@@ -49,9 +49,10 @@ Không nên hiểu nhầm rằng:
 4. [Ingestion_Spec.md](c:/Users/ngtru/Documents/CodeSpace/VitalAI/doc/Ingestion_Spec.md)
 5. [Retrieval_Spec.md](c:/Users/ngtru/Documents/CodeSpace/VitalAI/doc/Retrieval_Spec.md)
 6. [Agent_Graph_Spec.md](c:/Users/ngtru/Documents/CodeSpace/VitalAI/doc/Agent_Graph_Spec.md)
-7. [Architecture.md](c:/Users/ngtru/Documents/CodeSpace/VitalAI/doc/Architecture.md)
-8. [Database.md](c:/Users/ngtru/Documents/CodeSpace/VitalAI/doc/Database.md)
-9. [Implementation_Plan.md](c:/Users/ngtru/Documents/CodeSpace/VitalAI/doc/Implementation_Plan.md)
+7. [API_Spec.md](c:/Users/ngtru/Documents/CodeSpace/VitalAI/doc/API_Spec.md)
+8. [Architecture.md](c:/Users/ngtru/Documents/CodeSpace/VitalAI/doc/Architecture.md)
+9. [Database.md](c:/Users/ngtru/Documents/CodeSpace/VitalAI/doc/Database.md)
+10. [Implementation_Plan.md](c:/Users/ngtru/Documents/CodeSpace/VitalAI/doc/Implementation_Plan.md)
 
 ## Tóm tắt dữ liệu hiện có
 
@@ -143,6 +144,7 @@ Luồng này bắt buộc phải:
 - gold dataset
 - retrieval evaluation
 - response safety checks
+- error/limitation contract
 
 ## Nguyên tắc làm việc cho repo này
 

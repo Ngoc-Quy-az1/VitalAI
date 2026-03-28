@@ -1,0 +1,1 @@
+python scripts/embed_and_index.py --batch-size 50

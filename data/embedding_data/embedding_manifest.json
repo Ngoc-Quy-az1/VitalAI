@@ -1,0 +1,198 @@
+{
+  "counts": {
+    "documents": 671,
+    "skipped_chunks": 39
+  },
+  "distributions": {
+    "source_type": {
+      "chunk": 594,
+      "threshold": 73,
+      "formula": 4
+    },
+    "doc_type": {
+      "disease_guideline": 556,
+      "formula_reference": 13,
+      "medication_reference": 13,
+      "threshold_reference": 89
+    },
+    "section_type": {
+      "definition": 26,
+      "general": 168,
+      "progression": 10,
+      "classification": 161,
+      "clinical_features": 108,
+      "pathology": 25,
+      "diagnosis_criteria": 45,
+      "treatment": 112,
+      "complications": 11,
+      "follow_up": 5
+    },
+    "disease_name": {
+      "benh_ly_cau_than": 65,
+      "viem_cau_than_man": 2,
+      "lupus_nephritis": 53,
+      "diabetic_kidney_disease": 142,
+      "hoi_chung_than_hu": 43,
+      "viem_cau_than_cap": 16,
+      "benh_than_iga": 23,
+      "benh_than_man": 200,
+      "acute_kidney_injury": 127
+    }
+  },
+  "samples": {
+    "documents": [
+      {
+        "document_id": "chunk::benh_ly_cau_than_p1_001",
+        "source_type": "chunk",
+        "source_id": "benh_ly_cau_than_p1_001",
+        "content": "1. KHÁI NIỆM\nBệnh lý cầu thận là một trong những nguyên nhân thường gặp nhất của suy thận giai đoạn\ncuối, bao gồm bệnh cầu thận nguyên phát và bệnh cầu thận thứ phát. Bệnh lý của cầu thận có\nthể xếp loại theo nhiều cách, tuy nhiên cách xếp loại trên lâm sàng bao gồm các hội chứng\nchính như: hội chứng viêm cầu thận cấp, hội chứng viêm cầu thận tiến triển nhanh, hội chứng\nviêm cầu thận mạn, hội chứng thận hư, đái máu kéo dài hay tái phát và phân loại bệnh cầu\nthận dựa vào tổn thương mô bệnh học của cầu thận thường được áp dụng.",
+        "embedding_text": "Bệnh: Bệnh lý cầu thận\nMục: Khái niệm\nLoại tài liệu: Hướng dẫn bệnh học\nNội dung:\n1. KHÁI NIỆM\nBệnh lý cầu thận là một trong những nguyên nhân thường gặp nhất của suy thận giai đoạn\ncuối, bao gồm bệnh cầu thận nguyên phát và bệnh cầu thận thứ phát. Bệnh lý của cầu thận có\nthể xếp loại theo nhiều cách, tuy nhiên cách xếp loại trên lâm sàng bao gồm các hội chứng\nchính như: hội chứng viêm cầu thận cấp, hội chứng viêm cầu thận tiến triển nhanh, hội chứng\nviêm cầu thận mạn, hội chứng thận hư, đái máu kéo dài hay tái phát và phân loại bệnh cầu\nthận dựa vào tổn thương mô bệnh học của cầu thận thường được áp dụng.",
+        "metadata": {
+          "doc_type": "disease_guideline",
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "definition",
+          "content_type": "prose",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 1,
+          "language": "vi",
+          "chunk_index": 1
+        }
+      },
+      {
+        "document_id": "chunk::benh_ly_cau_than_p1_002",
+        "source_type": "chunk",
+        "source_id": "benh_ly_cau_than_p1_002",
+        "content": "2.1. Hội chứng viêm cầu thận cấp\nĐột ngột xuất hiện phù, đái máu đại thể hoặc vi thể, protein niệu, tăng huyết áp và có thể suy\ngiảm chức năng thận.",
+        "embedding_text": "Bệnh: Bệnh lý cầu thận\nMục: Tổng quát\nLoại tài liệu: Hướng dẫn bệnh học\nChỉ số liên quan: Protein niệu 24 giờ\nNội dung:\n2.1. Hội chứng viêm cầu thận cấp\nĐột ngột xuất hiện phù, đái máu đại thể hoặc vi thể, protein niệu, tăng huyết áp và có thể suy\ngiảm chức năng thận.",
+        "metadata": {
+          "doc_type": "disease_guideline",
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "general",
+          "content_type": "prose",
+          "biomarker": "protein_niệu_24h",
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 1,
+          "language": "vi",
+          "chunk_index": 2
+        }
+      },
+      {
+        "document_id": "chunk::benh_ly_cau_than_p1_003",
+        "source_type": "chunk",
+        "source_id": "benh_ly_cau_than_p1_003",
+        "content": "2.2. Hội chứng viêm cầu thận tiến triển nhanh\nĐột ngột xuất hiện thiểu niệu, tăng huyết áp, đái máu, protein niệu, thiếu máu, tiến triển\nnhanh đến suy thận, tiên lượng xấu.",
+        "embedding_text": "Bệnh: Bệnh lý cầu thận\nMục: Tiến triển và tiên lượng\nLoại tài liệu: Hướng dẫn bệnh học\nChỉ số liên quan: Protein niệu 24 giờ\nNội dung:\n2.2. Hội chứng viêm cầu thận tiến triển nhanh\nĐột ngột xuất hiện thiểu niệu, tăng huyết áp, đái máu, protein niệu, thiếu máu, tiến triển\nnhanh đến suy thận, tiên lượng xấu.",
+        "metadata": {
+          "doc_type": "disease_guideline",
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "progression",
+          "content_type": "prose",
+          "biomarker": "protein_niệu_24h",
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 1,
+          "language": "vi",
+          "chunk_index": 3
+        }
+      },
+      {
+        "document_id": "chunk::benh_ly_cau_than_p1_004",
+        "source_type": "chunk",
+        "source_id": "benh_ly_cau_than_p1_004",
+        "content": "2.3. Đái máu kéo dài hoặc hay tái phát\nXuất hiện đái máu vi thể hoặc đại thể nhưng protein niệu ít hoặc âm tính trong giai đoạn đầu\nvà không kèm theo triệu chứng lâm sàng nào khác.",
+        "embedding_text": "Bệnh: Bệnh lý cầu thận\nMục: Phân loại\nLoại tài liệu: Hướng dẫn bệnh học\nChỉ số liên quan: Protein niệu 24 giờ\nNội dung:\n2.3. Đái máu kéo dài hoặc hay tái phát\nXuất hiện đái máu vi thể hoặc đại thể nhưng protein niệu ít hoặc âm tính trong giai đoạn đầu\nvà không kèm theo triệu chứng lâm sàng nào khác.",
+        "metadata": {
+          "doc_type": "disease_guideline",
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "classification",
+          "content_type": "prose",
+          "biomarker": "protein_niệu_24h",
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 1,
+          "language": "vi",
+          "chunk_index": 4
+        }
+      },
+      {
+        "document_id": "chunk::benh_ly_cau_than_p1_005",
+        "source_type": "chunk",
+        "source_id": "benh_ly_cau_than_p1_005",
+        "content": "2.4. Hội chứng viêm cầu thận mạn Phù, protein niệu kéo dài, đái máu thường là vi thể, tăng\nhuyết áp và lâu dài sẽ dẫn đến suy thận mạn.",
+        "embedding_text": "Bệnh: Bệnh lý cầu thận\nMục: Tổng quát\nLoại tài liệu: Hướng dẫn bệnh học\nChỉ số liên quan: Protein niệu 24 giờ\nNội dung:\n2.4. Hội chứng viêm cầu thận mạn Phù, protein niệu kéo dài, đái máu thường là vi thể, tăng\nhuyết áp và lâu dài sẽ dẫn đến suy thận mạn.",
+        "metadata": {
+          "doc_type": "disease_guideline",
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "general",
+          "content_type": "prose",
+          "biomarker": "protein_niệu_24h",
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 1,
+          "language": "vi",
+          "chunk_index": 5
+        }
+      }
+    ],
+    "skipped_chunks": [
+      {
+        "source_id": "benh_ly_cau_than_p1_008",
+        "reason": "chunk_nhieu_nhieu_hoac_qua_ngan",
+        "page": 1,
+        "preview": "3.1. Bệnh cầu thận nguyên phát"
+      },
+      {
+        "source_id": "viem_cau_than_man_p2_002",
+        "reason": "chunk_nhieu_nhieu_hoac_qua_ngan",
+        "page": 2,
+        "preview": "3.1.4. Viêm cầu thận không xếp loại được"
+      },
+      {
+        "source_id": "benh_ly_cau_than_p3_002",
+        "reason": "chunk_nhieu_nhieu_hoac_qua_ngan",
+        "page": 3,
+        "preview": "3.6. Tổn thương cầu thận sau ghép"
+      },
+      {
+        "source_id": "benh_ly_cau_than_p3_003",
+        "reason": "chunk_nhieu_nhieu_hoac_qua_ngan",
+        "page": 3,
+        "preview": "4. CHẨN ĐOÁN MỘT SỐ BỆNH CẦU THẬN THƯỜNG GẶP"
+      },
+      {
+        "source_id": "benh_ly_cau_than_p4_002",
+        "reason": "chunk_nhieu_nhieu_hoac_qua_ngan",
+        "page": 4,
+        "preview": "4.3. Viêm cầu thận màng lan tỏa"
+      },
+      {
+        "source_id": "benh_ly_cau_than_p4_005",
+        "reason": "chunk_nhieu_nhieu_hoac_qua_ngan",
+        "page": 4,
+        "preview": "4.4. Viêm cầu thận tăng sinh lan tỏa"
+      },
+      {
+        "source_id": "benh_ly_cau_than_p4_006",
+        "reason": "chunk_nhieu_nhieu_hoac_qua_ngan",
+        "page": 4,
+        "preview": "4.4.1. Viêm cầu thận tăng sinh gian mạch"
+      },
+      {
+        "source_id": "benh_ly_cau_than_p6_002",
+        "reason": "chunk_nhieu_nhieu_hoac_qua_ngan",
+        "page": 6,
+        "preview": "4.4.3. Viêm cầu thận màng tăng sinh"
+      },
+      {
+        "source_id": "benh_ly_cau_than_p9_001",
+        "reason": "chunk_nhieu_nhieu_hoac_qua_ngan",
+        "page": 9,
+        "preview": "4.4.7. Viêm cầu thận do Schönlein Henoch"
+      },
+      {
+        "source_id": "benh_ly_cau_than_p9_004",
+        "reason": "chunk_nhieu_nhieu_hoac_qua_ngan",
+        "page": 9,
+        "preview": "4.4.8. Xơ hóa cầu thận do đái tháo đường"
+      }
+    ]
+  }
+}

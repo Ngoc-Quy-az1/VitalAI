@@ -177,6 +177,15 @@ Khi bắt đầu code, nên code theo thứ tự:
 8. API
 9. evaluation
 
+### API contract cần chốt trước khi code backend
+
+- endpoint tối thiểu
+- request schema
+- response schema
+- citation field
+- safety field
+- error handling
+
 ## Phase 6 — Evaluation and safety
 
 ### Mục tiêu

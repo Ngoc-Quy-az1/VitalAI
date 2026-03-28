@@ -1,0 +1,150 @@
+[
+  {
+    "formula_id": "mdrd_gfr",
+    "formula_name": "MDRD eGFR",
+    "formula_type": "calculation",
+    "expression": "186 * (creatinine_mg_dl ** -1.154) * (age ** -0.203) * sex_factor * race_factor",
+    "variables": [
+      {
+        "name": "creatinine_mg_dl",
+        "description": "creatinine mg dl",
+        "unit": null,
+        "required": true
+      },
+      {
+        "name": "age",
+        "description": "age",
+        "unit": null,
+        "required": true
+      },
+      {
+        "name": "sex",
+        "description": "sex",
+        "unit": null,
+        "required": true
+      },
+      {
+        "name": "race",
+        "description": "race",
+        "unit": null,
+        "required": true
+      }
+    ],
+    "output_name": "gfr_ml_min_1_73m2",
+    "output_unit": "ml/ph/1.73m2",
+    "disease_name": "acute_kidney_injury",
+    "section_type": "classification",
+    "source_text": "FR\", \"description\": \"Ước tính mức lọc cầu thận (GFR) từ creatinin huyết thanh\", \"inputs\": [ \"creatinine_mg_dl\", \"age\", \"sex\", \"race\" ], \"formula\": \"186 * (creatinine_mg_dl ** -1.154) * (age ** -0.203) * sex_factor * race_factor\", \"parameters\": { \"sex_factor\": { \"male\": 1, \"female\": 0.742 }, \"race_factor\": { \"black\": 1.21, \"other\": 1",
+    "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+    "page": 130,
+    "language": "vi"
+  },
+  {
+    "formula_id": "cockcroft_gault",
+    "formula_name": "Cockcroft-Gault",
+    "formula_type": "calculation",
+    "expression": "((140 - age) * weight_kg) / (72 * creatinine_mg_dl) * sex_factor",
+    "variables": [
+      {
+        "name": "age",
+        "description": "age",
+        "unit": null,
+        "required": true
+      },
+      {
+        "name": "weight_kg",
+        "description": "weight kg",
+        "unit": null,
+        "required": true
+      },
+      {
+        "name": "creatinine_mg_dl",
+        "description": "creatinine mg dl",
+        "unit": null,
+        "required": true
+      },
+      {
+        "name": "sex",
+        "description": "sex",
+        "unit": null,
+        "required": true
+      }
+    ],
+    "output_name": "creatinine_clearance_ml_min",
+    "output_unit": "ml/ph",
+    "disease_name": "benh_than_man",
+    "section_type": "diagnosis_criteria",
+    "source_text": "e\": \"Cockcroft-Gault\", \"description\": \"Ước tính độ thanh thải creatinin\", \"inputs\": [ \"age\", \"weight_kg\", \"creatinine_mg_dl\", \"sex\" ], \"formula\": \"((140 - age) * weight_kg) / (72 * creatinine_mg_dl) * sex_factor\", \"parameters\": { \"sex_factor\": { \"male\": 1, \"female\": 0.85 } }, \"output\": \"creatinine_clearance_ml_min\", \"unit\": \"ml/p",
+    "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+    "page": 132,
+    "language": "vi"
+  },
+  {
+    "formula_id": "body_surface_area",
+    "formula_name": "Diện tích da cơ thể (BSA)",
+    "formula_type": "calculation",
+    "expression": "((weight_kg * height_cm) / 3600) ** 0.5",
+    "variables": [
+      {
+        "name": "weight_kg",
+        "description": "weight kg",
+        "unit": null,
+        "required": true
+      },
+      {
+        "name": "height_cm",
+        "description": "height cm",
+        "unit": null,
+        "required": true
+      }
+    ],
+    "output_name": "bsa_m2",
+    "output_unit": "m2",
+    "disease_name": "benh_than_man",
+    "section_type": "diagnosis_criteria",
+    "source_text": "\"body_surface_area\", \"name\": \"Diện tích da cơ thể (BSA)\", \"description\": \"Ước tính diện tích da cơ thể\", \"inputs\": [ \"weight_kg\", \"height_cm\" ], \"formula\": \"((weight_kg * height_cm) / 3600) ** 0.5\", \"output\": \"bsa_m2\", \"unit\": \"m2\" } ], \"text_chunks\": [ { \"text\": \"Mức lọc cầu thận (GFR) <60 ml/ph/1,73m2 kéo dài trên 3 tháng là tiêu chuẩn chẩn đ",
+    "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+    "page": 133,
+    "language": "vi"
+  },
+  {
+    "formula_id": "fena_formula",
+    "formula_name": "Fractional Excretion of Sodium (FENa)",
+    "formula_type": "calculation",
+    "expression": "(urine_na * plasma_creatinine) / (plasma_na * urine_creatinine) * 100",
+    "variables": [
+      {
+        "name": "urine_na (UNa)",
+        "description": "urine na (UNa)",
+        "unit": null,
+        "required": true
+      },
+      {
+        "name": "plasma_na (PNa)",
+        "description": "plasma na (PNa)",
+        "unit": null,
+        "required": true
+      },
+      {
+        "name": "urine_creatinine (UCr)",
+        "description": "urine creatinine (UCr)",
+        "unit": null,
+        "required": true
+      },
+      {
+        "name": "plasma_creatinine (PCr)",
+        "description": "plasma creatinine (PCr)",
+        "unit": null,
+        "required": true
+      }
+    ],
+    "output_name": "fena_percent",
+    "output_unit": null,
+    "disease_name": "acute_kidney_injury",
+    "section_type": "diagnosis_criteria",
+    "source_text": "ractional Excretion of Sodium (FENa)\", \"inputs\": [ \"urine_na (UNa)\", \"plasma_na (PNa)\", \"urine_creatinine (UCr)\", \"plasma_creatinine (PCr)\" ], \"formula\": \"(urine_na * plasma_creatinine) / (plasma_na * urine_creatinine) * 100\", \"output\": \"fena_percent\", \"interpretation\": [ { \"condition\": \"fena < 1%\", \"meaning\": \"Gợi ý suy thận trước thận\" }, {",
+    "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+    "page": 185,
+    "language": "vi"
+  }
+]
