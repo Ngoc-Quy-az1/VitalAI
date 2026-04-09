@@ -13,4 +13,5 @@ torchaudio == 2.5.1
 rich == 13.9.4
 sounddevice == 0.5.1
 transformers >= 4.40.0
-
+langchain-core == 0.3.83
+langchain-mistralai == 0.2.5

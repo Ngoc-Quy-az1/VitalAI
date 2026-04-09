@@ -484,3 +484,84 @@ Các thay đổi vừa làm có tác dụng chính là:
 2. làm metadata đúng ngữ cảnh hơn
 3. làm retriever hiểu rằng `là gì` thường là query `definition`
 4. giảm khả năng chunk chẩn đoán lấn át chunk định nghĩa trong case lupus
+
+## Phần bổ sung: tích hợp LLM bằng Mistral
+
+Sau khi retrieval đã được sửa, hệ thống đã được nối thêm một lớp answer synthesis dùng Mistral làm model chính.
+
+### File mới / file thay đổi
+
+- `src/LLM/qa/__init__.py`
+- `src/LLM/qa/answering.py`
+- `scripts/test_answer.py`
+- `test_query.sh`
+- `requirements.txt`
+
+### Model chính đang dùng
+
+Answer layer dùng:
+
+```python
+from langchain_mistralai import ChatMistralAI
+```
+
+Các biến môi trường đang được đọc:
+
+- `MISTRAL_CLIENT_API_KEY`
+- `MODEL_NAME`
+- `MISTRAL_TEMPERATURE` (optional, default hiện là `0.1`)
+
+### Luồng hoạt động mới
+
+Hiện tại full flow QA hoạt động theo thứ tự:
+
+1. nhận query người dùng
+2. chạy hybrid retrieval trên Neon qua `NeonVectorSearcher`
+3. lấy top evidence
+4. format evidence thành prompt ngắn, có `source_id`, `page`, `section`
+5. gọi `ChatMistralAI`
+6. trả về:
+   - `answer`
+   - `query_understanding`
+   - `results`
+
+### Tác dụng của lớp LLM mới
+
+- hệ thống không chỉ trả top-k chunks nữa
+- có thể trả lời trực tiếp bằng tiếng Việt
+- vẫn giữ retrieval debug info để dễ audit
+- prompt buộc model:
+  - chỉ dùng evidence đã truy xuất
+  - nêu rõ nếu thiếu dữ kiện
+  - thêm citation ngắn theo `source_id` và trang
+
+### Kết quả smoke test
+
+Đã smoke test thành công việc khởi tạo:
+
+- `RetrievalAugmentedAnswerer`
+- `ChatMistralAI`
+- `NeonVectorSearcher`
+
+Đã chạy được end-to-end query:
+
+- `Lupus ban đỏ là gì?`
+
+Kết quả trả lời đã bám đúng evidence chính từ:
+
+- `lupus_nephritis_p25_002`
+
+### Lệnh test mới
+
+```bash
+../.venv/bin/python scripts/test_answer.py --query "Lupus ban đỏ là gì?" --top-k 5
+```
+
+### Ghi chú vận hành
+
+- Nếu retrieval DB chưa được re-index sau các thay đổi ingestion/embedding, answer flow vẫn chạy nhưng có thể còn dùng metadata cũ ở một số record.
+- Vì vậy sau khi thay đổi artifacts, cần chạy lại:
+
+```bash
+../.venv/bin/python scripts/embed_and_index.py
+```
