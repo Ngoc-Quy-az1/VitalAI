@@ -8,7 +8,7 @@ from typing import Generator, Iterator, Optional
 import numpy as np
 
 from ..VAD.vad_handler import VADHandler
-from .STT_handler import STTHandler
+from .stt_cache import get_or_create_stt_handler
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 class VADSTTPipeline:
     def __init__(self):
         self.vad: Optional[VADHandler] = None
-        self.STT: Optional[STTHandler] = None
+        self.STT: Optional[object] = None
 
     def setup(
         self,
@@ -38,8 +38,7 @@ class VADSTTPipeline:
         self.vad = VADHandler()
         self.vad.setup(should_listen, **vad_kwargs)
 
-        self.STT = STTHandler()
-        self.STT.setup(**STT_kwargs)
+        self.STT = get_or_create_stt_handler(**STT_kwargs)
 
     def process_audio_chunk(
         self, pcm_int16_bytes: bytes

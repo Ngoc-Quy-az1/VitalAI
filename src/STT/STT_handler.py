@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import logging
-from typing import Any, Literal, Optional
+import os
+from typing import Any, Optional
 
 import numpy as np
 import torch
@@ -12,88 +13,61 @@ from ..VAD.base_handler import BaseHandler
 logger = logging.getLogger(__name__)
 
 try:
-    import whisper
+    from transformers import pipeline as hf_asr_pipeline
 
-    HAS_OPENAI_WHISPER = True
+    HAS_TRANSFORMERS = True
 except ImportError:
-    HAS_OPENAI_WHISPER = False
-    whisper = None  # type: ignore
+    HAS_TRANSFORMERS = False
+    hf_asr_pipeline = None  # type: ignore[misc, assignment]
 
-try:
-    from faster_whisper import WhisperModel
-
-    HAS_FASTER_WHISPER = True
-except ImportError:
-    HAS_FASTER_WHISPER = False
-    WhisperModel = None  # type: ignore
-
-Engine = Literal["faster", "openai"]
+# VinAI PhoWhisper (Hugging Face) — engine STT duy nhất trong VitalAI
+DEFAULT_PHOWHISPER_MODEL = "vinai/PhoWhisper-base"
 
 
 class STTHandler(BaseHandler):
-    """
-    STT: ưu tiên ``faster-whisper`` (nhanh, ổn định trên CPU int8), fallback ``openai-whisper``.
-    """
+    """Nhận dạng giọng nói qua PhoWhisper (transformers ASR pipeline)."""
 
     def setup(
         self,
-        model_name: str = "small",
-        engine: Engine = "faster",
+        *,
+        model_name: str = DEFAULT_PHOWHISPER_MODEL,
+        hf_model: Optional[str] = None,
         device: Optional[str] = None,
         language: str = "vi",
         task: str = "transcribe",
-        fp16: bool = True,
-        compute_type: Optional[str] = None,
-        beam_size: int = 5,
         **kwargs: Any,
     ) -> None:
         self.language = language
         self.task = task
-        self.fp16 = fp16
-        self.beam_size = max(1, beam_size)
-        self._fw_model = None
-        self.model = None
+        self._hf_pipe = None
+
+        if not HAS_TRANSFORMERS or hf_asr_pipeline is None:
+            raise RuntimeError(
+                "PhoWhisper cần transformers. Cài: pip install transformers torch"
+            )
 
         if device is None:
             device = "cuda" if torch.cuda.is_available() else "cpu"
         self.device = device
 
-        if engine == "faster" and not HAS_FASTER_WHISPER:
-            if HAS_OPENAI_WHISPER:
-                logger.warning(
-                    "faster-whisper not installed; falling back to openai-whisper. "
-                    "Install: pip install faster-whisper"
-                )
-                engine = "openai"
-            else:
-                raise RuntimeError(
-                    "Install faster-whisper (pip install faster-whisper) "
-                    "or openai-whisper (pip install openai-whisper)"
-                )
+        model_id = hf_model or os.getenv("PHOWHISPER_MODEL") or model_name
+        if not model_id or "/" not in model_id:
+            model_id = DEFAULT_PHOWHISPER_MODEL
 
-        if engine == "faster":
-            if compute_type is None:
-                compute_type = "float16" if device == "cuda" else "int8"
-            logger.info(
-                "Loading faster-whisper model=%s device=%s compute_type=%s",
-                model_name,
-                device,
-                compute_type,
-            )
-            self._fw_model = WhisperModel(
-                model_name,
-                device=device,
-                compute_type=compute_type,
-            )
-            self._engine = "faster"
-        else:
-            if not HAS_OPENAI_WHISPER:
-                raise RuntimeError(
-                    "openai-whisper not installed. Run: pip install openai-whisper"
-                )
-            logger.info("Loading openai-whisper model=%s device=%s", model_name, device)
-            self.model = whisper.load_model(model_name, device=device)
-            self._engine = "openai"
+        pipe_device = 0 if (device == "cuda" and torch.cuda.is_available()) else -1
+        if device == "cuda" and pipe_device == -1:
+            logger.warning("CUDA không khả dụng — PhoWhisper chạy CPU (rất chậm).")
+
+        logger.info(
+            "Loading PhoWhisper model=%s device=%s",
+            model_id,
+            pipe_device,
+        )
+        self._hf_pipe = hf_asr_pipeline(
+            "automatic-speech-recognition",
+            model=model_id,
+            device=pipe_device,
+        )
 
     def _ensure_mono_float32(self, audio: np.ndarray) -> np.ndarray:
         x = np.asarray(audio, dtype=np.float32)
@@ -113,28 +87,22 @@ class STTHandler(BaseHandler):
                 .numpy()
             )
 
-        if self._engine == "faster" and self._fw_model is not None:
-            segments, _ = self._fw_model.transcribe(
-                x.astype(np.float32),
-                language=self.language if self.language else None,
-                task=self.task,
-                beam_size=self.beam_size,
-                vad_filter=False,
-            )
-            parts = [s.text for s in segments]
-            return "".join(parts).strip()
+        if self._hf_pipe is None:
+            raise RuntimeError("Gọi setup() trước khi transcribe.")
 
-        if self.model is None:
-            raise RuntimeError("STT model not loaded.")
-
-        result = self.model.transcribe(
-            x,
-            language=self.language if self.language else None,
-            task=self.task,
-            fp16=self.fp16 and self.device == "cuda",
-            verbose=False,
+        wlang = self.language or None
+        if wlang == "vi":
+            wlang = "vietnamese"
+        gen_kw: dict[str, Any] = {"task": self.task}
+        if wlang:
+            gen_kw["language"] = wlang
+        out = self._hf_pipe(
+            {"raw": x.astype(np.float32), "sampling_rate": 16000},
+            generate_kwargs=gen_kw,
         )
-        return (result.get("text") or "").strip()
+        if isinstance(out, dict):
+            return (out.get("text") or "").strip()
+        return str(out).strip()
 
     def process(self, audio_chunk):
         raise NotImplementedError(
@@ -142,7 +110,7 @@ class STTHandler(BaseHandler):
         )
 
     def on_session_end(self):
-        pass 
+        pass
 
 
 ASRHandler = STTHandler
