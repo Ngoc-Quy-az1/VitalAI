@@ -9,3 +9,5 @@ numpy == 1.26.4
 PyMuPDF == 1.24.13
 openai == 2.2.0
 asyncpg == 0.31.0
+langchain-core == 0.3.83
+langchain-mistralai == 0.2.5

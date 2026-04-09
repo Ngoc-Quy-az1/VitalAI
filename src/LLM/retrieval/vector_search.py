@@ -18,6 +18,7 @@ Chưa làm ở bước này:
 import json
 import os
 import re
+import asyncio
 import unicodedata
 from typing import Any
 
@@ -107,35 +108,15 @@ class NeonVectorSearcher:
             biomarker=biomarker,
         )
         query_embedding = await self._embed_query(understanding["embedding_query"])
-        conn = await asyncpg.connect(self.database_url, statement_cache_size=0)
-        try:
-            candidate_limit = max(top_k * 6, 12)
-            vector_rows = await self._search_vector_rows(
-                conn=conn,
-                embedding=query_embedding,
-                top_k=candidate_limit,
-                disease_name=disease_name,
-                section_type=section_type,
-                source_type=source_type,
-                biomarker=biomarker,
-            )
-            keyword_rows = await self._search_keyword_rows(
-                conn=conn,
-                keyword_query=understanding["keyword_query"],
-                top_k=candidate_limit,
-                disease_name=disease_name,
-                section_type=section_type,
-                source_type=source_type,
-                biomarker=biomarker,
-            )
-            rows = self._fuse_rows(
-                vector_rows=vector_rows,
-                keyword_rows=keyword_rows,
-                top_k=top_k,
-                understanding=understanding,
-            )
-        finally:
-            await conn.close()
+        rows = await self._search_with_retry(
+            embedding=query_embedding,
+            top_k=top_k,
+            disease_name=disease_name,
+            section_type=section_type,
+            source_type=source_type,
+            biomarker=biomarker,
+            understanding=understanding,
+        )
 
         return {
             "query": query,
@@ -156,6 +137,65 @@ class NeonVectorSearcher:
             },
             "results": rows,
         }
+
+    async def _search_with_retry(
+        self,
+        embedding: list[float],
+        top_k: int,
+        disease_name: str | None,
+        section_type: str | None,
+        source_type: str | None,
+        biomarker: str | None,
+        understanding: dict[str, Any],
+        max_attempts: int = 2,
+    ) -> list[dict[str, Any]]:
+        """Retry nhẹ cho các lỗi DB connection transient khi query Neon."""
+
+        last_error: Exception | None = None
+
+        for attempt in range(1, max_attempts + 1):
+            conn = await asyncpg.connect(self.database_url, statement_cache_size=0)
+            try:
+                candidate_limit = max(top_k * 6, 12)
+                vector_rows = await self._search_vector_rows(
+                    conn=conn,
+                    embedding=embedding,
+                    top_k=candidate_limit,
+                    disease_name=disease_name,
+                    section_type=section_type,
+                    source_type=source_type,
+                    biomarker=biomarker,
+                )
+                keyword_rows = await self._search_keyword_rows(
+                    conn=conn,
+                    keyword_query=understanding["keyword_query"],
+                    top_k=candidate_limit,
+                    disease_name=disease_name,
+                    section_type=section_type,
+                    source_type=source_type,
+                    biomarker=biomarker,
+                )
+                return self._fuse_rows(
+                    vector_rows=vector_rows,
+                    keyword_rows=keyword_rows,
+                    top_k=top_k,
+                    understanding=understanding,
+                )
+            except (
+                asyncpg.ConnectionDoesNotExistError,
+                asyncpg.ConnectionFailureError,
+                asyncpg.InterfaceError,
+            ) as exc:
+                last_error = exc
+                if attempt >= max_attempts:
+                    break
+                await asyncio.sleep(0.75 * attempt)
+            finally:
+                await conn.close()
+
+        if last_error is not None:
+            raise last_error
+        raise RuntimeError("Hybrid retrieval thất bại nhưng không thu được exception cụ thể.")
 
     async def _embed_query(self, query: str) -> list[float]:
         """Gọi OpenAI Embeddings cho câu truy vấn."""
