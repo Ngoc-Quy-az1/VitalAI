@@ -339,7 +339,7 @@ BIOMARKER_ALIASES = {
     "GFR": ["gfr", "egfr", "muc loc cau than", "mlct"],
     "BSA": ["dien tich da", "bsa"],
     "FENa": ["fena", "fractional excretion of sodium"],
-    "sodium": ["na+", "natri", "na "],
+    "sodium": ["na+", "natri"],
     "urea": ["ure mau", "urea", "ure"],
 }
 
@@ -420,6 +420,10 @@ CONTEXT_RESET_MARKERS = (
     "ton thuong cau than sau ghep",
     "chan doan mot so benh cau than thuong gap",
 )
+
+HEADING_PRESERVING_SPLIT_THRESHOLD = 1100
+SUBCHUNK_TARGET_LENGTH = 900
+SUBCHUNK_MAX_UNITS = 2
 
 
 @dataclass
@@ -843,8 +847,86 @@ class MedicalPdfProcessor:
             block = "\n".join(lines).strip()
             if len(block) < 30:
                 continue
-            cleaned.append(block)
+            cleaned.extend(self._split_large_prose_block(block))
         return cleaned
+
+    def _split_large_prose_block(self, block: str) -> list[str]:
+        """
+        Tách prose block quá dài theo bullet/đoạn nhưng vẫn giữ heading ở đầu chunk.
+
+        Mục tiêu là tránh một chunk overview quá dài gom nhiều ý khác nhau,
+        làm embedding bị loãng và đè mất ý định nghĩa/khái niệm.
+        """
+
+        if len(block) < HEADING_PRESERVING_SPLIT_THRESHOLD:
+            return [block]
+
+        lines = [line.strip() for line in block.splitlines() if line.strip()]
+        if not lines:
+            return [block]
+
+        heading = lines[0] if HEADING_RE.match(lines[0]) else None
+        body_lines = lines[1:] if heading else lines
+        units = self._split_block_units(body_lines)
+        if len(units) < 3:
+            return [block]
+
+        chunks: list[str] = []
+        current_units: list[str] = []
+        current_length = len(heading or "")
+
+        for unit in units:
+            projected_length = current_length + len(unit)
+            if current_units and (
+                len(current_units) >= SUBCHUNK_MAX_UNITS or projected_length > SUBCHUNK_TARGET_LENGTH
+            ):
+                chunks.append(self._compose_prose_subchunk(heading, current_units))
+                current_units = [unit]
+                current_length = len(heading or "") + len(unit)
+                continue
+
+            current_units.append(unit)
+            current_length = projected_length
+
+        if current_units:
+            chunks.append(self._compose_prose_subchunk(heading, current_units))
+
+        return chunks if len(chunks) > 1 else [block]
+
+    def _split_block_units(self, lines: list[str]) -> list[str]:
+        """Nhóm các dòng thuộc cùng một bullet/đoạn để phục vụ chia subchunk."""
+
+        units: list[str] = []
+        current: list[str] = []
+
+        for line in lines:
+            if self._is_bullet_like_line(line):
+                if current:
+                    units.append("\n".join(current).strip())
+                current = [line]
+                continue
+
+            if not current:
+                current = [line]
+                continue
+
+            current.append(line)
+
+        if current:
+            units.append("\n".join(current).strip())
+
+        return [unit for unit in units if unit]
+
+    def _compose_prose_subchunk(self, heading: str | None, units: list[str]) -> str:
+        """Ghép heading với các đơn vị nội dung con thành một chunk hoàn chỉnh."""
+
+        if heading is None:
+            return "\n".join(units).strip()
+        return "\n".join([heading] + units).strip()
+
+    def _is_bullet_like_line(self, line: str) -> bool:
+        stripped = line.lstrip()
+        return stripped.startswith(("–", "-", "•"))
 
     def _split_sentences(self, text: str) -> list[str]:
         """Tách câu phục vụ extract threshold. Giữ bảo thủ để tránh cắt quá vụn."""
@@ -971,28 +1053,46 @@ class MedicalPdfProcessor:
     ) -> dict[str, Any]:
         """Lắp metadata theo contract đã chốt cho downstream retrieval về sau."""
 
+        section_type = self._detect_section_type(text)
+        biomarker = self._detect_biomarker(text)
         return {
-            "doc_type": self._detect_doc_type(text, content_type),
+            "doc_type": self._detect_doc_type(
+                text,
+                content_type,
+                section_type=section_type,
+                biomarker=biomarker,
+            ),
             "disease_name": disease_name if disease_name is not None else self._detect_disease_name(text),
-            "section_type": self._detect_section_type(text),
+            "section_type": section_type,
             "content_type": content_type,
-            "biomarker": self._detect_biomarker(text),
+            "biomarker": biomarker,
             "source_file": self.source_file,
             "page": page,
             "language": "vi",
             "chunk_index": chunk_index,
         }
 
-    def _detect_doc_type(self, text: str, content_type: str) -> str:
+    def _detect_doc_type(
+        self,
+        text: str,
+        content_type: str,
+        section_type: str | None = None,
+        biomarker: str | None = None,
+    ) -> str:
         normalized = self._normalize_ascii(text)
+        resolved_section = section_type or self._detect_section_type(text)
         if content_type == "json_block" and any(key in normalized for key in ("function_mapping", "formula", "inputs")):
             return "formula_reference"
-        if any(key in normalized for key in ("lieu dung", "cyclophosphamid", "prednisone", "methylprednisolone")):
-            return "medication_reference"
-        if any(key in normalized for key in ("gfr", "acr", "kdigo", "microalbuminuria")):
-            return "threshold_reference"
-        if any(key in normalized for key in ("cong thuc", "formula", "cockcroft", "mdrd", "fena")):
+        if any(key in normalized for key in ("formula", "cockcroft", "mdrd", "fena")):
             return "formula_reference"
+        if biomarker and resolved_section in {"classification", "diagnosis_criteria"} and any(
+            key in normalized for key in ("gfr", "acr", "pcr", "kdigo", "microalbuminuria", "protein niu", "albumin")
+        ):
+            return "threshold_reference"
+        if resolved_section == "treatment" and any(
+            key in normalized for key in ("lieu dung", "cyclophosphamid", "prednisone", "methylprednisolone")
+        ):
+            return "medication_reference"
         return "disease_guideline"
 
     def _detect_disease_name(self, text: str) -> str | None:
@@ -1028,8 +1128,36 @@ class MedicalPdfProcessor:
 
     def _detect_section_type(self, text: str) -> str:
         normalized = self._normalize_ascii(text)
-        for section_type, keywords in SECTION_KEYWORDS.items():
-            if any(keyword in normalized for keyword in keywords):
+        lines = [self._normalize_ascii(line.strip()) for line in text.splitlines() if line.strip()]
+        heading_preview = " ".join(lines[:2])
+        section_preview = " ".join(lines[:6]) if lines else normalized[:400]
+
+        for section_type in (
+            "definition",
+            "classification",
+            "pathology",
+            "treatment",
+            "diagnosis_criteria",
+            "clinical_features",
+            "progression",
+            "complications",
+            "follow_up",
+        ):
+            if any(keyword in heading_preview for keyword in SECTION_KEYWORDS[section_type]):
+                return section_type
+
+        for section_type in (
+            "definition",
+            "classification",
+            "pathology",
+            "treatment",
+            "diagnosis_criteria",
+            "clinical_features",
+            "progression",
+            "complications",
+            "follow_up",
+        ):
+            if any(keyword in section_preview for keyword in SECTION_KEYWORDS[section_type]):
                 return section_type
         return "general"
 

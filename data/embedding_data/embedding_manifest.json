@@ -1,42 +1,42 @@
 {
   "counts": {
-    "documents": 671,
+    "documents": 851,
     "skipped_chunks": 39
   },
   "distributions": {
     "source_type": {
-      "chunk": 594,
+      "chunk": 774,
       "threshold": 73,
       "formula": 4
     },
     "doc_type": {
-      "disease_guideline": 556,
-      "formula_reference": 13,
-      "medication_reference": 13,
-      "threshold_reference": 89
+      "disease_guideline": 745,
+      "medication_reference": 9,
+      "threshold_reference": 85,
+      "formula_reference": 12
     },
     "section_type": {
-      "definition": 26,
-      "general": 168,
-      "progression": 10,
-      "classification": 161,
-      "clinical_features": 108,
-      "pathology": 25,
-      "diagnosis_criteria": 45,
-      "treatment": 112,
-      "complications": 11,
-      "follow_up": 5
+      "definition": 34,
+      "general": 277,
+      "progression": 27,
+      "classification": 95,
+      "clinical_features": 88,
+      "pathology": 26,
+      "diagnosis_criteria": 73,
+      "treatment": 198,
+      "follow_up": 12,
+      "complications": 21
     },
     "disease_name": {
-      "benh_ly_cau_than": 65,
+      "benh_ly_cau_than": 66,
       "viem_cau_than_man": 2,
-      "lupus_nephritis": 53,
-      "diabetic_kidney_disease": 142,
-      "hoi_chung_than_hu": 43,
-      "viem_cau_than_cap": 16,
-      "benh_than_iga": 23,
-      "benh_than_man": 200,
-      "acute_kidney_injury": 127
+      "lupus_nephritis": 73,
+      "diabetic_kidney_disease": 170,
+      "hoi_chung_than_hu": 53,
+      "viem_cau_than_cap": 27,
+      "benh_than_iga": 32,
+      "benh_than_man": 237,
+      "acute_kidney_injury": 191
     }
   },
   "samples": {

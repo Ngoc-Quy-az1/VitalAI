@@ -3,6 +3,6 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "${SCRIPT_DIR}/_common.sh"
 
-run_repo_python scripts/embed_and_index.py --batch-size 50 "$@"
+"${SCRIPT_DIR}/process_data.sh" "$@"
+"${SCRIPT_DIR}/prepare_embedding.sh"

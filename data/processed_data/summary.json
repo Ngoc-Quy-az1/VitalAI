@@ -1,11 +1,11 @@
 {
   "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
   "page_count": 210,
-  "chunk_count": 635,
+  "chunk_count": 815,
   "threshold_count": 74,
   "formula_count": 4,
   "chunk_content_types": {
-    "prose": 626,
+    "prose": 806,
     "json_block": 9
   },
   "threshold_biomarkers": {
