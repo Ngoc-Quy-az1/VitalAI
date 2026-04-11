@@ -11,3 +11,6 @@ openai == 2.2.0
 asyncpg == 0.31.0
 langchain-core == 0.3.83
 langchain-mistralai == 0.2.5
+langgraph == 0.2.76
+fastapi == 0.115.7
+uvicorn == 0.34.0
