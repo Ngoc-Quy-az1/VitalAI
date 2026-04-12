@@ -27,6 +27,42 @@ ALLOWED_SECTION_TYPES = {
     "general",
 }
 ALLOWED_SOURCE_TYPES = {"chunk", "threshold", "formula"}
+ALLOWED_DISEASE_NAMES = {
+    "benh_than_man",
+    "lupus_nephritis",
+    "acute_kidney_injury",
+    "hoi_chung_than_hu",
+    "benh_than_iga",
+    "diabetic_kidney_disease",
+    "benh_ly_cau_than",
+    "viem_cau_than_cap",
+}
+DISEASE_NAME_ALIASES = {
+    "lupus": "lupus_nephritis",
+    "lupus_ban_do": "lupus_nephritis",
+    "lupus ban do": "lupus_nephritis",
+    "lupus_ban_đỏ": "lupus_nephritis",
+    "lupus ban đỏ": "lupus_nephritis",
+    "systemic_lupus_erythematosus": "lupus_nephritis",
+    "systemic lupus erythematosus": "lupus_nephritis",
+    "sle": "lupus_nephritis",
+    "benh_than_lupus": "lupus_nephritis",
+    "benh than lupus": "lupus_nephritis",
+    "viem_than_lupus": "lupus_nephritis",
+    "viem than lupus": "lupus_nephritis",
+    "benh_than_man_tinh": "benh_than_man",
+    "benh than man tinh": "benh_than_man",
+    "ckd": "benh_than_man",
+    "suy_than_man": "benh_than_man",
+    "suy than man": "benh_than_man",
+    "aki": "acute_kidney_injury",
+    "suy_than_cap": "acute_kidney_injury",
+    "suy than cap": "acute_kidney_injury",
+}
+LABEL_TRANSLATIONS = {
+    "prerenal_aki_suggestive": "gợi ý suy thận cấp trước thận",
+    "intrinsic_aki_suggestive": "gợi ý suy thận cấp tại thận",
+}
 
 
 class MedicalToolsClient:
@@ -110,6 +146,7 @@ def normalize_router_plan(plan: dict[str, Any], query: str) -> dict[str, Any]:
         parameters.setdefault("text", query)
         parameters.setdefault("measurements", None)
         parameters.setdefault("disease_name", None)
+        parameters["disease_name"] = _canonical_disease_name(parameters.get("disease_name"))
         parameters.setdefault("formula_ids", [])
         if parameters.get("formula_ids") is None:
             # Không tính mọi công thức theo default; chỉ tính khi router chọn
@@ -131,7 +168,7 @@ def normalize_router_plan(plan: dict[str, Any], query: str) -> dict[str, Any]:
     filters = rag_plan.get("filters") or {}
     if not isinstance(filters, dict):
         filters = {}
-    filters["disease_name"] = _optional_str(filters.get("disease_name"))
+    filters["disease_name"] = _canonical_disease_name(filters.get("disease_name"))
     section_type = _optional_str(filters.get("section_type"))
     source_type = _optional_str(filters.get("source_type")) or "chunk"
     filters["section_type"] = section_type if section_type in ALLOWED_SECTION_TYPES else None
@@ -215,24 +252,31 @@ def build_structured_answer(result: dict[str, Any] | None, query: str | None = N
         )
 
     measurements = _format_measurements(result.get("detected_measurements", []))
+    derived = _format_measurements(result.get("derived_measurements", []))
     threshold_lines = _matched_threshold_lines(result.get("threshold_matches", []), include_classifications=False)
     classification_lines = _matched_threshold_lines(result.get("classifications", []), include_classifications=True)
     formula_lines = _formula_result_lines(result.get("formula_results", []), query=query)
+    interpretation_lines = _interpretation_lines(result)
 
     detail_lines = [*threshold_lines[:6], *classification_lines[:6], *formula_lines[:4]]
     if not detail_lines:
         return None
 
-    opening = "Các chỉ số bạn cung cấp có điểm cần chú ý."
+    opening = "Kết quả tính toán có điểm cần chú ý."
     if measurements:
         opening = f"Các chỉ số bạn cung cấp ({measurements}) có điểm cần chú ý."
+    elif derived:
+        opening = f"Kết quả tính được ({derived}) có điểm cần chú ý."
 
     answer_lines = [opening, ""]
     answer_lines.extend(f"- {line}" for line in detail_lines)
+    if interpretation_lines:
+        answer_lines.extend(["", "Diễn giải:"])
+        answer_lines.extend(f"- {line}" for line in interpretation_lines[:4])
     answer_lines.extend(
         [
             "",
-            "Kết quả này chỉ mang tính tham khảo và không thay thế đánh giá của bác sĩ.",
+            "Kết quả này chỉ mang tính tham khảo, không đủ để tự khẳng định chẩn đoán cá nhân và không thay thế đánh giá của bác sĩ.",
         ]
     )
     return "\n".join(answer_lines)
@@ -272,7 +316,7 @@ def _matched_threshold_lines(items: Any, *, include_classifications: bool) -> li
             continue
 
         threshold = item.get("threshold") or {}
-        label = _clean_text(threshold.get("label"))
+        label = _display_label(threshold.get("label"))
         if include_classifications and not label:
             continue
         if not include_classifications and label:
@@ -299,6 +343,51 @@ def _matched_threshold_lines(items: Any, *, include_classifications: bool) -> li
     return lines
 
 
+def _interpretation_lines(result: dict[str, Any]) -> list[str]:
+    lines: list[str] = []
+    for item in result.get("classifications", []):
+        if not isinstance(item, dict) or not item.get("matched"):
+            continue
+        threshold = item.get("threshold") or {}
+        raw_label = _clean_text(threshold.get("label"))
+        biomarker = _clean_text(item.get("biomarker"))
+        if biomarker == "FENa" and raw_label == "prerenal_aki_suggestive":
+            lines.append(
+                "FENa dưới 1% gợi ý hướng suy thận cấp trước thận. Cách diễn giải này khác với hướng suy thận tại thận, "
+                "thường được gợi ý khi FENa trên 1%."
+            )
+            lines.append(
+                "Trong ngữ cảnh này, FENa dưới 1% thường đi cùng natri niệu thấp và nước tiểu cô đặc; "
+                "đây là thông tin hỗ trợ diễn giải, không phải kết luận chẩn đoán độc lập."
+            )
+            lines.append(
+                "Không thể kết luận chắc chắn bạn có bệnh chỉ từ bộ chỉ số này; cần đối chiếu thêm tình trạng lâm sàng "
+                "và các xét nghiệm liên quan."
+            )
+        elif biomarker == "FENa" and raw_label == "intrinsic_aki_suggestive":
+            lines.append(
+                "FENa trên 1% gợi ý hướng suy thận cấp tại thận. Cách diễn giải này khác với hướng suy thận trước thận, "
+                "thường được gợi ý khi FENa dưới 1%."
+            )
+            lines.append(
+                "Không thể kết luận chắc chắn bạn có bệnh chỉ từ bộ chỉ số này; cần đối chiếu thêm tình trạng lâm sàng "
+                "và các xét nghiệm liên quan."
+            )
+        elif biomarker == "GFR" and raw_label:
+            lines.append(f"GFR được xếp vào nhóm {_display_label(raw_label)} theo khoảng ngưỡng tương ứng.")
+    for item in result.get("threshold_matches", []):
+        if not isinstance(item, dict) or not item.get("matched"):
+            continue
+        threshold = item.get("threshold") or {}
+        biomarker = _clean_text(item.get("biomarker"))
+        if biomarker == "ACR" and threshold.get("op") == ">" and float(threshold.get("value") or 0) <= 30:
+            lines.append(
+                "ACR vượt ngưỡng 30 mg/g là một dấu hiệu cần chú ý khi đánh giá albumin niệu; "
+                "cần đối chiếu thời gian tồn tại và bối cảnh lâm sàng trước khi kết luận."
+            )
+    return _dedupe_text(lines)
+
+
 def _formula_result_lines(items: Any, *, query: str | None) -> list[str]:
     if not isinstance(items, list):
         return []
@@ -312,9 +401,10 @@ def _formula_result_lines(items: Any, *, query: str | None) -> list[str]:
         formula_name = _clean_text(item.get("formula_name")) or _clean_text(item.get("formula_id")) or "Công thức"
         if status == "computed":
             value = _format_number(item.get("value"))
-            unit = _clean_text(item.get("unit"))
+            unit = _clean_text(item.get("unit")) or _default_formula_unit(item)
+            output_label = _formula_output_label(item)
             if value is not None:
-                lines.append(f"{formula_name}: {value}{f' {unit}' if unit else ''}.")
+                lines.append(f"{formula_name} tính {output_label}: {value}{f' {unit}' if unit else ''}.")
             continue
 
         if status == "missing_inputs" and _formula_is_relevant(item, query_norm):
@@ -322,6 +412,17 @@ def _formula_result_lines(items: Any, *, query: str | None) -> list[str]:
             if missing:
                 lines.append(f"{formula_name} chưa tính được vì thiếu: {', '.join(missing[:6])}.")
     return lines
+
+
+def _dedupe_text(items: list[str]) -> list[str]:
+    seen: set[str] = set()
+    result: list[str] = []
+    for item in items:
+        if item in seen:
+            continue
+        seen.add(item)
+        result.append(item)
+    return result
 
 
 def _formula_is_relevant(item: dict[str, Any], query_norm: str) -> bool:
@@ -359,6 +460,28 @@ def _threshold_text(threshold: dict[str, Any]) -> str:
         "<=": "<=",
     }
     return f"{op_map.get(str(op), str(op))} {value}{f' {unit}' if unit else ''}"
+
+
+def _display_label(value: Any) -> str:
+    label = _clean_text(value)
+    return LABEL_TRANSLATIONS.get(label, label)
+
+
+def _default_formula_unit(item: dict[str, Any]) -> str:
+    if item.get("output_name") == "fena_percent":
+        return "%"
+    return ""
+
+
+def _formula_output_label(item: dict[str, Any]) -> str:
+    output_name = _clean_text(item.get("output_name"))
+    labels = {
+        "fena_percent": "FENa",
+        "gfr_ml_min_1_73m2": "eGFR",
+        "creatinine_clearance_ml_min": "độ thanh thải creatinine",
+        "bsa_m2": "diện tích da cơ thể",
+    }
+    return labels.get(output_name, output_name or "kết quả")
 
 
 def _join_value_unit(name: str, value: str, unit: str | None) -> str:
@@ -407,4 +530,23 @@ def _optional_str(value: Any) -> str | None:
             coerced = _optional_str(item)
             if coerced:
                 return coerced
+    return None
+
+
+def _canonical_disease_name(value: Any) -> str | None:
+    text = _optional_str(value)
+    if not text:
+        return None
+    if text in ALLOWED_DISEASE_NAMES:
+        return text
+    normalized = _normalize_for_match(text)
+    normalized_key = normalized.replace(" ", "_")
+    if normalized_key in ALLOWED_DISEASE_NAMES:
+        return normalized_key
+    if text in DISEASE_NAME_ALIASES:
+        return DISEASE_NAME_ALIASES[text]
+    if normalized in DISEASE_NAME_ALIASES:
+        return DISEASE_NAME_ALIASES[normalized]
+    if normalized_key in DISEASE_NAME_ALIASES:
+        return DISEASE_NAME_ALIASES[normalized_key]
     return None

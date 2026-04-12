@@ -96,7 +96,10 @@ class MedicalToolsService:
                 source=f"formula:{result['formula_id']}",
             )
 
-        all_measurements = {**measurement_values, **derived_measurements}
+        # Chỉ số người dùng nhập trực tiếp được ưu tiên khi trùng tên với chỉ số tính ra.
+        # Ví dụ user có sẵn GFR và cũng đủ biến tính MDRD eGFR: threshold nên đánh giá GFR họ cung cấp,
+        # còn MDRD vẫn được trả riêng trong formula_results/derived_measurements.
+        all_measurements = {**derived_measurements, **measurement_values}
         threshold_evaluations = self._evaluate_thresholds(
             measurements=all_measurements,
             disease_name=disease_name,
@@ -262,6 +265,17 @@ class MedicalToolsService:
                     source=item.source,
                 )
 
+        # Creatinine máu là input tương đương cho MDRD/Cockcroft khi đơn vị là mg/dL.
+        if "plasma_creatinine" in formula_variables and "creatinine_mg_dl" not in formula_variables:
+            item = formula_variables["plasma_creatinine"]
+            if item.unit in {None, "mg/dL"}:
+                formula_variables["creatinine_mg_dl"] = ParsedValue(
+                    name="creatinine_mg_dl",
+                    value=item.value,
+                    unit="mg/dL",
+                    source=item.source,
+                )
+
         if "LDL_cholesterol" in measurements and "cholesterol" in measurements:
             ldl = measurements["LDL_cholesterol"]
             cholesterol = measurements["cholesterol"]
@@ -324,6 +338,15 @@ class MedicalToolsService:
 
         if "creatinine" in result["measurements"] and "creatinine_mg_dl" not in result["formula_variables"]:
             item = result["measurements"]["creatinine"]
+            if item.unit in {None, "mg/dL"}:
+                result["formula_variables"]["creatinine_mg_dl"] = ParsedValue(
+                    name="creatinine_mg_dl",
+                    value=item.value,
+                    unit="mg/dL",
+                    source=item.source,
+                )
+        if "plasma_creatinine" in result["formula_variables"] and "creatinine_mg_dl" not in result["formula_variables"]:
+            item = result["formula_variables"]["plasma_creatinine"]
             if item.unit in {None, "mg/dL"}:
                 result["formula_variables"]["creatinine_mg_dl"] = ParsedValue(
                     name="creatinine_mg_dl",
