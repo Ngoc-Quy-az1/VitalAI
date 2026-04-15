@@ -447,7 +447,8 @@ class NeonVectorSearcher:
     ) -> dict[str, Any]:
         """Suy ra intent retrieval cơ bản từ query để enrich search."""
 
-        normalized = self._normalize_ascii(query)
+        cleaned_query = self._strip_leading_greeting(query)
+        normalized = self._normalize_ascii(cleaned_query)
         disease_hint = disease_name or self._detect_hint(normalized, DISEASE_HINTS)
         section_hint = section_type or self._detect_hint(normalized, SECTION_HINTS)
         biomarker_hint = biomarker or self._detect_hint(normalized, BIOMARKER_HINTS)
@@ -455,7 +456,7 @@ class NeonVectorSearcher:
         if section_hint is None and any(pattern in normalized for pattern in ("la gi", "khai niem", "dinh nghia")):
             section_hint = "definition"
 
-        embedding_lines = [f"Câu hỏi người dùng: {query.strip()}"]
+        embedding_lines = [f"Câu hỏi người dùng: {cleaned_query.strip()}"]
         if disease_hint:
             embedding_lines.append(f"Bệnh trọng tâm: {DISEASE_LABELS.get(disease_hint, disease_hint)}")
         if section_hint:
@@ -463,7 +464,7 @@ class NeonVectorSearcher:
         if biomarker_hint:
             embedding_lines.append(f"Chỉ số trọng tâm: {biomarker_hint}")
 
-        keyword_query = query.strip()
+        keyword_query = cleaned_query.strip()
         if section_hint == "definition" and "khai niem" not in normalized and "dinh nghia" not in normalized:
             keyword_query = f"{keyword_query} khái niệm định nghĩa"
 
@@ -474,6 +475,17 @@ class NeonVectorSearcher:
             "embedding_query": "\n".join(embedding_lines),
             "keyword_query": keyword_query,
         }
+
+    def _strip_leading_greeting(self, query: str) -> str:
+        """Bỏ lời chào đầu câu để retrieval tập trung vào phần y khoa."""
+
+        cleaned = query.strip()
+        cleaned = re.sub(
+            r"(?iu)^\s*(?:hi|hello|hey|xin\s+chào|chào\s+bạn|chào)\s*[,!\.\-:;]*\s+",
+            "",
+            cleaned,
+        )
+        return cleaned or query.strip()
 
     def _detect_hint(self, normalized_query: str, hint_map: dict[str, list[str]]) -> str | None:
         """Tìm hint đầu tiên khớp query theo danh sách alias đơn giản."""

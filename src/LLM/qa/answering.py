@@ -1,26 +1,25 @@
 from __future__ import annotations
 
 """
-Lớp QA tối thiểu cho VitalAI: retrieval trước, rồi sinh câu trả lời bằng chat model.
+Lớp QA public API cho VitalAI.
 
 Mục tiêu của file này:
-- tái sử dụng hybrid retriever hiện có
-- đưa evidence vào một prompt rõ ràng
-- sinh câu trả lời tiếng Việt có trích nguồn ngắn gọn
+- khởi tạo retriever + chat model
+- gọi LangGraph chatbot flow
+- trả output an toàn cho UI/user, không lộ page number hoặc metadata nội bộ
 
 Giới hạn hiện tại:
-- chưa có agent graph
 - chưa có structured lookup riêng cho threshold/formula
-- chưa có self-check hay reranker ở lớp cuối
+- chưa có long-term memory hoặc tool calling ngoài retrieval
 """
 
 import os
 from typing import Any
 
-from dotenv import load_dotenv
-from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_mistralai import ChatMistralAI
 
+from src.LLM.observability import configure_langsmith_from_env
+from src.LLM.qa.graph import build_chatbot_graph
 from src.LLM.retrieval.vector_search import NeonVectorSearcher, build_searcher_from_env
 
 
@@ -32,10 +31,19 @@ class RetrievalAugmentedAnswerer:
         searcher: NeonVectorSearcher,
         llm: ChatMistralAI,
         max_evidence_items: int = 5,
+        medical_tools_base_url: str | None = None,
+        tool_contract_path: str | None = None,
     ) -> None:
         self.searcher = searcher
         self.llm = llm
         self.max_evidence_items = max_evidence_items
+        self.graph = build_chatbot_graph(
+            searcher=searcher,
+            llm=llm,
+            max_evidence_items=max_evidence_items,
+            medical_tools_base_url=medical_tools_base_url,
+            tool_contract_path=tool_contract_path,
+        )
 
     async def answer(
         self,
@@ -45,98 +53,48 @@ class RetrievalAugmentedAnswerer:
         section_type: str | None = None,
         source_type: str | None = None,
         biomarker: str | None = None,
+        include_debug: bool = False,
     ) -> dict[str, Any]:
-        """Trả về câu trả lời LLM cùng toàn bộ retrieval context để debug."""
+        """Trả về câu trả lời cuối cùng. Debug RAG chỉ bật khi caller yêu cầu."""
 
-        retrieval = await self.searcher.search(
-            query=query,
-            top_k=top_k,
-            disease_name=disease_name,
-            section_type=section_type,
-            source_type=source_type,
-            biomarker=biomarker,
+        state = await self.graph.ainvoke(
+            {
+                "query": query,
+                "top_k": top_k,
+                "disease_name": disease_name,
+                "section_type": section_type,
+                "source_type": source_type,
+                "biomarker": biomarker,
+            }
         )
-        evidence_items = retrieval["results"][: self.max_evidence_items]
-        answer_text = await self._generate_answer(query=query, evidence_items=evidence_items)
-
-        return {
+        response: dict[str, Any] = {
             "query": query,
-            "answer": answer_text,
-            "filters": retrieval["filters"],
-            "query_understanding": retrieval.get("query_understanding"),
-            "results": retrieval["results"],
+            "answer": state.get("final_answer", ""),
+            "route": state.get("route"),
+            "sources": state.get("user_sources", []),
         }
-
-    async def _generate_answer(self, query: str, evidence_items: list[dict[str, Any]]) -> str:
-        """Gọi Mistral để tổng hợp câu trả lời từ evidence đã truy xuất."""
-
-        if not evidence_items:
-            return (
-                "Chưa tìm thấy ngữ cảnh phù hợp trong kho tài liệu hiện tại, "
-                "nên mình chưa thể trả lời đáng tin cậy."
-            )
-
-        evidence_block = self._format_evidence(evidence_items)
-        messages = [
-            SystemMessage(
-                content=(
-                    "Bạn là trợ lý QA y khoa cho VitalAI. "
-                    "Chỉ được trả lời dựa trên phần evidence đã cung cấp. "
-                    "Nếu evidence chưa đủ, hãy nói rõ là chưa đủ dữ kiện. "
-                    "Luôn trả lời bằng tiếng Việt. "
-                    "Ưu tiên câu trả lời ngắn gọn, trực tiếp. "
-                    "Khi nêu ý chính, thêm citation ngắn ở cuối câu theo dạng [source_id, tr.page]."
-                )
-            ),
-            HumanMessage(
-                content=(
-                    f"Câu hỏi: {query}\n\n"
-                    "Evidence đã truy xuất:\n"
-                    f"{evidence_block}\n\n"
-                    "Yêu cầu trả lời:\n"
-                    "1. Trả lời trực tiếp câu hỏi.\n"
-                    "2. Không bịa thêm thông tin ngoài evidence.\n"
-                    "3. Nếu có nhiều ý, gộp ngắn gọn và có citation.\n"
-                    "4. Nếu evidence mâu thuẫn hoặc chưa đủ, nói rõ giới hạn."
-                )
-            ),
-        ]
-        response = await self.llm.ainvoke(messages)
-        return str(response.content).strip()
-
-    def _format_evidence(self, evidence_items: list[dict[str, Any]]) -> str:
-        """Định dạng evidence cho prompt để model dễ bám nguồn."""
-
-        lines: list[str] = []
-        for index, item in enumerate(evidence_items, start=1):
-            page = item.get("page")
-            page_text = f"tr.{page}" if page is not None else "tr.?"
-            similarity = item.get("similarity")
-            keyword_score = item.get("keyword_score")
-            score_bits = []
-            if similarity is not None:
-                score_bits.append(f"sim={similarity}")
-            if keyword_score is not None:
-                score_bits.append(f"fts={keyword_score}")
-            score_text = ", ".join(score_bits) if score_bits else "không có score"
-            lines.append(
-                (
-                    f"[{index}] source_id={item['source_id']} | {page_text} | "
-                    f"section={item.get('section_type')} | {score_text}\n"
-                    f"{item.get('preview', '').strip()}"
-                )
-            )
-        return "\n\n".join(lines)
+        if include_debug:
+            response["debug"] = {
+                "filters": state.get("filters"),
+                "query_understanding": state.get("query_understanding"),
+                "results": state.get("debug_results", []),
+                "router_plan": state.get("router_plan"),
+                "router_error": state.get("router_error"),
+                "medical_tool_result": state.get("medical_tool_result"),
+            }
+        return response
 
 
 def build_answerer_from_env() -> RetrievalAugmentedAnswerer:
     """Khởi tạo answerer từ `.env` hiện có của dự án."""
 
-    load_dotenv()
+    configure_langsmith_from_env()
 
     api_key = os.getenv("MISTRAL_CLIENT_API_KEY")
     model_name = os.getenv("MODEL_NAME", "mistral-large-latest")
     temperature = float(os.getenv("MISTRAL_TEMPERATURE", "0.1"))
+    medical_tools_base_url = os.getenv("MEDICAL_TOOLS_BASE_URL", "http://localhost:8010")
+    tool_contract_path = os.getenv("MEDICAL_TOOLS_CONTRACT_PATH")
 
     if not api_key:
         raise ValueError("Thiếu biến môi trường MISTRAL_CLIENT_API_KEY")
@@ -145,7 +103,12 @@ def build_answerer_from_env() -> RetrievalAugmentedAnswerer:
     llm = ChatMistralAI(
         model=model_name,
         api_key=api_key,
-        max_tokens=1024,
+        max_tokens=2048,
         temperature=temperature,
     )
-    return RetrievalAugmentedAnswerer(searcher=searcher, llm=llm)
+    return RetrievalAugmentedAnswerer(
+        searcher=searcher,
+        llm=llm,
+        medical_tools_base_url=medical_tools_base_url,
+        tool_contract_path=tool_contract_path,
+    )

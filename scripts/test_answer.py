@@ -30,6 +30,7 @@ async def _run(args: argparse.Namespace) -> dict:
         section_type=args.section_type,
         source_type=args.source_type,
         biomarker=args.biomarker,
+        include_debug=args.debug,
     )
 
 
@@ -46,6 +47,7 @@ def main() -> None:
     parser.add_argument("--section-type", default=None, help="Filter metadata theo section_type.")
     parser.add_argument("--source-type", default=None, help="Filter theo source_type: chunk|threshold|formula.")
     parser.add_argument("--biomarker", default=None, help="Filter metadata theo biomarker.")
+    parser.add_argument("--debug", action="store_true", help="In thêm raw retrieval results để debug nội bộ.")
     args = parser.parse_args()
 
     result = asyncio.run(_run(args))
