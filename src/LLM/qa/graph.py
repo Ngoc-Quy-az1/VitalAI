@@ -244,6 +244,15 @@ def build_chatbot_graph(
 
     async def generate_response(state: ChatbotGraphState) -> ChatbotGraphState:
         has_structured_result = bool(state.get("medical_tool_result"))
+        structured_result = state.get("medical_tool_result") or {}
+        structured_result_type = structured_result.get("result_type")
+        safe_structured_answer = state.get("safe_structured_answer") or ""
+        if structured_result_type in {"structured_knowledge_query", "structured_graph_query"} and safe_structured_answer:
+            return {
+                **state,
+                "raw_answer": safe_structured_answer,
+                "used_structured_answer": True,
+            }
         if state.get("route") == "retrieve" and not state.get("evidence_items") and not has_structured_result:
             raw_answer = (
                 "Mình chưa tìm thấy ngữ cảnh phù hợp trong kho tài liệu hiện tại, "
@@ -352,6 +361,17 @@ def _build_heuristic_router_plan(query: str) -> dict[str, Any] | None:
     """
 
     normalized = _normalize_query_text(query)
+    if _looks_like_structured_query(normalized):
+        source_type = "structured_graph" if _looks_like_graph_query(normalized) else "structured_table"
+        return _tool_plan_structured(
+            query=query,
+            endpoint="/mcp/medical-tools/structured-knowledge-query",
+            parameters={"query": query, "top_k": 5},
+            rag_query=query,
+            source_type=source_type,
+            reason="heuristic_structured_first",
+        )
+
     formula_ids = _detect_formula_ids(normalized, query)
     has_threshold_values = bool(
         re.search(r"\d", query)
@@ -401,7 +421,72 @@ def _build_heuristic_router_plan(query: str) -> dict[str, Any] | None:
             reason="heuristic_threshold_values",
         )
 
-    return None
+    # Structured-first default for knowledge questions without explicit formula inputs.
+    return _tool_plan_structured(
+        query=query,
+        endpoint="/mcp/medical-tools/structured-knowledge-query",
+        parameters={"query": query, "top_k": 5},
+        rag_query=query,
+        source_type=None,
+        reason="default_structured_first",
+    )
+
+
+def _tool_plan_structured(
+    *,
+    query: str,
+    endpoint: str,
+    parameters: dict[str, Any],
+    rag_query: str,
+    source_type: str | None,
+    reason: str,
+) -> dict[str, Any]:
+    return {
+        "needs_medical_tool": True,
+        "tool_call": {
+            "tool_name": "medical_tools.evaluate",
+            "method": "POST",
+            "endpoint": endpoint,
+            "parameters": parameters,
+        },
+        "rag_plan": {
+            "should_retrieve": True,
+            "query": rag_query,
+            "filters": {
+                "disease_name": None,
+                "section_type": None,
+                "source_type": source_type,
+                "biomarker": None,
+            },
+        },
+        "missing_inputs": [],
+        "reason": reason,
+    }
+
+
+def _looks_like_structured_query(normalized: str) -> bool:
+    keywords = (
+        "bang",
+        "du lieu bang",
+        "so do",
+        "luu do",
+        "decision tree",
+        "nhanh",
+        "graph",
+        "metadata",
+        "rifle",
+        "risk",
+        "injury",
+        "failure",
+        "loss",
+        "end stage",
+    )
+    return any(keyword in normalized for keyword in keywords)
+
+
+def _looks_like_graph_query(normalized: str) -> bool:
+    keywords = ("so do", "luu do", "decision tree", "graph", "nhanh", "cay")
+    return any(keyword in normalized for keyword in keywords)
 
 
 def _detect_formula_ids(normalized: str, original_query: str) -> list[str]:

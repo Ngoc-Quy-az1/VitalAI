@@ -38,6 +38,14 @@ class MedicalToolsService:
         self.thresholds = self._load_all_thresholds()
         self.formulas = self._load_formulas(self.processed_data_dir / "formulas.json")
         self.formula_by_id = {item["formula_id"]: item for item in self.formulas}
+        self.structured_tables = self._load_structured_array(
+            preferred=self.processed_data_dir / "data_metadata_tables.json",
+            fallback=self.processed_data_dir / "data_metadata_blocks.json",
+        )
+        self.structured_graphs = self._load_structured_array(
+            preferred=self.processed_data_dir / "data_metadata_graphs.json",
+            fallback=None,
+        )
 
     def capabilities(self) -> dict[str, Any]:
         """Metadata cho MCP/AI service biết tool này hỗ trợ gì."""
@@ -56,6 +64,51 @@ class MedicalToolsService:
                 }
                 for item in self.formulas
             ],
+            "structured_table_ids": [item.get("document_id") for item in self.structured_tables if item.get("document_id")],
+            "structured_graph_ids": [item.get("document_id") for item in self.structured_graphs if item.get("document_id")],
+        }
+
+    def graph_query(self, *, query: str, document_id: str | None = None, top_k: int = 3) -> dict[str, Any]:
+        candidates = self.structured_graphs
+        if document_id:
+            candidates = [item for item in candidates if item.get("document_id") == document_id]
+
+        ranked = self._rank_structured_documents(query=query, documents=candidates, doc_type="structured_graph", top_k=top_k)
+        return {
+            "result_type": "structured_graph_query",
+            "query": query,
+            "document_id": document_id,
+            "hits": ranked,
+        }
+
+    def query_structured_knowledge(self, *, query: str, top_k: int = 5) -> dict[str, Any]:
+        table_hits = self._rank_structured_documents(
+            query=query,
+            documents=self.structured_tables,
+            doc_type="structured_table",
+            top_k=max(top_k, 3),
+        )
+        graph_hits = self._rank_structured_documents(
+            query=query,
+            documents=self.structured_graphs,
+            doc_type="structured_graph",
+            top_k=max(top_k, 3),
+        )
+        merged_map: dict[str, dict[str, Any]] = {}
+        for hit in [*table_hits, *graph_hits]:
+            doc_id = str(hit.get("document_id") or "")
+            if not doc_id:
+                continue
+            current = merged_map.get(doc_id)
+            if current is None or float(hit.get("score") or 0.0) > float(current.get("score") or 0.0):
+                merged_map[doc_id] = hit
+        merged = sorted(merged_map.values(), key=lambda item: item.get("score", 0.0), reverse=True)[:top_k]
+        return {
+            "result_type": "structured_knowledge_query",
+            "query": query,
+            "hits": merged,
+            "tables_found": len(table_hits),
+            "graphs_found": len(graph_hits),
         }
 
     def evaluate(
@@ -566,3 +619,105 @@ class MedicalToolsService:
         if not path.exists():
             raise FileNotFoundError(f"Không tìm thấy formulas file: {path}")
         return json.loads(path.read_text(encoding="utf-8"))
+
+    def _load_structured_array(self, *, preferred: Path, fallback: Path | None) -> list[dict[str, Any]]:
+        source = preferred if preferred.exists() else fallback
+        if source is None or not source.exists():
+            return []
+        data = json.loads(source.read_text(encoding="utf-8"))
+        return [item for item in data if isinstance(item, dict)]
+
+    def _rank_structured_documents(
+        self,
+        *,
+        query: str,
+        documents: list[dict[str, Any]],
+        doc_type: str,
+        top_k: int,
+    ) -> list[dict[str, Any]]:
+        query_tokens = self._tokenize(self._normalize_ascii(query))
+        if not query_tokens:
+            return []
+
+        ranked: list[dict[str, Any]] = []
+        for item in documents:
+            text = self._flatten_json(item)
+            normalized = self._normalize_ascii(text)
+            tokens = self._tokenize(normalized)
+            if not tokens:
+                continue
+            overlap = len(query_tokens.intersection(tokens))
+            if overlap <= 0:
+                continue
+            score = overlap / max(len(query_tokens), 1)
+            score += self._structured_query_boost(query=self._normalize_ascii(query), normalized_document=normalized)
+            ranked.append(
+                {
+                    "document_id": item.get("document_id"),
+                    "source_type": doc_type,
+                    "score": round(score, 4),
+                    "preview": text[:500],
+                    "content": item,
+                }
+            )
+
+        ranked.sort(key=lambda value: value["score"], reverse=True)
+        return ranked[:top_k]
+
+    def _flatten_json(self, value: Any) -> str:
+        chunks: list[str] = []
+        self._collect_json_text(value, chunks)
+        return " | ".join(part for part in chunks if part)
+
+    def _collect_json_text(self, value: Any, chunks: list[str]) -> None:
+        if isinstance(value, dict):
+            for key, item in value.items():
+                if isinstance(item, (dict, list)):
+                    self._collect_json_text(item, chunks)
+                else:
+                    chunks.append(f"{key}: {item}")
+            return
+        if isinstance(value, list):
+            for item in value:
+                self._collect_json_text(item, chunks)
+            return
+        if value is not None:
+            chunks.append(str(value))
+
+    def _tokenize(self, text: str) -> set[str]:
+        return {token for token in re.findall(r"[a-z0-9_]{2,}", text) if token}
+
+    def _structured_query_boost(self, *, query: str, normalized_document: str) -> float:
+        score = 0.0
+        query_tokens = self._tokenize(query)
+        doc_tokens = self._tokenize(normalized_document)
+
+        # Exact phrase boosts for strongly identifiable table/graph families.
+        phrase_pairs = (
+            ("rifle", "rifle"),
+            ("kdigo", "kdigo"),
+            ("r risk", "risk"),
+            ("injury", "injury"),
+            ("failure", "failure"),
+            ("loss", "loss"),
+            ("end stage", "end-stage"),
+            ("acute kidney injury", "acute kidney injury"),
+            ("suy than cap", "suy than cap"),
+        )
+        for q_phrase, d_phrase in phrase_pairs:
+            if q_phrase in query and d_phrase in normalized_document:
+                score += 0.25
+
+        # Disambiguate "R-risk" questions toward RIFLE instead of CKD risk maps.
+        if ("r-risk" in query or "r risk" in query) and "rifle" in normalized_document:
+            score += 0.9
+        if ("r-risk" in query or "r risk" in query) and "classification_system: rifle" in normalized_document:
+            score += 0.6
+
+        # Boost when uncommon medical stage tokens align.
+        special_tokens = {"rifle", "risk", "injury", "failure", "loss", "aki", "kdigo"}
+        matched_special = special_tokens.intersection(query_tokens).intersection(doc_tokens)
+        if matched_special:
+            score += 0.12 * len(matched_special)
+
+        return score

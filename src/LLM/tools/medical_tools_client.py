@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import json
 import re
+import unicodedata
 from pathlib import Path
 from typing import Any
 from urllib.error import HTTPError, URLError
@@ -13,7 +14,11 @@ from urllib.request import Request, urlopen
 
 
 DEFAULT_CONTRACT_PATH = Path(__file__).resolve().parents[1] / "tool_contracts" / "medical_tools_contract.md"
-ALLOWED_ENDPOINTS = {"/mcp/medical-tools/evaluate"}
+ALLOWED_ENDPOINTS = {
+    "/mcp/medical-tools/evaluate",
+    "/mcp/medical-tools/graph-query",
+    "/mcp/medical-tools/structured-knowledge-query",
+}
 ALLOWED_SECTION_TYPES = {
     "definition",
     "classification",
@@ -26,7 +31,7 @@ ALLOWED_SECTION_TYPES = {
     "follow_up",
     "general",
 }
-ALLOWED_SOURCE_TYPES = {"chunk", "threshold", "formula"}
+ALLOWED_SOURCE_TYPES = {"chunk", "threshold", "formula", "structured_table", "structured_graph"}
 ALLOWED_DISEASE_NAMES = {
     "benh_than_man",
     "lupus_nephritis",
@@ -146,13 +151,23 @@ def normalize_router_plan(plan: dict[str, Any], query: str) -> dict[str, Any]:
         parameters.setdefault("text", query)
         parameters.setdefault("measurements", None)
         parameters.setdefault("disease_name", None)
-        parameters["disease_name"] = _canonical_disease_name(parameters.get("disease_name"))
-        parameters.setdefault("formula_ids", [])
-        if parameters.get("formula_ids") is None:
-            # Không tính mọi công thức theo default; chỉ tính khi router chọn
-            # formula_ids cụ thể để tránh noise và giảm token ở final prompt.
-            parameters["formula_ids"] = []
-        parameters["include_debug"] = False
+        if endpoint == "/mcp/medical-tools/evaluate":
+            parameters["disease_name"] = _canonical_disease_name(parameters.get("disease_name"))
+            parameters.setdefault("formula_ids", [])
+            if parameters.get("formula_ids") is None:
+                parameters["formula_ids"] = []
+            parameters["include_debug"] = False
+        elif endpoint == "/mcp/medical-tools/graph-query":
+            parameters = {
+                "query": _optional_str(parameters.get("query")) or query,
+                "document_id": _optional_str(parameters.get("document_id")),
+                "top_k": int(parameters.get("top_k") or 3),
+            }
+        elif endpoint == "/mcp/medical-tools/structured-knowledge-query":
+            parameters = {
+                "query": _optional_str(parameters.get("query")) or query,
+                "top_k": int(parameters.get("top_k") or 5),
+            }
         tool_call = {
             "tool_name": "medical_tools.evaluate",
             "method": "POST",
@@ -199,6 +214,23 @@ def build_structured_context(result: dict[str, Any] | None, query: str | None = 
         return (
             "Kết quả phân tích chỉ số: không khả dụng. "
             "Không được tự tính công thức hoặc tự phân loại ngưỡng nếu thiếu dữ liệu chắc chắn."
+        )
+
+    if result.get("result_type") in {"structured_knowledge_query", "structured_graph_query"}:
+        hits = result.get("hits") if isinstance(result.get("hits"), list) else []
+        if not hits:
+            return "Không tìm thấy dữ liệu bảng/sơ đồ phù hợp."
+        top_docs = []
+        for hit in hits[:3]:
+            if not isinstance(hit, dict):
+                continue
+            doc_id = _clean_text(hit.get("document_id")) or "unknown"
+            top_docs.append(doc_id)
+        doc_list = ", ".join(top_docs) if top_docs else "không rõ tài liệu"
+        return (
+            "Có dữ liệu cấu trúc liên quan để tham chiếu. "
+            f"Tài liệu gần nhất: {doc_list}. "
+            "Ưu tiên trả lời trực tiếp câu hỏi của người dùng; chỉ nêu document_id khi người dùng yêu cầu."
         )
 
     lines: list[str] = ["Kết quả phân tích chỉ số đã được chuẩn hóa:"]
@@ -250,6 +282,16 @@ def build_structured_answer(result: dict[str, Any] | None, query: str | None = N
             "Hiện chưa có đủ dữ liệu phân tích chỉ số để trả lời chắc chắn. "
             "Không nên tự suy diễn kết quả công thức hoặc phân loại khi dữ liệu chưa khả dụng."
         )
+    if result.get("result_type") in {"structured_knowledge_query", "structured_graph_query"}:
+        hits = result.get("hits") if isinstance(result.get("hits"), list) else []
+        if not hits:
+            return "Mình chưa tìm thấy dữ liệu bảng hoặc sơ đồ khớp trực tiếp với câu hỏi này."
+        direct_answer = _structured_direct_answer_from_hits(query=query, hits=hits)
+        if direct_answer:
+            return direct_answer
+        # Không trả list document cứng nếu chưa trích được đáp án cụ thể;
+        # để graph fallback sang synthesis tự nhiên bằng evidence.
+        return None
 
     measurements = _format_measurements(result.get("detected_measurements", []))
     derived = _format_measurements(result.get("derived_measurements", []))
@@ -511,6 +553,122 @@ def _normalize_for_match(value: str) -> str:
     normalized = normalized.replace("_", " ")
     normalized = re.sub(r"[^\w\s]+", " ", normalized)
     return re.sub(r"\s+", " ", normalized).strip()
+
+
+def _fold_ascii(value: str) -> str:
+    prepared = value.replace("đ", "d").replace("Đ", "D")
+    normalized = unicodedata.normalize("NFKD", prepared)
+    ascii_text = normalized.encode("ascii", "ignore").decode("ascii")
+    return re.sub(r"\s+", " ", ascii_text.lower()).strip()
+
+
+def _structured_direct_answer_from_hits(query: str | None, hits: list[dict[str, Any]]) -> str | None:
+    normalized_query = _normalize_for_match(query or "")
+    folded_query = _fold_ascii(normalized_query)
+    # Generic stage-based table answers (CKD/AKI/...).
+    stage_key = _extract_stage_key(folded_query)
+    asks_gfr = any(keyword in folded_query for keyword in ("gfr", "mlct", "muc loc cau than", "muc loc"))
+    if stage_key and asks_gfr:
+        for hit in hits:
+            if not isinstance(hit, dict):
+                continue
+            content = hit.get("content")
+            if not isinstance(content, dict):
+                continue
+            stage_answer = _extract_stage_gfr_answer(content=content, stage_key=stage_key)
+            if stage_answer:
+                return stage_answer
+
+    if "r risk" not in folded_query and "rifle" not in folded_query:
+        return None
+
+    for hit in hits:
+        if not isinstance(hit, dict):
+            continue
+        content = hit.get("content")
+        if not isinstance(content, dict):
+            continue
+        doc_id = _normalize_for_match(str(content.get("document_id") or ""))
+        if "rifle" not in doc_id:
+            continue
+        stages = content.get("stages")
+        if not isinstance(stages, list):
+            continue
+        for stage in stages:
+            if not isinstance(stage, dict):
+                continue
+            stage_name = _normalize_for_match(str(stage.get("name") or ""))
+            stage_id = _normalize_for_match(str(stage.get("stage") or ""))
+            if stage_id != "r" and "risk" not in stage_name:
+                continue
+            criteria = stage.get("criteria") if isinstance(stage.get("criteria"), dict) else {}
+            creatinine_text = _clean_text(criteria.get("creatinine"))
+            urine_text = _clean_text(criteria.get("urine_output"))
+            if not creatinine_text and not urine_text:
+                continue
+            lines = ["Theo bảng RIFLE (AKI), mức R - Risk được xác định như sau:"]
+            if creatinine_text:
+                lines.append(f"- Tiêu chí mức lọc cầu thận/creatinin: {creatinine_text}.")
+            if urine_text:
+                lines.append(f"- Tiêu chí nước tiểu: {urine_text}.")
+            return "\n".join(lines)
+    return None
+
+
+def _extract_stage_key(normalized_query: str) -> str | None:
+    stage_match = re.search(r"\b(?:giai doan|stage)\s*([a-z0-9]+)\b", normalized_query)
+    if not stage_match:
+        return None
+    raw = stage_match.group(1).strip().lower()
+    if raw in {"1", "i"}:
+        return "i"
+    if raw in {"2", "ii"}:
+        return "ii"
+    if raw in {"3", "iii", "3a", "iiia"}:
+        return "iii"
+    if raw in {"4", "iv"}:
+        return "iv"
+    if raw in {"5", "v"}:
+        return "v"
+    if raw in {"r", "risk"}:
+        return "r"
+    return raw
+
+
+def _extract_stage_gfr_answer(*, content: dict[str, Any], stage_key: str) -> str | None:
+    stages = content.get("stages")
+    if not isinstance(stages, list):
+        return None
+
+    table_title = _clean_text(content.get("title")) or "bảng phân loại"
+    for stage in stages:
+        if not isinstance(stage, dict):
+            continue
+        stage_id = _normalize_for_match(str(stage.get("stage") or ""))
+        stage_name = _normalize_for_match(str(stage.get("name") or ""))
+        if stage_key not in {stage_id, stage_name} and not stage_name.endswith(stage_key):
+            continue
+
+        gfr_range = _clean_text(stage.get("gfr_range"))
+        unit = _clean_text(stage.get("unit"))
+        if not gfr_range:
+            criteria = stage.get("criteria") if isinstance(stage.get("criteria"), dict) else {}
+            gfr_range = _clean_text(criteria.get("creatinine"))
+            unit = unit or ""
+        if not gfr_range:
+            continue
+
+        label = _clean_text(stage.get("name")) or _clean_text(stage.get("stage")) or stage_key.upper()
+        description = _clean_text(stage.get("description"))
+        value_text = f"{gfr_range}{f' {unit}' if unit else ''}".strip()
+        lines = [
+            f"Theo {table_title}, giai đoạn {label} tương ứng với mức lọc cầu thận khoảng {value_text}.",
+        ]
+        if description:
+            lines.append(f"Điều này thường được hiểu là: {description}.")
+        lines.append("Bạn có thể đối chiếu thêm với triệu chứng và xét nghiệm hiện tại để đánh giá chính xác hơn.")
+        return "\n".join(lines)
+    return None
 
 
 def _optional_str(value: Any) -> str | None:

@@ -28,6 +28,16 @@ class StructuredEvaluateRequest(BaseModel):
     formula_ids: list[str] | None = Field(default=None, description="Chỉ chạy các formula_id cụ thể nếu cần.")
     include_debug: bool = Field(default=False, description="Trả thêm thông tin debug nội bộ cho developer.")
 
+class GraphQueryRequest(BaseModel):
+    query: str = Field(..., description="Câu hỏi cần truy vấn trên dữ liệu sơ đồ.")
+    document_id: str | None = Field(default=None, description="Graph document_id nếu muốn khóa vào 1 sơ đồ cụ thể.")
+    top_k: int = Field(default=3, ge=1, le=10)
+
+
+class StructuredKnowledgeQueryRequest(BaseModel):
+    query: str = Field(..., description="Câu hỏi liên quan bảng/sơ đồ cần truy xuất structured.")
+    top_k: int = Field(default=5, ge=1, le=10)
+
 
 app = FastAPI(
     title="VitalAI Medical Tools Service",
@@ -62,4 +72,23 @@ def evaluate_structured_input(request: StructuredEvaluateRequest) -> dict[str, A
         disease_name=request.disease_name,
         formula_ids=request.formula_ids,
         include_debug=request.include_debug,
+    )
+
+
+@app.post("/mcp/medical-tools/graph-query")
+@app.post("/structured/graph-query")
+def graph_query(request: GraphQueryRequest) -> dict[str, Any]:
+    return get_service().graph_query(
+        query=request.query,
+        document_id=request.document_id,
+        top_k=request.top_k,
+    )
+
+
+@app.post("/mcp/medical-tools/structured-knowledge-query")
+@app.post("/structured/knowledge-query")
+def structured_knowledge_query(request: StructuredKnowledgeQueryRequest) -> dict[str, Any]:
+    return get_service().query_structured_knowledge(
+        query=request.query,
+        top_k=request.top_k,
     )
