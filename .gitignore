@@ -41,6 +41,5 @@ data/audio/*.wav
 .DS_Store
 Thumbs.db
 
-#data
+# Project data (keep local only)
 data/
-
