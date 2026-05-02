@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import json
 import re
+import unicodedata
 from pathlib import Path
 from typing import Any
 from urllib.error import HTTPError, URLError
@@ -258,19 +259,23 @@ def build_structured_answer(result: dict[str, Any] | None, query: str | None = N
     formula_lines = _formula_result_lines(result.get("formula_results", []), query=query)
     interpretation_lines = _interpretation_lines(result)
 
-    detail_lines = [*threshold_lines[:6], *classification_lines[:6], *formula_lines[:4]]
+    prefers_formula_only = _query_prefers_formula_only(query)
+    if prefers_formula_only and formula_lines:
+        detail_lines = formula_lines[:4]
+    else:
+        detail_lines = [*threshold_lines[:6], *classification_lines[:6], *formula_lines[:4]]
     if not detail_lines:
         return None
 
-    opening = "Kết quả tính toán có điểm cần chú ý."
+    opening = "Mình chỉ dùng đúng các chỉ số bạn cung cấp để tính và đối chiếu."
     if measurements:
-        opening = f"Các chỉ số bạn cung cấp ({measurements}) có điểm cần chú ý."
+        opening = f"Mình ghi nhận các chỉ số bạn cung cấp: {measurements}."
     elif derived:
-        opening = f"Kết quả tính được ({derived}) có điểm cần chú ý."
+        opening = f"Mình tính được các chỉ số liên quan: {derived}."
 
     answer_lines = [opening, ""]
     answer_lines.extend(f"- {line}" for line in detail_lines)
-    if interpretation_lines:
+    if interpretation_lines and _query_requests_interpretation(query):
         answer_lines.extend(["", "Diễn giải:"])
         answer_lines.extend(f"- {line}" for line in interpretation_lines[:4])
     answer_lines.extend(
@@ -440,6 +445,60 @@ def _formula_is_relevant(item: dict[str, Any], query_norm: str) -> bool:
     return any(keyword in query_norm for keyword in ("cong thuc", "tinh egfr", "tinh gfr", "mdrd", "cockcroft", "bsa", "fena"))
 
 
+def _query_requests_interpretation(query: str | None) -> bool:
+    query_norm = _normalize_for_match(query or "")
+    if not query_norm:
+        return False
+    return any(
+        keyword in query_norm
+        for keyword in (
+            "giai thich",
+            "y nghia",
+            "nghia la gi",
+            "danh gia",
+            "phan loai",
+            "xep loai",
+            "co dang lo khong",
+            "co nguy hiem khong",
+        )
+    )
+
+
+def _query_prefers_formula_only(query: str | None) -> bool:
+    query_norm = _normalize_for_match(query or "")
+    if not query_norm or _query_requests_interpretation(query):
+        return False
+    asks_formula = any(
+        keyword in query_norm
+        for keyword in (
+            "tinh",
+            "cong thuc",
+            "formula",
+            "uoc tinh",
+            "estimate",
+            "calculate",
+            "mdrd",
+            "egfr",
+            "cockcroft",
+            "gault",
+            "bsa",
+            "fena",
+        )
+    )
+    asks_classification = any(
+        keyword in query_norm
+        for keyword in (
+            "phan loai",
+            "xep loai",
+            "giai doan",
+            "nguong",
+            "y nghia",
+            "giai thich",
+        )
+    )
+    return asks_formula and not asks_classification
+
+
 def _threshold_text(threshold: dict[str, Any]) -> str:
     op = threshold.get("op")
     unit = _clean_text(threshold.get("unit"))
@@ -507,7 +566,9 @@ def _clean_text(value: Any) -> str:
 
 
 def _normalize_for_match(value: str) -> str:
-    normalized = value.lower()
+    normalized = unicodedata.normalize("NFD", value.lower())
+    normalized = "".join(char for char in normalized if unicodedata.category(char) != "Mn")
+    normalized = normalized.replace("đ", "d")
     normalized = normalized.replace("_", " ")
     normalized = re.sub(r"[^\w\s]+", " ", normalized)
     return re.sub(r"\s+", " ", normalized).strip()

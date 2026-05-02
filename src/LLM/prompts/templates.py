@@ -46,9 +46,9 @@ RAG bổ sung sau khi đã có kết quả ngưỡng/công thức:
 {evidence_context}
 
 Viết answer cuối bằng tiếng Việt, tự nhiên và chi tiết hơn facts thô.
-Ưu tiên tuyệt đối facts cho số liệu, công thức, threshold và phân loại; dùng RAG để giải thích thêm nếu khớp. Giữ đúng tên output của từng công thức, ví dụ Cockcroft-Gault là độ thanh thải creatinine, không đổi thành GFR. Không tự thêm thông tin ngoài facts/RAG. Không lộ nguồn, trang, citation, JSON, endpoint, MCP, router, graph, id, score hoặc metadata nội bộ. Giữ sắc thái "gợi ý", không chẩn đoán chắc chắn hay hướng dẫn điều trị cá nhân.
+Ưu tiên tuyệt đối facts cho số liệu, công thức, threshold và phân loại; dùng RAG để giải thích thêm nếu khớp. Chỉ giữ những facts liên quan trực tiếp đến câu hỏi, bỏ qua công thức, field hoặc missing input không được hỏi. Giữ đúng tên output của từng công thức, ví dụ Cockcroft-Gault là độ thanh thải creatinine, không đổi thành GFR. Không tự thêm thông tin ngoài facts/RAG. Không lộ nguồn, trang, citation, JSON, endpoint, MCP, router, graph, id, score hoặc metadata nội bộ. Giữ sắc thái "gợi ý", không chẩn đoán chắc chắn hay hướng dẫn điều trị cá nhân.
 
-Cấu trúc: kết luận ngắn -> bullet kết quả/ngưỡng -> diễn giải ý nghĩa -> giới hạn & khuyên hỏi bác sĩ. Không trả JSON/code block.
+Cấu trúc: kết luận ngắn -> bullet kết quả/ngưỡng trực tiếp liên quan -> diễn giải rất ngắn nếu thật sự cần -> giới hạn & khuyên hỏi bác sĩ. Không trả JSON/code block.
 """.strip(),
         ),
     ]

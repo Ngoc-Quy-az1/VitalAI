@@ -244,12 +244,19 @@ def build_chatbot_graph(
 
     async def generate_response(state: ChatbotGraphState) -> ChatbotGraphState:
         has_structured_result = bool(state.get("medical_tool_result"))
+        safe_structured_answer = state.get("safe_structured_answer") or build_structured_answer(
+            state.get("medical_tool_result"),
+            query=state.get("query"),
+        ) or ""
         if state.get("route") == "retrieve" and not state.get("evidence_items") and not has_structured_result:
             raw_answer = (
                 "Mình chưa tìm thấy ngữ cảnh phù hợp trong kho tài liệu hiện tại, "
                 "nên chưa thể trả lời chắc chắn cho câu hỏi này."
             )
             used_structured_answer = False
+        elif has_structured_result and safe_structured_answer and _should_prefer_structured_answer(state):
+            raw_answer = safe_structured_answer
+            used_structured_answer = True
         else:
             try:
                 response = await llm.ainvoke(
@@ -257,15 +264,28 @@ def build_chatbot_graph(
                     config={"tags": ["final_answer"], "metadata": {"internal": False}},
                 )
                 raw_answer = str(response.content).strip()
+                if has_structured_result and safe_structured_answer:
+                    if (
+                        _looks_like_internal_router_json(raw_answer)
+                        or _looks_like_internal_leak(raw_answer)
+                        or _has_unsupported_structured_expansion(
+                            raw_answer,
+                            safe_structured_answer,
+                            state.get("evidence_context", ""),
+                        )
+                    ):
+                        raw_answer = safe_structured_answer
+                        used_structured_answer = True
+                    else:
+                        used_structured_answer = False
+                else:
+                    used_structured_answer = False
             except Exception:
-                raw_answer = state.get("safe_structured_answer") or build_structured_answer(
-                    state.get("medical_tool_result"),
-                    query=state.get("query"),
-                ) or (
+                raw_answer = safe_structured_answer or (
                     "Mình đã xử lý được dữ liệu đầu vào, nhưng chưa thể sinh phần diễn giải cuối. "
                     "Vui lòng thử lại sau."
                 )
-            used_structured_answer = has_structured_result
+                used_structured_answer = bool(safe_structured_answer)
         return {**state, "raw_answer": raw_answer, "used_structured_answer": used_structured_answer}
 
     async def cleanup_response(state: ChatbotGraphState) -> ChatbotGraphState:
@@ -406,7 +426,30 @@ def _build_heuristic_router_plan(query: str) -> dict[str, Any] | None:
 
 def _detect_formula_ids(normalized: str, original_query: str) -> list[str]:
     formula_ids: list[str] = []
-    if "fena" in normalized or _has_fena_input_set(normalized):
+    asks_to_calculate = any(
+        keyword in normalized
+        for keyword in (
+            "tinh",
+            "cong thuc",
+            "formula",
+            "uoc tinh",
+            "estimate",
+            "calculate",
+        )
+    )
+    mentions_interpretation = any(
+        keyword in normalized
+        for keyword in (
+            "danh gia",
+            "phan loai",
+            "xep loai",
+            "y nghia",
+            "giai thich",
+        )
+    )
+
+    explicit_fena = "fena" in normalized or "fractional excretion of sodium" in normalized
+    if explicit_fena or (_has_fena_input_set(normalized) and asks_to_calculate):
         formula_ids.append("fena_formula")
 
     has_creatinine = any(keyword in normalized for keyword in ("creatinine mau", "creatinin mau", "creatinine", "creatinin"))
@@ -416,11 +459,23 @@ def _detect_formula_ids(normalized: str, original_query: str) -> list[str]:
     has_weight = any(keyword in normalized for keyword in ("nang", "can nang", "kg", "weight"))
     has_height = any(keyword in normalized for keyword in ("cao", "chieu cao", "cm", "height"))
 
-    if any(keyword in normalized for keyword in ("mdrd", "egfr", "e gfr", "tinh gfr")) or (has_creatinine and has_age and has_sex and has_race):
+    explicit_mdrd = any(keyword in normalized for keyword in ("mdrd", "egfr", "e gfr", "tinh gfr", "uoc tinh gfr"))
+    explicit_cockcroft = any(
+        keyword in normalized
+        for keyword in (
+            "cockcroft",
+            "gault",
+            "do thanh thai creatinine",
+            "creatinine clearance",
+        )
+    )
+    explicit_bsa = any(keyword in normalized for keyword in ("bsa", "dien tich da"))
+
+    if explicit_mdrd or (asks_to_calculate and not mentions_interpretation and has_creatinine and has_age and has_sex and has_race and any(keyword in normalized for keyword in ("gfr", "egfr"))):
         formula_ids.append("mdrd_gfr")
-    if any(keyword in normalized for keyword in ("cockcroft", "gault")) or (has_creatinine and has_age and has_sex and has_weight):
+    if explicit_cockcroft:
         formula_ids.append("cockcroft_gault")
-    if any(keyword in normalized for keyword in ("bsa", "dien tich da")) or (has_height and has_weight):
+    if explicit_bsa:
         formula_ids.append("body_surface_area")
 
     return _unique_non_empty(formula_ids)
@@ -714,6 +769,42 @@ def _has_unsupported_structured_expansion(answer: str, safe_facts: str, evidence
         "protein nieu",
     )
     return any(term in answer_norm and term not in allowed_context for term in risky_terms)
+
+
+def _should_prefer_structured_answer(state: ChatbotGraphState) -> bool:
+    query = state.get("query", "")
+    result = state.get("medical_tool_result") or {}
+    safe_structured_answer = state.get("safe_structured_answer") or ""
+    if not query or not result or not safe_structured_answer:
+        return False
+
+    normalized = _normalize_query_text(query)
+    formula_results = [item for item in result.get("formula_results", []) if isinstance(item, dict)]
+    computed_formulas = [item for item in formula_results if item.get("status") == "computed"]
+    threshold_matches = [
+        item for item in result.get("threshold_matches", []) if isinstance(item, dict) and item.get("matched")
+    ]
+    classifications = [
+        item for item in result.get("classifications", []) if isinstance(item, dict) and item.get("matched")
+    ]
+
+    if computed_formulas:
+        return True
+
+    return any(
+        keyword in normalized
+        for keyword in (
+            "phan loai",
+            "xep loai",
+            "giai doan",
+            "nguong",
+            "vuot nguong",
+            "co bat thuong khong",
+            "co cao khong",
+            "co thap khong",
+            "y nghia gi",
+        )
+    ) and bool(threshold_matches or classifications)
 
 
 def _has_fena_input_set(normalized_query: str) -> bool:

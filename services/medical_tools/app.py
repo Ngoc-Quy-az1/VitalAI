@@ -25,7 +25,7 @@ class StructuredEvaluateRequest(BaseModel):
         description="Dict hoặc list chỉ số đã parse sẵn. Ví dụ {'ACR': {'value': 350, 'unit': 'mg/g'}}.",
     )
     disease_name: str | None = Field(default=None, description="Filter disease_name nếu caller đã biết context bệnh.")
-    formula_ids: list[str] | None = Field(default=None, description="Chỉ chạy các formula_id cụ thể nếu cần.")
+    formula_ids: list[str] = Field(default_factory=list, description="Chỉ chạy các formula_id cụ thể nếu cần.")
     include_debug: bool = Field(default=False, description="Trả thêm thông tin debug nội bộ cho developer.")
 
 

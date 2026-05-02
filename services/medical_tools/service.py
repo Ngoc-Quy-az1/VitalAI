@@ -140,9 +140,10 @@ class MedicalToolsService:
         categorical_values: dict[str, str],
         formula_ids: list[str] | None,
     ) -> list[dict[str, Any]]:
+        # Chỉ tính đúng các công thức caller chọn.
+        # `None` cũng được xem như không chọn công thức nào để tránh tự động
+        # tính thừa tất cả công thức chỉ vì người dùng có nhập nhiều chỉ số.
         selected = [self.formula_by_id[item] for item in formula_ids or [] if item in self.formula_by_id]
-        if formula_ids is None:
-            selected = self.formulas
 
         results: list[dict[str, Any]] = []
         for formula in selected:
