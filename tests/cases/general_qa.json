@@ -1,0 +1,32 @@
+{
+  "category": "general_qa",
+  "description": "Cau hoi hoi dap thong thuong, khong bat buoc tool formula/threshold.",
+  "cases": [
+    {
+      "id": "general_001",
+      "title": "Dinh nghia lupus ban do",
+      "query": "Lupus ban đỏ là gì?",
+      "top_k": 5,
+      "expected": {
+        "require_route": "retrieve",
+        "min_answer_chars": 60,
+        "require_sources_min": 1,
+        "must_include_any": ["lupus"],
+        "must_not_include_any": ["source_id=", "document_id=", "tool_name"]
+      }
+    },
+    {
+      "id": "general_002",
+      "title": "Giai thich GFR",
+      "query": "GFR là gì?",
+      "top_k": 5,
+      "expected": {
+        "require_route": "retrieve",
+        "min_answer_chars": 50,
+        "require_sources_min": 1,
+        "must_include_any": ["gfr"],
+        "must_not_include_any": ["source_id=", "document_id="]
+      }
+    }
+  ]
+}

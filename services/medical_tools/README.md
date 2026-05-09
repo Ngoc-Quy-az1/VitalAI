@@ -111,6 +111,9 @@ Dựa trên `formulas.json` hiện tại:
 - `body_surface_area`
 - `fena_formula`
 
+Lưu ý:
+- `mdrd_gfr` sẽ mặc định `race=other` nếu câu hỏi không cung cấp `race`, và kết quả sẽ ghi rõ giả định đó trong `formula_results`.
+
 Evaluator chỉ cho phép toán số học cơ bản qua AST whitelist, không cho phép function call, import, attribute access hoặc code execution.
 
 ## Luồng MCP đề xuất
@@ -124,6 +127,105 @@ AI service / LangGraph
 ```
 
 Service này chỉ trả structured result, không tự sinh câu trả lời LLM.
+
+## Thay đổi gần đây
+
+Phần này ghi lại các thay đổi mới để dễ hiểu vì sao chatbot đang hoạt động theo cách hiện tại.
+
+### 1. Bỏ cơ chế `safe_structured_answer`
+
+Trước đây graph của chatbot có một nhánh "an toàn":
+
+- tool trả structured result
+- graph dựng thêm một câu trả lời tóm tắt an toàn tên là `safe_structured_answer`
+- trong một số tình huống, graph ưu tiên trả thẳng câu này thay vì để LLM tự diễn giải
+
+Mục tiêu cũ là giảm hallucination, nhưng cơ chế này làm luồng hơi khó theo dõi và khiến việc debug cảm giác như tool "gọi được nhưng chưa chắc đã đi hết vào chatbot".
+
+Hiện tại cơ chế đó đã được bỏ.
+
+Luồng mới:
+
+```text
+tool result
+  -> build_structured_context(...)
+  -> đưa vào final prompt cùng evidence_context
+  -> LLM tự viết câu trả lời cuối
+```
+
+Ý nghĩa:
+
+- chatbot vẫn nhận dữ liệu từ medical tool service
+- nhưng không còn bị ép phải trả một bản tóm tắt deterministic
+- model có nhiều tự do hơn để diễn giải
+- đổi lại, bạn chấp nhận rủi ro model có thể diễn giải sai hoặc nói rộng hơn facts
+
+### 2. Tool vẫn là nơi tính toán chính
+
+Việc bỏ `safe_structured_answer` không có nghĩa là bỏ tool.
+
+Tool service vẫn chịu trách nhiệm:
+
+- parse các chỉ số từ câu hỏi
+- tính công thức như `MDRD`, `Cockcroft-Gault`, `FENa`, `BSA`
+- so ngưỡng và phân loại
+
+Phần chatbot chỉ làm:
+
+- gọi tool
+- lấy kết quả đã chuẩn hóa
+- đưa kết quả đó vào prompt
+- để LLM tạo câu trả lời tự nhiên cho người dùng
+
+Nói ngắn gọn:
+
+- `service.py` quyết định số liệu
+- `graph.py` quyết định đưa số liệu vào prompt thế nào
+- LLM quyết định cách diễn đạt câu trả lời cuối
+
+### 3. Sửa lỗi MDRD thiếu `race`
+
+Một lỗi quan trọng trước đó là:
+
+- câu hỏi eGFR kiểu `Nữ 60 tuổi, creatinine 1.4 mg/dL. Hãy ước tính eGFR.`
+- tool nhận ra đây là câu hỏi công thức
+- nhưng `mdrd_gfr` bị thiếu `race`, nên không tính ra số cuối cùng
+
+Hiện tại:
+
+- nếu `mdrd_gfr` thiếu `race`, service mặc định `race=other`
+- kết quả vẫn được tính
+- trong `formula_results` sẽ có ghi chú giả định này
+
+Điều này giúp tool không còn dừng ở trạng thái `missing_inputs` cho các câu eGFR phổ biến.
+
+### 4. Điều gì còn "an toàn" và điều gì không
+
+Sau thay đổi này:
+
+- vẫn còn sanitize `structured_context` để không nhét raw JSON nội bộ vào prompt
+- vẫn còn `cleanup_user_answer(...)` để dọn bớt metadata nội bộ khỏi output cuối
+- nhưng không còn lớp chặn nội dung kiểu "nếu model diễn giải quá tay thì ép quay về safe answer"
+
+Vì vậy behavior hiện tại là:
+
+- an toàn ở mức format và giấu metadata nội bộ
+- không còn an toàn ở mức kiểm soát chặt nội dung diễn giải y khoa cuối
+
+### 5. Khi nào nên nhớ điều này lúc debug
+
+Nếu bạn thấy chatbot trả sai ở câu hỏi công thức/ngưỡng, hãy tách kiểm tra theo thứ tự:
+
+1. Tool có được gọi không
+2. Tool trả `formula_results` / `threshold_matches` đúng chưa
+3. `structured_context` có chứa đúng dữ liệu không
+4. Nếu 3 bước trên đúng mà answer cuối vẫn sai, lỗi nằm ở bước LLM diễn giải
+
+Điểm mấu chốt:
+
+- sai ở `service.py` là sai tính toán
+- sai ở `structured_context` là sai khâu truyền dữ liệu vào prompt
+- sai ở câu trả lời cuối dù `structured_context` đúng là sai do LLM diễn giải
 
 ## Rebuild thresholds bổ sung
 

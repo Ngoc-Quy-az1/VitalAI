@@ -19,11 +19,10 @@ from langchain_core.messages import BaseMessage
 from langgraph.graph import END, StateGraph
 
 from src.LLM.prompts.tool_router_prompt import MEDICAL_TOOL_ROUTER_PROMPT
-from src.LLM.prompts.templates import DIRECT_ANSWER_PROMPT, RAG_ANSWER_PROMPT, STRUCTURED_FINAL_ANSWER_PROMPT
+from src.LLM.prompts.templates import DIRECT_ANSWER_PROMPT, RAG_ANSWER_PROMPT
 from src.LLM.retrieval.vector_search import NeonVectorSearcher
 from src.LLM.tools import (
     MedicalToolsClient,
-    build_structured_answer,
     build_structured_context,
     load_medical_tools_contract,
     normalize_router_plan,
@@ -50,8 +49,6 @@ class ChatbotGraphState(TypedDict, total=False):
     prompt_messages: list[BaseMessage]
     raw_answer: str
     final_answer: str
-    safe_structured_answer: str
-    used_structured_answer: bool
     user_sources: list[dict[str, Any]]
     debug_results: list[dict[str, Any]]
     query_understanding: dict[str, Any] | None
@@ -84,7 +81,6 @@ def build_chatbot_graph(
             "router_plan": None,
             "medical_tool_result": None,
             "structured_context": "Không có kết quả phân tích chỉ số.",
-            "safe_structured_answer": "",
             "filters": {
                 "disease_name": state.get("disease_name"),
                 "section_type": state.get("section_type"),
@@ -157,7 +153,6 @@ def build_chatbot_graph(
             **state,
             "medical_tool_result": result,
             "structured_context": build_structured_context(result, query=state.get("query")),
-            "safe_structured_answer": build_structured_answer(result, query=state.get("query")) or "",
         }
 
     async def retrieve_context(state: ChatbotGraphState) -> ChatbotGraphState:
@@ -213,20 +208,6 @@ def build_chatbot_graph(
         if state.get("retrieval") is None:
             prompt = DIRECT_ANSWER_PROMPT.invoke({"query": state["query"]})
             route: RouteName = "direct"
-        elif state.get("medical_tool_result"):
-            evidence_context = state.get("evidence_context") or "Không tìm thấy evidence phù hợp."
-            safe_structured_answer = state.get("safe_structured_answer") or build_structured_answer(
-                state.get("medical_tool_result"),
-                query=state.get("query"),
-            ) or state.get("structured_context") or "Không có kết quả phân tích chỉ số."
-            prompt = STRUCTURED_FINAL_ANSWER_PROMPT.invoke(
-                {
-                    "query": state["query"],
-                    "safe_structured_answer": safe_structured_answer,
-                    "evidence_context": evidence_context,
-                }
-            )
-            route = "retrieve"
         else:
             evidence_context = state.get("evidence_context") or "Không tìm thấy evidence phù hợp."
             prompt = RAG_ANSWER_PROMPT.invoke(
@@ -243,20 +224,11 @@ def build_chatbot_graph(
         return "build_prompt"
 
     async def generate_response(state: ChatbotGraphState) -> ChatbotGraphState:
-        has_structured_result = bool(state.get("medical_tool_result"))
-        safe_structured_answer = state.get("safe_structured_answer") or build_structured_answer(
-            state.get("medical_tool_result"),
-            query=state.get("query"),
-        ) or ""
-        if state.get("route") == "retrieve" and not state.get("evidence_items") and not has_structured_result:
+        if state.get("route") == "retrieve" and not state.get("evidence_items") and not state.get("medical_tool_result"):
             raw_answer = (
                 "Mình chưa tìm thấy ngữ cảnh phù hợp trong kho tài liệu hiện tại, "
                 "nên chưa thể trả lời chắc chắn cho câu hỏi này."
             )
-            used_structured_answer = False
-        elif has_structured_result and safe_structured_answer and _should_prefer_structured_answer(state):
-            raw_answer = safe_structured_answer
-            used_structured_answer = True
         else:
             try:
                 response = await llm.ainvoke(
@@ -264,36 +236,19 @@ def build_chatbot_graph(
                     config={"tags": ["final_answer"], "metadata": {"internal": False}},
                 )
                 raw_answer = str(response.content).strip()
-                if has_structured_result and safe_structured_answer:
-                    if (
-                        _looks_like_internal_router_json(raw_answer)
-                        or _looks_like_internal_leak(raw_answer)
-                        or _has_unsupported_structured_expansion(
-                            raw_answer,
-                            safe_structured_answer,
-                            state.get("evidence_context", ""),
-                        )
-                    ):
-                        raw_answer = safe_structured_answer
-                        used_structured_answer = True
-                    else:
-                        used_structured_answer = False
-                else:
-                    used_structured_answer = False
             except Exception:
-                raw_answer = safe_structured_answer or (
+                raw_answer = (
                     "Mình đã xử lý được dữ liệu đầu vào, nhưng chưa thể sinh phần diễn giải cuối. "
                     "Vui lòng thử lại sau."
                 )
-                used_structured_answer = bool(safe_structured_answer)
-        return {**state, "raw_answer": raw_answer, "used_structured_answer": used_structured_answer}
+        return {**state, "raw_answer": raw_answer}
 
     async def cleanup_response(state: ChatbotGraphState) -> ChatbotGraphState:
         final_answer = cleanup_user_answer(state.get("raw_answer", ""))
         return {
             **state,
             "final_answer": final_answer,
-            "user_sources": [] if state.get("used_structured_answer") else _build_user_sources(state.get("evidence_items", [])),
+            "user_sources": _build_user_sources(state.get("evidence_items", [])),
         }
 
     graph = StateGraph(ChatbotGraphState)
@@ -718,93 +673,6 @@ def _tool_plan(
         "missing_inputs": [],
         "reason": reason,
     }
-
-
-def _looks_like_internal_router_json(answer: str) -> bool:
-    normalized = answer.strip().lower()
-    return normalized.startswith("{") and "needs_medical_tool" in normalized and "tool_call" in normalized
-
-
-def _looks_like_internal_leak(answer: str) -> bool:
-    normalized = answer.lower()
-    blocked_terms = (
-        "needs_medical_tool",
-        "tool_call",
-        "router_plan",
-        "medical_tool_result",
-        "structured_context",
-        "source_id",
-        "document_id",
-        "threshold_id",
-        "mcp",
-        "endpoint",
-        "context_item",
-    )
-    return any(term in normalized for term in blocked_terms) or normalized.startswith("```json")
-
-
-def _has_unsupported_structured_expansion(answer: str, safe_facts: str, evidence_context: str = "") -> bool:
-    """Detect common medical expansions that the final LLM may add beyond facts."""
-
-    if not safe_facts:
-        return False
-    answer_norm = _normalize_query_text(answer)
-    allowed_context = _normalize_query_text(f"{safe_facts}\n{evidence_context}")
-    risky_terms = (
-        "mat nuoc",
-        "giam the tich",
-        "tuan hoan",
-        "tieu duong",
-        "huyet ap",
-        "met moi",
-        "phu",
-        "tieu it",
-        "dau dau",
-        "dieu tri",
-        "huong dieu tri",
-        "nguyen nhan",
-        "proteinuria",
-        "ro protein",
-        "than ro protein",
-        "protein nieu",
-    )
-    return any(term in answer_norm and term not in allowed_context for term in risky_terms)
-
-
-def _should_prefer_structured_answer(state: ChatbotGraphState) -> bool:
-    query = state.get("query", "")
-    result = state.get("medical_tool_result") or {}
-    safe_structured_answer = state.get("safe_structured_answer") or ""
-    if not query or not result or not safe_structured_answer:
-        return False
-
-    normalized = _normalize_query_text(query)
-    formula_results = [item for item in result.get("formula_results", []) if isinstance(item, dict)]
-    computed_formulas = [item for item in formula_results if item.get("status") == "computed"]
-    threshold_matches = [
-        item for item in result.get("threshold_matches", []) if isinstance(item, dict) and item.get("matched")
-    ]
-    classifications = [
-        item for item in result.get("classifications", []) if isinstance(item, dict) and item.get("matched")
-    ]
-
-    if computed_formulas:
-        return True
-
-    return any(
-        keyword in normalized
-        for keyword in (
-            "phan loai",
-            "xep loai",
-            "giai doan",
-            "nguong",
-            "vuot nguong",
-            "co bat thuong khong",
-            "co cao khong",
-            "co thap khong",
-            "y nghia gi",
-        )
-    ) and bool(threshold_matches or classifications)
 
 
 def _has_fena_input_set(normalized_query: str) -> bool:

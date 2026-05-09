@@ -1,0 +1,38 @@
+{
+  "category": "formula_qa",
+  "description": "Cau hoi can tinh cong thuc y khoa tu input co cau truc.",
+  "cases": [
+    {
+      "id": "formula_001",
+      "title": "Uoc tinh eGFR bang MDRD",
+      "query": "Nữ 60 tuổi, creatinine 1.4 mg/dL. Hãy ước tính eGFR.",
+      "top_k": 5,
+      "expected": {
+        "require_route": "retrieve",
+        "require_tool_called": true,
+        "require_tool_success": true,
+        "require_formula_result_min": 1,
+        "require_formula_ids_any": ["mdrd_gfr"],
+        "min_answer_chars": 30,
+        "must_include_any": ["gfr", "egfr", "creatinin", "creatinine"],
+        "must_not_include_any": ["tool_name"]
+      }
+    },
+    {
+      "id": "formula_002",
+      "title": "Tinh Cockcroft-Gault",
+      "query": "Nam 65 tuổi, nặng 70 kg, creatinine 1.6 mg/dL. Tính Cockcroft-Gault.",
+      "top_k": 5,
+      "expected": {
+        "require_route": "retrieve",
+        "require_tool_called": true,
+        "require_tool_success": true,
+        "require_formula_result_min": 1,
+        "require_formula_ids_any": ["cockcroft_gault"],
+        "min_answer_chars": 30,
+        "must_include_any": ["cockcroft", "gault", "creatinine clearance", "thanh thải"],
+        "must_not_include_any": ["tool_name"]
+      }
+    }
+  ]
+}

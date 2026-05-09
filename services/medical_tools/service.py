@@ -151,6 +151,7 @@ class MedicalToolsService:
             names = expression_names(expression)
             variables: dict[str, float] = {}
             missing: list[str] = []
+            assumptions: list[str] = []
 
             if "sex_factor" in names:
                 sex = self._normalize_sex(categorical_values.get("sex"))
@@ -162,8 +163,12 @@ class MedicalToolsService:
             if "race_factor" in names:
                 race = self._normalize_race(categorical_values.get("race"))
                 if race is None:
-                    missing.append("race")
-                else:
+                    race = self._default_race_for_formula(formula["formula_id"])
+                    if race is None:
+                        missing.append("race")
+                    else:
+                        assumptions.append("Giả định race=other (hệ số 1.0) vì câu hỏi không cung cấp race.")
+                if race is not None:
                     variables["race_factor"] = 1.21 if race == "black" else 1.0
 
             for name in sorted(names - {"sex_factor", "race_factor"}):
@@ -179,6 +184,8 @@ class MedicalToolsService:
                 "unit": formula.get("output_unit"),
                 "required_variables": sorted(names),
             }
+            if assumptions:
+                base["assumptions"] = assumptions
             if missing:
                 results.append({**base, "status": "missing_inputs", "missing_inputs": sorted(set(missing))})
                 continue
@@ -494,6 +501,11 @@ class MedicalToolsService:
         if value is None:
             return None
         return self._detect_race(self._normalize_ascii(value)) or "other"
+
+    def _default_race_for_formula(self, formula_id: str) -> str | None:
+        if formula_id == "mdrd_gfr":
+            return "other"
+        return None
 
     def _sex_factor(self, formula_id: str, sex: str) -> float:
         if formula_id == "cockcroft_gault":

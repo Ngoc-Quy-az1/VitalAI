@@ -216,7 +216,7 @@ fena_formula
 
 Formula input notes:
 
-- `mdrd_gfr` cần `creatinine_mg_dl`, `age`, `sex`, `race`.
+- `mdrd_gfr` cần `creatinine_mg_dl`, `age`, `sex`; nếu thiếu `race`, service sẽ mặc định `other` và trả kèm giả định này trong `formula_results`.
 - `cockcroft_gault` cần `age`, `weight_kg`, `creatinine_mg_dl`, `sex`.
 - `body_surface_area` cần `weight_kg`, `height_cm`.
 - `fena_formula` cần `urine_na`, `plasma_na`, `urine_creatinine`, `plasma_creatinine`.

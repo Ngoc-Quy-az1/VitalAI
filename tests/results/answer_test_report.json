@@ -1,0 +1,1904 @@
+{
+  "generated_at": "2026-05-05T05:27:30Z",
+  "total_cases": 8,
+  "passed_cases": 5,
+  "failed_cases": 3,
+  "results": [
+    {
+      "category": "formula_qa",
+      "id": "formula_001",
+      "title": "Uoc tinh eGFR bang MDRD",
+      "query": "Nữ 60 tuổi, creatinine 1.4 mg/dL. Hãy ước tính eGFR.",
+      "response": {
+        "query": "Nữ 60 tuổi, creatinine 1.4 mg/dL. Hãy ước tính eGFR.",
+        "answer": "Mình ghi nhận các chỉ số bạn cung cấp: creatinine 1.4 mg/dL.\n\n- MDRD eGFR chưa tính được vì thiếu: race.\n\nKết quả này chỉ mang tính tham khảo, không đủ để tự khẳng định chẩn đoán cá nhân và không thay thế đánh giá của bác sĩ.",
+        "route": "retrieve",
+        "sources": [],
+        "debug": {
+          "filters": {
+            "disease_name": null,
+            "section_type": null,
+            "source_type": null,
+            "biomarker": null
+          },
+          "query_understanding": {
+            "disease_hint": null,
+            "section_hint": null,
+            "biomarker_hint": "GFR",
+            "embedding_query": "Câu hỏi người dùng: Nữ 60 tuổi, creatinine 1.4 mg/dL. Hãy ước tính eGFR.\nCông thức: MDRD eGFR\nChỉ số trọng tâm: GFR",
+            "keyword_query": "Nữ 60 tuổi, creatinine 1.4 mg/dL. Hãy ước tính eGFR.\nCông thức: MDRD eGFR"
+          },
+          "results": [
+            {
+              "document_id": "chunk::benh_than_man_p133_002",
+              "source_type": "chunk",
+              "source_id": "benh_than_man_p133_002",
+              "similarity": 0.588538,
+              "keyword_score": null,
+              "fusion_score": 0.044493,
+              "page": 133,
+              "disease_name": "benh_than_man",
+              "section_type": "diagnosis_criteria",
+              "doc_type": "threshold_reference",
+              "biomarker": "GFR",
+              "vector_rank": 9,
+              "keyword_rank": null,
+              "preview": "Mức lọc cầu thận (GFR) <60 ml/ph/1,73m2 kéo dài trên 3 tháng là tiêu chuẩn chẩn đoán bệnh thận mạn."
+            },
+            {
+              "document_id": "chunk::benh_than_man_p134_001",
+              "source_type": "chunk",
+              "source_id": "benh_than_man_p134_001",
+              "similarity": 0.571184,
+              "keyword_score": null,
+              "fusion_score": 0.043333,
+              "page": 134,
+              "disease_name": "benh_than_man",
+              "section_type": "general",
+              "doc_type": "formula_reference",
+              "biomarker": "GFR",
+              "vector_rank": 15,
+              "keyword_rank": null,
+              "preview": "trên tuổi, cân nặng và creatinin huyết thanh.\",\n}\n}\n],\n\"tính gfr\",\n\"egfr\",\n\"mdrd\"\n],\n},"
+            },
+            {
+              "document_id": "chunk::acute_kidney_injury_p108_001",
+              "source_type": "chunk",
+              "source_id": "acute_kidney_injury_p108_001",
+              "similarity": 0.548218,
+              "keyword_score": null,
+              "fusion_score": 0.041628,
+              "page": 108,
+              "disease_name": "acute_kidney_injury",
+              "section_type": "general",
+              "doc_type": "disease_guideline",
+              "biomarker": "GFR",
+              "vector_rank": 26,
+              "keyword_rank": null,
+              "preview": "},\n},\n},\n},\n},\n}\n],\n\"creatinine_change\",\n\"gfr_change\","
+            },
+            {
+              "document_id": "chunk::benh_than_man_p144_001",
+              "source_type": "chunk",
+              "source_id": "benh_than_man_p144_001",
+              "similarity": 0.546662,
+              "keyword_score": null,
+              "fusion_score": 0.041111,
+              "page": 144,
+              "disease_name": "benh_than_man",
+              "section_type": "classification",
+              "doc_type": "threshold_reference",
+              "biomarker": "GFR",
+              "vector_rank": 30,
+              "keyword_rank": null,
+              "preview": "},\n},\n}\n],\nđoạn I khi GFR ≥90 và giai đoạn V khi GFR <15 ml/phút/1.73m2.\",\n}\n}\n],\n}"
+            },
+            {
+              "document_id": "formula::mdrd_gfr",
+              "source_type": "formula",
+              "source_id": "mdrd_gfr",
+              "similarity": 0.720763,
+              "keyword_score": null,
+              "fusion_score": 0.016393,
+              "page": 130,
+              "disease_name": "acute_kidney_injury",
+              "section_type": "classification",
+              "doc_type": "formula_reference",
+              "biomarker": null,
+              "vector_rank": 1,
+              "keyword_rank": null,
+              "preview": "Công thức MDRD eGFR áp dụng trong bối cảnh Tổn thương thận cấp. Biểu thức: 186 * (creatinine_mg_dl ** -1.154) * (age ** -0.203) * sex_factor * race_factor. Biến đầu vào: creatinine_mg_dl, age, sex, race. Đầu ra: gfr_ml_min_1_73m2 (ml/ph/1.73m2). Trích từ trang 130."
+            }
+          ],
+          "router_plan": {
+            "needs_medical_tool": true,
+            "tool_call": {
+              "tool_name": "medical_tools.evaluate",
+              "method": "POST",
+              "endpoint": "/mcp/medical-tools/evaluate",
+              "parameters": {
+                "text": "Nữ 60 tuổi, creatinine 1.4 mg/dL. Hãy ước tính eGFR.",
+                "measurements": null,
+                "disease_name": "benh_than_man",
+                "formula_ids": [
+                  "mdrd_gfr"
+                ],
+                "include_debug": false
+              }
+            },
+            "rag_plan": {
+              "should_retrieve": true,
+              "query": "Nữ 60 tuổi, creatinine 1.4 mg/dL. Hãy ước tính eGFR.\nMDRD eGFR và phân loại bệnh thận mạn\nđánh giá ngưỡng ACR GFR kali huyết áp cholesterol nếu có",
+              "filters": {
+                "disease_name": "benh_than_man",
+                "section_type": "general",
+                "source_type": "chunk",
+                "biomarker": null
+              }
+            },
+            "missing_inputs": [],
+            "reason": "heuristic_formula_and_threshold_values"
+          },
+          "router_error": null,
+          "medical_tool_result": {
+            "input": {
+              "text": "Nữ 60 tuổi, creatinine 1.4 mg/dL. Hãy ước tính eGFR.",
+              "disease_name": "benh_than_man"
+            },
+            "detected_measurements": [
+              {
+                "name": "creatinine",
+                "value": 1.4,
+                "unit": "mg/dL",
+                "source": "text"
+              }
+            ],
+            "derived_measurements": [],
+            "threshold_matches": [],
+            "threshold_evaluations": [],
+            "classifications": [],
+            "formula_results": [
+              {
+                "formula_id": "mdrd_gfr",
+                "formula_name": "MDRD eGFR",
+                "output_name": "gfr_ml_min_1_73m2",
+                "unit": "ml/ph/1.73m2",
+                "required_variables": [
+                  "age",
+                  "creatinine_mg_dl",
+                  "race_factor",
+                  "sex_factor"
+                ],
+                "status": "missing_inputs",
+                "missing_inputs": [
+                  "race"
+                ]
+              }
+            ],
+            "safety": {
+              "medical_disclaimer": "Kết quả chỉ mang tính tham khảo, không thay thế đánh giá của bác sĩ.",
+              "unit_warning": "Chỉ so sánh trực tiếp khi đơn vị input khớp hoặc không có đơn vị trong dữ liệu ngưỡng."
+            }
+          }
+        }
+      },
+      "evaluation": {
+        "passed": true,
+        "checks": [
+          {
+            "name": "min_answer_chars",
+            "passed": true,
+            "detail": "actual=225, expected>=30"
+          },
+          {
+            "name": "require_route",
+            "passed": true,
+            "detail": "actual=retrieve, expected=retrieve"
+          },
+          {
+            "name": "require_tool_called",
+            "passed": true,
+            "detail": "needs_medical_tool=True"
+          },
+          {
+            "name": "require_tool_success",
+            "passed": true,
+            "detail": "tool_status=None"
+          },
+          {
+            "name": "require_formula_result_min",
+            "passed": true,
+            "detail": "actual=1, expected>=1"
+          },
+          {
+            "name": "require_formula_ids_any",
+            "passed": true,
+            "detail": "actual=['mdrd_gfr'], expected_any=['mdrd_gfr']"
+          },
+          {
+            "name": "must_include_any",
+            "passed": true,
+            "detail": "tokens=['gfr', 'egfr', 'creatinin', 'creatinine']"
+          },
+          {
+            "name": "must_not_include_any",
+            "passed": true,
+            "detail": "tokens=['tool_name']"
+          }
+        ]
+      }
+    },
+    {
+      "category": "formula_qa",
+      "id": "formula_002",
+      "title": "Tinh Cockcroft-Gault",
+      "query": "Nam 65 tuổi, nặng 70 kg, creatinine 1.6 mg/dL. Tính Cockcroft-Gault.",
+      "response": {
+        "query": "Nam 65 tuổi, nặng 70 kg, creatinine 1.6 mg/dL. Tính Cockcroft-Gault.",
+        "answer": "Mình ghi nhận các chỉ số bạn cung cấp: creatinine 1.6 mg/dL.\n\n- Cockcroft-Gault tính độ thanh thải creatinine: 45.5729 ml/ph.\n\nKết quả này chỉ mang tính tham khảo, không đủ để tự khẳng định chẩn đoán cá nhân và không thay thế đánh giá của bác sĩ.",
+        "route": "retrieve",
+        "sources": [],
+        "debug": {
+          "filters": {
+            "disease_name": null,
+            "section_type": null,
+            "source_type": null,
+            "biomarker": "creatinine_clearance"
+          },
+          "query_understanding": {
+            "disease_hint": null,
+            "section_hint": null,
+            "biomarker_hint": "creatinine_clearance",
+            "embedding_query": "Câu hỏi người dùng: Nam 65 tuổi, nặng 70 kg, creatinine 1.6 mg/dL. Tính Cockcroft-Gault.\nCông thức: Cockcroft-Gault\nChỉ số: creatinine_clearance\nChỉ số trọng tâm: creatinine_clearance",
+            "keyword_query": "Nam 65 tuổi, nặng 70 kg, creatinine 1.6 mg/dL. Tính Cockcroft-Gault.\nCông thức: Cockcroft-Gault\nChỉ số: creatinine_clearance"
+          },
+          "results": [],
+          "router_plan": {
+            "needs_medical_tool": true,
+            "tool_call": {
+              "tool_name": "medical_tools.evaluate",
+              "method": "POST",
+              "endpoint": "/mcp/medical-tools/evaluate",
+              "parameters": {
+                "text": "Nam 65 tuổi, nặng 70 kg, creatinine 1.6 mg/dL. Tính Cockcroft-Gault.",
+                "measurements": null,
+                "disease_name": "benh_than_man",
+                "formula_ids": [
+                  "cockcroft_gault"
+                ],
+                "include_debug": false
+              }
+            },
+            "rag_plan": {
+              "should_retrieve": true,
+              "query": "Nam 65 tuổi, nặng 70 kg, creatinine 1.6 mg/dL. Tính Cockcroft-Gault.\nCockcroft-Gault creatinine clearance\nđánh giá ngưỡng ACR GFR kali huyết áp cholesterol nếu có",
+              "filters": {
+                "disease_name": "benh_than_man",
+                "section_type": "general",
+                "source_type": "chunk",
+                "biomarker": null
+              }
+            },
+            "missing_inputs": [],
+            "reason": "heuristic_formula_and_threshold_values"
+          },
+          "router_error": null,
+          "medical_tool_result": {
+            "input": {
+              "text": "Nam 65 tuổi, nặng 70 kg, creatinine 1.6 mg/dL. Tính Cockcroft-Gault.",
+              "disease_name": "benh_than_man"
+            },
+            "detected_measurements": [
+              {
+                "name": "creatinine",
+                "value": 1.6,
+                "unit": "mg/dL",
+                "source": "text"
+              }
+            ],
+            "derived_measurements": [
+              {
+                "name": "creatinine_clearance",
+                "value": 45.5729,
+                "unit": "ml/ph",
+                "source": "formula:cockcroft_gault"
+              }
+            ],
+            "threshold_matches": [],
+            "threshold_evaluations": [],
+            "classifications": [],
+            "formula_results": [
+              {
+                "formula_id": "cockcroft_gault",
+                "formula_name": "Cockcroft-Gault",
+                "output_name": "creatinine_clearance_ml_min",
+                "unit": "ml/ph",
+                "required_variables": [
+                  "age",
+                  "creatinine_mg_dl",
+                  "sex_factor",
+                  "weight_kg"
+                ],
+                "status": "computed",
+                "value": 45.5729
+              }
+            ],
+            "safety": {
+              "medical_disclaimer": "Kết quả chỉ mang tính tham khảo, không thay thế đánh giá của bác sĩ.",
+              "unit_warning": "Chỉ so sánh trực tiếp khi đơn vị input khớp hoặc không có đơn vị trong dữ liệu ngưỡng."
+            }
+          }
+        }
+      },
+      "evaluation": {
+        "passed": true,
+        "checks": [
+          {
+            "name": "min_answer_chars",
+            "passed": true,
+            "detail": "actual=246, expected>=30"
+          },
+          {
+            "name": "require_route",
+            "passed": true,
+            "detail": "actual=retrieve, expected=retrieve"
+          },
+          {
+            "name": "require_tool_called",
+            "passed": true,
+            "detail": "needs_medical_tool=True"
+          },
+          {
+            "name": "require_tool_success",
+            "passed": true,
+            "detail": "tool_status=None"
+          },
+          {
+            "name": "require_formula_result_min",
+            "passed": true,
+            "detail": "actual=1, expected>=1"
+          },
+          {
+            "name": "require_formula_ids_any",
+            "passed": true,
+            "detail": "actual=['cockcroft_gault'], expected_any=['cockcroft_gault']"
+          },
+          {
+            "name": "must_include_any",
+            "passed": true,
+            "detail": "tokens=['cockcroft', 'gault', 'creatinine clearance', 'thanh thải']"
+          },
+          {
+            "name": "must_not_include_any",
+            "passed": true,
+            "detail": "tokens=['tool_name']"
+          }
+        ]
+      }
+    },
+    {
+      "category": "formula_threshold_qa",
+      "id": "formula_threshold_001",
+      "title": "Danh gia chuc nang than tu creatinine va ACR",
+      "query": "Nữ 60 tuổi, cân nặng 55 kg, chiều cao 160 cm, creatinine 1.4 mg/dL, ACR 350 mg/g. Hãy đánh giá chức năng thận.",
+      "response": {
+        "query": "Nữ 60 tuổi, cân nặng 55 kg, chiều cao 160 cm, creatinine 1.4 mg/dL, ACR 350 mg/g. Hãy đánh giá chức năng thận.",
+        "answer": "Mình ghi nhận các chỉ số bạn cung cấp: ACR 350 mg/g; creatinine 1.4 mg/dL.\n\n- ACR 350 mg/g thỏa điều kiện > 30 mg/g.\n\nDiễn giải:\n- ACR vượt ngưỡng 30 mg/g là một dấu hiệu cần chú ý khi đánh giá albumin niệu; cần đối chiếu thời gian tồn tại và bối cảnh lâm sàng trước khi kết luận.\n\nKết quả này chỉ mang tính tham khảo, không đủ để tự khẳng định chẩn đoán cá nhân và không thay thế đánh giá của bác sĩ.",
+        "route": "retrieve",
+        "sources": [],
+        "debug": {
+          "filters": {
+            "disease_name": "benh_than_man",
+            "section_type": null,
+            "source_type": null,
+            "biomarker": "ACR"
+          },
+          "query_understanding": {
+            "disease_hint": "benh_than_man",
+            "section_hint": "classification",
+            "biomarker_hint": "ACR",
+            "embedding_query": "Câu hỏi người dùng: Nữ 60 tuổi, cân nặng 55 kg, chiều cao 160 cm, creatinine 1.4 mg/dL, ACR 350 mg/g. Hãy đánh giá chức năng thận.\nChỉ số: ACR\nNgưỡng/phân loại: ACR > 30.0 mg/g\nĐoạn liên quan: Biểu hiện tổn thương thận tồn tại kéo dài ≥ 3 tháng (có 1 hoặc nhiều hơn những triệu chứng dưới đây) • Có Albumin niệu (tỷ lệ albumin/creatinine nước tiểu > 30mg/g hoặc albumin niệu ≥ 24 giờ > 30mg/24giờ).\nBệnh trọng tâm: Bệnh thận mạn\nMục cần tìm: Phân loại\nChỉ số trọng tâm: ACR",
+            "keyword_query": "Nữ 60 tuổi, cân nặng 55 kg, chiều cao 160 cm, creatinine 1.4 mg/dL, ACR 350 mg/g. Hãy đánh giá chức năng thận.\nChỉ số: ACR\nNgưỡng/phân loại: ACR > 30.0 mg/g\nĐoạn liên quan: Biểu hiện tổn thương thận tồn tại kéo dài ≥ 3 tháng (có 1 hoặc nhiều hơn những triệu chứng dưới đây) • Có Albumin niệu (tỷ lệ albumin/creatinine nước tiểu > 30mg/g hoặc albumin niệu ≥ 24 giờ > 30mg/24giờ)."
+          },
+          "results": [
+            {
+              "document_id": "threshold::benh_than_man_acr_gt_30_p129_101",
+              "source_type": "threshold",
+              "source_id": "benh_than_man_acr_gt_30_p129_101",
+              "similarity": 0.71106,
+              "keyword_score": null,
+              "fusion_score": 0.086393,
+              "page": 129,
+              "disease_name": "benh_than_man",
+              "section_type": "clinical_features",
+              "doc_type": "threshold_reference",
+              "biomarker": "ACR",
+              "vector_rank": 1,
+              "keyword_rank": null,
+              "preview": "Trong bối cảnh Bệnh thận mạn, chỉ số Tỷ số albumin/creatinin niệu có ngưỡng lớn hơn 30.0 mg/g. Trích từ trang 129."
+            },
+            {
+              "document_id": "chunk::benh_than_man_p129_001",
+              "source_type": "chunk",
+              "source_id": "benh_than_man_p129_001",
+              "similarity": 0.694676,
+              "keyword_score": null,
+              "fusion_score": 0.086129,
+              "page": 129,
+              "disease_name": "benh_than_man",
+              "section_type": "clinical_features",
+              "doc_type": "disease_guideline",
+              "biomarker": "ACR",
+              "vector_rank": 2,
+              "keyword_rank": null,
+              "preview": "A. Biểu hiện tổn thương thận tồn tại kéo dài ≥ 3 tháng (có 1 hoặc nhiều hơn những triệu\nchứng dưới đây)\n•\nCó Albumin niệu (tỷ lệ albumin/creatinine nước tiểu > 30mg/g hoặc albumin niệu ≥"
+            }
+          ],
+          "router_plan": {
+            "needs_medical_tool": true,
+            "tool_call": {
+              "tool_name": "medical_tools.evaluate",
+              "method": "POST",
+              "endpoint": "/mcp/medical-tools/evaluate",
+              "parameters": {
+                "text": "Nữ 60 tuổi, cân nặng 55 kg, chiều cao 160 cm, creatinine 1.4 mg/dL, ACR 350 mg/g. Hãy đánh giá chức năng thận.",
+                "measurements": null,
+                "disease_name": "benh_than_man",
+                "formula_ids": [],
+                "include_debug": false
+              }
+            },
+            "rag_plan": {
+              "should_retrieve": true,
+              "query": "Nữ 60 tuổi, cân nặng 55 kg, chiều cao 160 cm, creatinine 1.4 mg/dL, ACR 350 mg/g. Hãy đánh giá chức năng thận.",
+              "filters": {
+                "disease_name": "benh_than_man",
+                "section_type": "classification",
+                "source_type": "chunk",
+                "biomarker": null
+              }
+            },
+            "missing_inputs": [],
+            "reason": "heuristic_threshold_values"
+          },
+          "router_error": null,
+          "medical_tool_result": {
+            "input": {
+              "text": "Nữ 60 tuổi, cân nặng 55 kg, chiều cao 160 cm, creatinine 1.4 mg/dL, ACR 350 mg/g. Hãy đánh giá chức năng thận.",
+              "disease_name": "benh_than_man"
+            },
+            "detected_measurements": [
+              {
+                "name": "ACR",
+                "value": 350.0,
+                "unit": "mg/g",
+                "source": "text"
+              },
+              {
+                "name": "creatinine",
+                "value": 1.4,
+                "unit": "mg/dL",
+                "source": "text"
+              }
+            ],
+            "derived_measurements": [],
+            "threshold_matches": [
+              {
+                "biomarker": "ACR",
+                "input_value": 350.0,
+                "input_unit": "mg/g",
+                "comparison_value": 350.0,
+                "comparison_unit": "mg/g",
+                "matched": true,
+                "status": "condition_met",
+                "unit_matches": true,
+                "threshold": {
+                  "threshold_id": "benh_than_man_acr_gt_30_p129_101",
+                  "op": ">",
+                  "value": 30.0,
+                  "value_min": null,
+                  "value_max": null,
+                  "unit": "mg/g",
+                  "label": null,
+                  "severity": null,
+                  "disease_name": "benh_than_man",
+                  "section_type": "clinical_features"
+                },
+                "source": {
+                  "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+                  "source_text": "Biểu hiện tổn thương thận tồn tại kéo dài ≥ 3 tháng (có 1 hoặc nhiều hơn những triệu chứng dưới đây) • Có Albumin niệu (tỷ lệ albumin/creatinine nước tiểu > 30mg/g hoặc albumin niệu ≥ 24 giờ > 30mg/24giờ).",
+                  "disease_name": "benh_than_man",
+                  "section_type": "clinical_features"
+                }
+              }
+            ],
+            "threshold_evaluations": [
+              {
+                "biomarker": "ACR",
+                "input_value": 350.0,
+                "input_unit": "mg/g",
+                "comparison_value": 350.0,
+                "comparison_unit": "mg/g",
+                "matched": true,
+                "status": "condition_met",
+                "unit_matches": true,
+                "threshold": {
+                  "threshold_id": "benh_than_man_acr_gt_30_p129_101",
+                  "op": ">",
+                  "value": 30.0,
+                  "value_min": null,
+                  "value_max": null,
+                  "unit": "mg/g",
+                  "label": null,
+                  "severity": null,
+                  "disease_name": "benh_than_man",
+                  "section_type": "clinical_features"
+                },
+                "source": {
+                  "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+                  "source_text": "Biểu hiện tổn thương thận tồn tại kéo dài ≥ 3 tháng (có 1 hoặc nhiều hơn những triệu chứng dưới đây) • Có Albumin niệu (tỷ lệ albumin/creatinine nước tiểu > 30mg/g hoặc albumin niệu ≥ 24 giờ > 30mg/24giờ).",
+                  "disease_name": "benh_than_man",
+                  "section_type": "clinical_features"
+                }
+              }
+            ],
+            "classifications": [],
+            "formula_results": [],
+            "safety": {
+              "medical_disclaimer": "Kết quả chỉ mang tính tham khảo, không thay thế đánh giá của bác sĩ.",
+              "unit_warning": "Chỉ so sánh trực tiếp khi đơn vị input khớp hoặc không có đơn vị trong dữ liệu ngưỡng."
+            }
+          }
+        }
+      },
+      "evaluation": {
+        "passed": false,
+        "checks": [
+          {
+            "name": "min_answer_chars",
+            "passed": true,
+            "detail": "actual=401, expected>=50"
+          },
+          {
+            "name": "require_route",
+            "passed": true,
+            "detail": "actual=retrieve, expected=retrieve"
+          },
+          {
+            "name": "require_tool_called",
+            "passed": true,
+            "detail": "needs_medical_tool=True"
+          },
+          {
+            "name": "require_tool_success",
+            "passed": true,
+            "detail": "tool_status=None"
+          },
+          {
+            "name": "require_formula_result_min",
+            "passed": false,
+            "detail": "actual=0, expected>=1"
+          },
+          {
+            "name": "require_threshold_match_min",
+            "passed": true,
+            "detail": "actual=1, expected>=1"
+          },
+          {
+            "name": "require_classification_min",
+            "passed": false,
+            "detail": "actual=0, expected>=1"
+          },
+          {
+            "name": "must_include_any",
+            "passed": true,
+            "detail": "tokens=['acr', 'gfr', 'thận']"
+          },
+          {
+            "name": "must_not_include_any",
+            "passed": true,
+            "detail": "tokens=['tool_name']"
+          }
+        ]
+      }
+    },
+    {
+      "category": "formula_threshold_qa",
+      "id": "formula_threshold_002",
+      "title": "Tinh eGFR va xem xet bat thuong",
+      "query": "Nữ 60 tuổi, cân nặng 55 kg, chiều cao 160 cm, creatinine 1.4 mg/dL. Hãy tính eGFR và cho biết có bất thường không.",
+      "response": {
+        "query": "Nữ 60 tuổi, cân nặng 55 kg, chiều cao 160 cm, creatinine 1.4 mg/dL. Hãy tính eGFR và cho biết có bất thường không.",
+        "answer": "Mình ghi nhận các chỉ số bạn cung cấp: creatinine 1.4 mg/dL.\n\n- MDRD eGFR chưa tính được vì thiếu: race.\n\nKết quả này chỉ mang tính tham khảo, không đủ để tự khẳng định chẩn đoán cá nhân và không thay thế đánh giá của bác sĩ.",
+        "route": "retrieve",
+        "sources": [],
+        "debug": {
+          "filters": {
+            "disease_name": null,
+            "section_type": null,
+            "source_type": null,
+            "biomarker": null
+          },
+          "query_understanding": {
+            "disease_hint": null,
+            "section_hint": null,
+            "biomarker_hint": "GFR",
+            "embedding_query": "Câu hỏi người dùng: Nữ 60 tuổi, cân nặng 55 kg, chiều cao 160 cm, creatinine 1.4 mg/dL. Hãy tính eGFR và cho biết có bất thường không.\nCông thức: MDRD eGFR\nChỉ số trọng tâm: GFR",
+            "keyword_query": "Nữ 60 tuổi, cân nặng 55 kg, chiều cao 160 cm, creatinine 1.4 mg/dL. Hãy tính eGFR và cho biết có bất thường không.\nCông thức: MDRD eGFR"
+          },
+          "results": [
+            {
+              "document_id": "chunk::benh_than_man_p133_002",
+              "source_type": "chunk",
+              "source_id": "benh_than_man_p133_002",
+              "similarity": 0.572626,
+              "keyword_score": null,
+              "fusion_score": 0.044493,
+              "page": 133,
+              "disease_name": "benh_than_man",
+              "section_type": "diagnosis_criteria",
+              "doc_type": "threshold_reference",
+              "biomarker": "GFR",
+              "vector_rank": 9,
+              "keyword_rank": null,
+              "preview": "Mức lọc cầu thận (GFR) <60 ml/ph/1,73m2 kéo dài trên 3 tháng là tiêu chuẩn chẩn đoán bệnh thận mạn."
+            },
+            {
+              "document_id": "chunk::benh_than_man_p134_001",
+              "source_type": "chunk",
+              "source_id": "benh_than_man_p134_001",
+              "similarity": 0.564929,
+              "keyword_score": null,
+              "fusion_score": 0.043889,
+              "page": 134,
+              "disease_name": "benh_than_man",
+              "section_type": "general",
+              "doc_type": "formula_reference",
+              "biomarker": "GFR",
+              "vector_rank": 12,
+              "keyword_rank": null,
+              "preview": "trên tuổi, cân nặng và creatinin huyết thanh.\",\n}\n}\n],\n\"tính gfr\",\n\"egfr\",\n\"mdrd\"\n],\n},"
+            },
+            {
+              "document_id": "chunk::benh_than_man_p144_001",
+              "source_type": "chunk",
+              "source_id": "benh_than_man_p144_001",
+              "similarity": 0.527742,
+              "keyword_score": null,
+              "fusion_score": 0.041236,
+              "page": 144,
+              "disease_name": "benh_than_man",
+              "section_type": "classification",
+              "doc_type": "threshold_reference",
+              "biomarker": "GFR",
+              "vector_rank": 29,
+              "keyword_rank": null,
+              "preview": "},\n},\n}\n],\nđoạn I khi GFR ≥90 và giai đoạn V khi GFR <15 ml/phút/1.73m2.\",\n}\n}\n],\n}"
+            },
+            {
+              "document_id": "formula::mdrd_gfr",
+              "source_type": "formula",
+              "source_id": "mdrd_gfr",
+              "similarity": 0.6927,
+              "keyword_score": null,
+              "fusion_score": 0.016393,
+              "page": 130,
+              "disease_name": "acute_kidney_injury",
+              "section_type": "classification",
+              "doc_type": "formula_reference",
+              "biomarker": null,
+              "vector_rank": 1,
+              "keyword_rank": null,
+              "preview": "Công thức MDRD eGFR áp dụng trong bối cảnh Tổn thương thận cấp. Biểu thức: 186 * (creatinine_mg_dl ** -1.154) * (age ** -0.203) * sex_factor * race_factor. Biến đầu vào: creatinine_mg_dl, age, sex, race. Đầu ra: gfr_ml_min_1_73m2 (ml/ph/1.73m2). Trích từ trang 130."
+            },
+            {
+              "document_id": "chunk::benh_than_man_p129_002",
+              "source_type": "chunk",
+              "source_id": "benh_than_man_p129_002",
+              "similarity": 0.644339,
+              "keyword_score": null,
+              "fusion_score": 0.016129,
+              "page": 129,
+              "disease_name": "benh_than_man",
+              "section_type": "general",
+              "doc_type": "formula_reference",
+              "biomarker": "creatinine",
+              "vector_rank": 2,
+              "keyword_rank": null,
+              "preview": "24 giờ > 30mg/24giờ).\n•\nBất thường cặn lắng nước tiểu.\n•\nBất thường điện giải hoặc các bất thường khác do rối loạn chức năng của ống thận.\n•\nBất thường về mô bệnh học thận.\n•\nXét nghiệm hình ảnh học phát hiện thận bất thường.\n•\nNhững bệnh nhân sau khi được ghép thận cũng được xếp loại là mắc bệnh thận mạn\ntính, và được thêm ký hiệu T (Transplantation) trong khi tiến hành phân loại.\nB. Giảm mức lọc cầu thận (Glomerular filtration rate: GFR) < 60ml/ph/1,73 m²) tồn tại\nkéo dài trên 3 tháng.\nVới mức"
+            }
+          ],
+          "router_plan": {
+            "needs_medical_tool": true,
+            "tool_call": {
+              "tool_name": "medical_tools.evaluate",
+              "method": "POST",
+              "endpoint": "/mcp/medical-tools/evaluate",
+              "parameters": {
+                "text": "Nữ 60 tuổi, cân nặng 55 kg, chiều cao 160 cm, creatinine 1.4 mg/dL. Hãy tính eGFR và cho biết có bất thường không.",
+                "measurements": null,
+                "disease_name": "benh_than_man",
+                "formula_ids": [
+                  "mdrd_gfr"
+                ],
+                "include_debug": false
+              }
+            },
+            "rag_plan": {
+              "should_retrieve": true,
+              "query": "Nữ 60 tuổi, cân nặng 55 kg, chiều cao 160 cm, creatinine 1.4 mg/dL. Hãy tính eGFR và cho biết có bất thường không.\nMDRD eGFR và phân loại bệnh thận mạn\nđánh giá ngưỡng ACR GFR kali huyết áp cholesterol nếu có",
+              "filters": {
+                "disease_name": "benh_than_man",
+                "section_type": "general",
+                "source_type": "chunk",
+                "biomarker": null
+              }
+            },
+            "missing_inputs": [],
+            "reason": "heuristic_formula_and_threshold_values"
+          },
+          "router_error": null,
+          "medical_tool_result": {
+            "input": {
+              "text": "Nữ 60 tuổi, cân nặng 55 kg, chiều cao 160 cm, creatinine 1.4 mg/dL. Hãy tính eGFR và cho biết có bất thường không.",
+              "disease_name": "benh_than_man"
+            },
+            "detected_measurements": [
+              {
+                "name": "creatinine",
+                "value": 1.4,
+                "unit": "mg/dL",
+                "source": "text"
+              }
+            ],
+            "derived_measurements": [],
+            "threshold_matches": [],
+            "threshold_evaluations": [],
+            "classifications": [],
+            "formula_results": [
+              {
+                "formula_id": "mdrd_gfr",
+                "formula_name": "MDRD eGFR",
+                "output_name": "gfr_ml_min_1_73m2",
+                "unit": "ml/ph/1.73m2",
+                "required_variables": [
+                  "age",
+                  "creatinine_mg_dl",
+                  "race_factor",
+                  "sex_factor"
+                ],
+                "status": "missing_inputs",
+                "missing_inputs": [
+                  "race"
+                ]
+              }
+            ],
+            "safety": {
+              "medical_disclaimer": "Kết quả chỉ mang tính tham khảo, không thay thế đánh giá của bác sĩ.",
+              "unit_warning": "Chỉ so sánh trực tiếp khi đơn vị input khớp hoặc không có đơn vị trong dữ liệu ngưỡng."
+            }
+          }
+        }
+      },
+      "evaluation": {
+        "passed": true,
+        "checks": [
+          {
+            "name": "min_answer_chars",
+            "passed": true,
+            "detail": "actual=225, expected>=40"
+          },
+          {
+            "name": "require_route",
+            "passed": true,
+            "detail": "actual=retrieve, expected=retrieve"
+          },
+          {
+            "name": "require_tool_called",
+            "passed": true,
+            "detail": "needs_medical_tool=True"
+          },
+          {
+            "name": "require_tool_success",
+            "passed": true,
+            "detail": "tool_status=None"
+          },
+          {
+            "name": "require_formula_result_min",
+            "passed": true,
+            "detail": "actual=1, expected>=1"
+          },
+          {
+            "name": "must_include_any",
+            "passed": true,
+            "detail": "tokens=['gfr', 'egfr', 'thận']"
+          },
+          {
+            "name": "must_not_include_any",
+            "passed": true,
+            "detail": "tokens=['tool_name']"
+          }
+        ]
+      }
+    },
+    {
+      "category": "general_qa",
+      "id": "general_001",
+      "title": "Dinh nghia lupus ban do",
+      "query": "Lupus ban đỏ là gì?",
+      "response": {
+        "query": "Lupus ban đỏ là gì?",
+        "answer": "**Lupus ban đỏ hệ thống** là một **bệnh tự miễn** nghiêm trọng, khiến hệ thống miễn dịch tấn công nhầm các mô và cơ quan trong cơ thể, bao gồm da, khớp, tim, phổi và đặc biệt là **thận**. Đây là một trong những bệnh tự miễn phổ biến và phức tạp, thường có diễn biến **kịch phát xen kẽ với giai đoạn lui bệnh**.\n\n---\n\n### **Các điểm chính về bệnh:**\n- **Tổn thương đa cơ quan**:\n - Bệnh ảnh hưởng đến nhiều hệ thống cơ quan, nhưng **tổn thương thận** (viêm thận Lupus) là một trong những biến chứng nghiêm trọng nhất, góp phần đáng kể vào nguy cơ tử vong và tiên lượng bệnh.\n - Khi thận bị tổn thương, có thể xuất hiện các biểu hiện như:\n - **Hội chứng cầu thận cấp** (viêm mạch máu trong thận).\n - **Hội chứng thận hư** (protein niệu, phù, tăng huyết áp).\n - **Suy thận** (nếu không điều trị kịp thời).\n\n- **Diễn biến bệnh**:\n - Bệnh thường có **những đợt bùng phát nặng** (kịch phát) xen kẽ với **giai đoạn ổn định** (lui bệnh), kéo dài khác nhau.\n - Tổn thương thận có thể xuất hiện ngay từ **lúc chẩn đoán** (tỷ lệ ~35% ở Mỹ) hoặc phát triển sau đó (tăng lên ~50-60% trong 10 năm).\n\n- **Nhóm nguy cơ cao**:\n - **Người Mỹ gốc Phi và Tây Ban Nha** có tỷ lệ viêm thận Lupus cao hơn so với người châu Á.\n - **Nam giới** bị Lupus ban đỏ hệ thống có nguy cơ tổn thương thận **nặng hơn** so với nữ giới.\n\n- **Tầm soát và điều trị**:\n - **Tầm soát tổn thương thận** là rất quan trọng để phát hiện sớm và can thiệp kịp thời.\n - Điều trị đã có nhiều tiến bộ nhờ các thuốc **ức chế miễn dịch** như:\n - Corticosteroid (tiêm tĩnh mạch hoặc uống).\n - Cyclophosphamid, azathioprine, mycophenolic acid.\n - Các liệu pháp sinh học mới.\n - **Sinh thiết thận** giúp xác định loại tổn thương cụ thể để lựa chọn phác đồ điều trị phù hợp.\n\n---\n\n### **Ý nghĩa của thông tin trên:**\n- **Tầm quan trọng của thận**:\n Lupus ban đỏ hệ thống không chỉ ảnh hưởng đến da hoặc khớp, mà **tổn thương thận** là một yếu tố quyết định tiên lượng sống và chất lượng cuộc sống của bệnh nhân. Nếu không được điều trị kịp thời, viêm thận có thể dẫn đến suy thận mãn tính.\n\n- **Sự cần thiết của chẩn đoán sớm**:\n Việc **tầm soát thận định kỳ** (qua xét nghiệm nước tiểu, chức năng thận, sinh thiết khi cần) giúp phát hiện tổn thương sớm và điều trị hiệu quả hơn.\n\n- **Đa dạng trong điều trị**:\n Không có một phương pháp điều trị duy nhất; phác đồ được cá nhân hóa dựa trên **loại tổn thương thận** (xác định qua sinh thiết) và tình trạng bệnh nhân.\n\n---\n\n### **Lưu ý an toàn:**\n- **Không tự chẩn đoán hoặc điều trị**: Lupus ban đỏ hệ thống cần sự đánh giá chuyên sâu của bác sĩ chuyên khoa (như bác sĩ nội khoa, bệnh học hoặc thận học).\n- **Không bỏ qua tầm soát thận**: Nếu bạn hoặc người thân có triệu chứng như **đau khớp, mệt mỏi kéo dài, phát ban da (đặc biệt là hình cánh bướm), sốt không rõ nguyên nhân, hoặc triệu chứng thận (nước tiểu nhiều, phù, tăng huyết áp)**, hãy đến cơ sở y tế để khám sớm.\n- **Tuân thủ điều trị**: Lupus là bệnh mãn tính, yêu cầu **kiểm soát định kỳ** và điều trị dài hạn để ngăn ngừa biến chứng.\n\n---\nNếu bạn hoặc người thân có triệu chứng nghi ngờ, hãy liên hệ với bác sĩ để được đánh giá và tư vấn cụ thể.",
+        "route": "retrieve",
+        "sources": [
+          {
+            "label": "Tài liệu tham khảo 1",
+            "source_type": "chunk",
+            "section_type": "definition",
+            "disease_name": "lupus_nephritis",
+            "preview": "1. KHÁI NIỆM\n– Lupus ban đỏ hệ thống là một bệnh tự miễn ảnh hưởng đến nhiều hệ thống cơ quan trong đó\ntổn thương thận là một nguyên nhân quan trọng dẫn đến tử vong.\n– Biểu hiện tổn thương thận có ý nghĩa đặc biệt trong tiên lượng bệnh Lupu"
+          },
+          {
+            "label": "Tài liệu tham khảo 2",
+            "source_type": "chunk",
+            "section_type": "definition",
+            "disease_name": "lupus_nephritis",
+            "preview": "1. KHÁI NIỆM\n– Bệnh thận Lupus hay viêm thận Lupus là một tổn thương phổ biến và quan trọng của bệnh\nlupus ban đỏ hệ thống. Tại Mỹ có tới 35% số bệnh nhân có bằng chứng viêm thận Lupus tại\nthời điểm chẩn đoán và tăng lên với tỷ lệ chung kho"
+          },
+          {
+            "label": "Tài liệu tham khảo 3",
+            "source_type": "chunk",
+            "section_type": "definition",
+            "disease_name": "lupus_nephritis",
+            "preview": "1. KHÁI NIỆM\n– Các bệnh nhân bị Lupus cần phải được tầm soát tổn thương thận để có kế hoạch điều trị\nsớm."
+          },
+          {
+            "label": "Tài liệu tham khảo 4",
+            "source_type": "chunk",
+            "section_type": "definition",
+            "disease_name": "lupus_nephritis",
+            "preview": "1. KHÁI NIỆM\n•\nNgoài liên cầu nhóm A còn có các vi khuẩn khác như một số cầu khuẩn, song cầu\nkhuẩn, Mycobacteria, Salmonella typhosa, Brucella suis, Treponema pallidum,\nCorynebacterium bovis, actinobacilli. Một số virus (Cytomegalovirus, Ep"
+          },
+          {
+            "label": "Tài liệu tham khảo 5",
+            "source_type": "chunk",
+            "section_type": "definition",
+            "disease_name": "lupus_nephritis",
+            "preview": "1. KHÁI NIỆM\n– Điều trị viêm thận Lupus đã phát triển đáng kể trong nhiều thập kỉ qua, dựa vào các nghiên\ncứu lâm sàng sử dụng các loại thuốc ức chế miễn dịch khác nhau trong điều trị: corticosteroid,\ncyclophosphamid, azathioprine, mycophen"
+          }
+        ],
+        "debug": {
+          "filters": {
+            "disease_name": "lupus_nephritis",
+            "section_type": "definition",
+            "source_type": "chunk",
+            "biomarker": null
+          },
+          "query_understanding": {
+            "disease_hint": "lupus_nephritis",
+            "section_hint": "definition",
+            "biomarker_hint": null,
+            "embedding_query": "Câu hỏi người dùng: Lupus ban đỏ là gì? Định nghĩa, triệu chứng và liên quan đến lupus thận\nBệnh trọng tâm: Viêm thận lupus\nMục cần tìm: Khái niệm",
+            "keyword_query": "Lupus ban đỏ là gì? Định nghĩa, triệu chứng và liên quan đến lupus thận"
+          },
+          "results": [
+            {
+              "document_id": "chunk::lupus_nephritis_p25_002",
+              "source_type": "chunk",
+              "source_id": "lupus_nephritis_p25_002",
+              "similarity": 0.785019,
+              "keyword_score": null,
+              "fusion_score": 0.146393,
+              "page": 25,
+              "disease_name": "lupus_nephritis",
+              "section_type": "definition",
+              "doc_type": "disease_guideline",
+              "biomarker": null,
+              "vector_rank": 1,
+              "keyword_rank": null,
+              "preview": "1. KHÁI NIỆM\n– Lupus ban đỏ hệ thống là một bệnh tự miễn ảnh hưởng đến nhiều hệ thống cơ quan trong đó\ntổn thương thận là một nguyên nhân quan trọng dẫn đến tử vong.\n– Biểu hiện tổn thương thận có ý nghĩa đặc biệt trong tiên lượng bệnh Lupus ban đỏ hệ thống.\nBệnh có thể có những đợt kịch phát nặng xen kẽ những đợt lui bệnh dài hay ngắn. Trong\nnhững đợt kịch phát, biểu hiện thận có thể là một hội chứng cầu thận cấp, một hội chứng thận\như có hoặc không có kết hợp với suy thận. Khởi phát có thể là "
+            },
+            {
+              "document_id": "chunk::lupus_nephritis_p25_004",
+              "source_type": "chunk",
+              "source_id": "lupus_nephritis_p25_004",
+              "similarity": 0.747884,
+              "keyword_score": null,
+              "fusion_score": 0.146129,
+              "page": 25,
+              "disease_name": "lupus_nephritis",
+              "section_type": "definition",
+              "doc_type": "disease_guideline",
+              "biomarker": null,
+              "vector_rank": 2,
+              "keyword_rank": null,
+              "preview": "1. KHÁI NIỆM\n– Bệnh thận Lupus hay viêm thận Lupus là một tổn thương phổ biến và quan trọng của bệnh\nlupus ban đỏ hệ thống. Tại Mỹ có tới 35% số bệnh nhân có bằng chứng viêm thận Lupus tại\nthời điểm chẩn đoán và tăng lên với tỷ lệ chung khoảng 50-60% có viêm thận Lupus sau 10\nnăm. Tỷ lệ viêm thận cao hơn đáng kể ở nhóm người Mỹ gốc phi và gốc Tây Ban Nha, tuy\nnhiên nó còn thấp hơn người gốc châu Á và đặc biệt nam giới bị Lupus ban đỏ hệ thống có\ntổn thương thận cao và tổn thương nặng. Viêm thận "
+            },
+            {
+              "document_id": "chunk::lupus_nephritis_p25_003",
+              "source_type": "chunk",
+              "source_id": "lupus_nephritis_p25_003",
+              "similarity": 0.695499,
+              "keyword_score": null,
+              "fusion_score": 0.145873,
+              "page": 25,
+              "disease_name": "lupus_nephritis",
+              "section_type": "definition",
+              "doc_type": "disease_guideline",
+              "biomarker": null,
+              "vector_rank": 3,
+              "keyword_rank": null,
+              "preview": "1. KHÁI NIỆM\n– Các bệnh nhân bị Lupus cần phải được tầm soát tổn thương thận để có kế hoạch điều trị\nsớm."
+            },
+            {
+              "document_id": "chunk::lupus_nephritis_p11_005",
+              "source_type": "chunk",
+              "source_id": "lupus_nephritis_p11_005",
+              "similarity": 0.661206,
+              "keyword_score": null,
+              "fusion_score": 0.145625,
+              "page": 11,
+              "disease_name": "lupus_nephritis",
+              "section_type": "definition",
+              "doc_type": "disease_guideline",
+              "biomarker": "urea",
+              "vector_rank": 4,
+              "keyword_rank": null,
+              "preview": "1. KHÁI NIỆM\n•\nNgoài liên cầu nhóm A còn có các vi khuẩn khác như một số cầu khuẩn, song cầu\nkhuẩn, Mycobacteria, Salmonella typhosa, Brucella suis, Treponema pallidum,\nCorynebacterium bovis, actinobacilli. Một số virus (Cytomegalovirus, Epstein-Barr\nvirus, viêm gan B, sởi, quai bị), nấm hay ký sinh trùng (Coccidioides immitis, sốt rét,\nSchistosoma mansoni, Toxoplasma gondii, giun chỉ, trichinosis, trypanosome) cũng có\nthể là nguyên nhân dẫn đến viêm cầu thận cấp . Viêm cầu thận cấp còn có thể g"
+            },
+            {
+              "document_id": "chunk::lupus_nephritis_p25_005",
+              "source_type": "chunk",
+              "source_id": "lupus_nephritis_p25_005",
+              "similarity": 0.66114,
+              "keyword_score": null,
+              "fusion_score": 0.145385,
+              "page": 25,
+              "disease_name": "lupus_nephritis",
+              "section_type": "definition",
+              "doc_type": "disease_guideline",
+              "biomarker": null,
+              "vector_rank": 5,
+              "keyword_rank": null,
+              "preview": "1. KHÁI NIỆM\n– Điều trị viêm thận Lupus đã phát triển đáng kể trong nhiều thập kỉ qua, dựa vào các nghiên\ncứu lâm sàng sử dụng các loại thuốc ức chế miễn dịch khác nhau trong điều trị: corticosteroid,\ncyclophosphamid, azathioprine, mycophenolic acid, chất ức chế calcineurin và các liệu pháp\nsinh học mới dẫn đến tiên lượng lâu dài của bệnh thận Lupus tốt hơn. Việc lựa chọn phác đồ\nđiều trị cho bệnh nhân viêm thận Lupus phụ thuộc vào loại tổn thương mô bệnh học thận, do\nvậy sinh thiết thận và phân"
+            }
+          ],
+          "router_plan": {
+            "needs_medical_tool": false,
+            "tool_call": null,
+            "rag_plan": {
+              "should_retrieve": true,
+              "query": "Lupus ban đỏ là gì? Định nghĩa, triệu chứng và liên quan đến lupus thận",
+              "filters": {
+                "disease_name": "lupus_nephritis",
+                "section_type": "definition",
+                "source_type": "chunk",
+                "biomarker": null
+              }
+            },
+            "missing_inputs": [],
+            "reason": "question is a general medical definition without lab values or formula request"
+          },
+          "router_error": null,
+          "medical_tool_result": null
+        }
+      },
+      "evaluation": {
+        "passed": true,
+        "checks": [
+          {
+            "name": "min_answer_chars",
+            "passed": true,
+            "detail": "actual=3102, expected>=60"
+          },
+          {
+            "name": "require_route",
+            "passed": true,
+            "detail": "actual=retrieve, expected=retrieve"
+          },
+          {
+            "name": "require_sources_min",
+            "passed": true,
+            "detail": "actual=5, expected>=1"
+          },
+          {
+            "name": "must_include_any",
+            "passed": true,
+            "detail": "tokens=['lupus']"
+          },
+          {
+            "name": "must_not_include_any",
+            "passed": true,
+            "detail": "tokens=['source_id=', 'document_id=', 'tool_name']"
+          }
+        ]
+      }
+    },
+    {
+      "category": "general_qa",
+      "id": "general_002",
+      "title": "Giai thich GFR",
+      "query": "GFR là gì?",
+      "response": {
+        "query": "GFR là gì?",
+        "answer": "Mình chưa tìm thấy ngữ cảnh phù hợp trong kho tài liệu hiện tại, nên chưa thể trả lời chắc chắn cho câu hỏi này.",
+        "route": "retrieve",
+        "sources": [],
+        "debug": {
+          "filters": {
+            "disease_name": null,
+            "section_type": "definition",
+            "source_type": "chunk",
+            "biomarker": "GFR"
+          },
+          "query_understanding": {
+            "disease_hint": null,
+            "section_hint": "definition",
+            "biomarker_hint": "GFR",
+            "embedding_query": "Câu hỏi người dùng: GFR là gì? Định nghĩa và ý nghĩa lâm sàng của GFR trong y học\nMục cần tìm: Khái niệm\nChỉ số trọng tâm: GFR",
+            "keyword_query": "GFR là gì? Định nghĩa và ý nghĩa lâm sàng của GFR trong y học"
+          },
+          "results": [],
+          "router_plan": {
+            "needs_medical_tool": false,
+            "tool_call": null,
+            "rag_plan": {
+              "should_retrieve": true,
+              "query": "GFR là gì? Định nghĩa và ý nghĩa lâm sàng của GFR trong y học",
+              "filters": {
+                "disease_name": null,
+                "section_type": "definition",
+                "source_type": "chunk",
+                "biomarker": "GFR"
+              }
+            },
+            "missing_inputs": [],
+            "reason": "question is a general definition without lab values or formula request"
+          },
+          "router_error": null,
+          "medical_tool_result": null
+        }
+      },
+      "evaluation": {
+        "passed": false,
+        "checks": [
+          {
+            "name": "min_answer_chars",
+            "passed": true,
+            "detail": "actual=112, expected>=50"
+          },
+          {
+            "name": "require_route",
+            "passed": true,
+            "detail": "actual=retrieve, expected=retrieve"
+          },
+          {
+            "name": "require_sources_min",
+            "passed": false,
+            "detail": "actual=0, expected>=1"
+          },
+          {
+            "name": "must_include_any",
+            "passed": false,
+            "detail": "tokens=['gfr']"
+          },
+          {
+            "name": "must_not_include_any",
+            "passed": true,
+            "detail": "tokens=['source_id=', 'document_id=']"
+          }
+        ]
+      }
+    },
+    {
+      "category": "threshold_qa",
+      "id": "threshold_001",
+      "title": "ACR muc cao",
+      "query": "ACR 350 mg/g có ý nghĩa gì?",
+      "response": {
+        "query": "ACR 350 mg/g có ý nghĩa gì?",
+        "answer": "Mình ghi nhận các chỉ số bạn cung cấp: ACR 350 mg/g.\n\n- ACR 350 mg/g thỏa điều kiện > 30 mg/g.\n\nDiễn giải:\n- ACR vượt ngưỡng 30 mg/g là một dấu hiệu cần chú ý khi đánh giá albumin niệu; cần đối chiếu thời gian tồn tại và bối cảnh lâm sàng trước khi kết luận.\n\nKết quả này chỉ mang tính tham khảo, không đủ để tự khẳng định chẩn đoán cá nhân và không thay thế đánh giá của bác sĩ.",
+        "route": "retrieve",
+        "sources": [],
+        "debug": {
+          "filters": {
+            "disease_name": "benh_than_man",
+            "section_type": null,
+            "source_type": null,
+            "biomarker": "ACR"
+          },
+          "query_understanding": {
+            "disease_hint": "benh_than_man",
+            "section_hint": "classification",
+            "biomarker_hint": "ACR",
+            "embedding_query": "Câu hỏi người dùng: ACR 350 mg/g có ý nghĩa gì?\nChỉ số: ACR\nNgưỡng/phân loại: ACR > 30.0 mg/g\nĐoạn liên quan: Biểu hiện tổn thương thận tồn tại kéo dài ≥ 3 tháng (có 1 hoặc nhiều hơn những triệu chứng dưới đây) • Có Albumin niệu (tỷ lệ albumin/creatinine nước tiểu > 30mg/g hoặc albumin niệu ≥ 24 giờ > 30mg/24giờ).\nBệnh trọng tâm: Bệnh thận mạn\nMục cần tìm: Phân loại\nChỉ số trọng tâm: ACR",
+            "keyword_query": "ACR 350 mg/g có ý nghĩa gì?\nChỉ số: ACR\nNgưỡng/phân loại: ACR > 30.0 mg/g\nĐoạn liên quan: Biểu hiện tổn thương thận tồn tại kéo dài ≥ 3 tháng (có 1 hoặc nhiều hơn những triệu chứng dưới đây) • Có Albumin niệu (tỷ lệ albumin/creatinine nước tiểu > 30mg/g hoặc albumin niệu ≥ 24 giờ > 30mg/24giờ)."
+          },
+          "results": [
+            {
+              "document_id": "threshold::benh_than_man_acr_gt_30_p129_101",
+              "source_type": "threshold",
+              "source_id": "benh_than_man_acr_gt_30_p129_101",
+              "similarity": 0.693195,
+              "keyword_score": null,
+              "fusion_score": 0.086393,
+              "page": 129,
+              "disease_name": "benh_than_man",
+              "section_type": "clinical_features",
+              "doc_type": "threshold_reference",
+              "biomarker": "ACR",
+              "vector_rank": 1,
+              "keyword_rank": null,
+              "preview": "Trong bối cảnh Bệnh thận mạn, chỉ số Tỷ số albumin/creatinin niệu có ngưỡng lớn hơn 30.0 mg/g. Trích từ trang 129."
+            },
+            {
+              "document_id": "chunk::benh_than_man_p129_001",
+              "source_type": "chunk",
+              "source_id": "benh_than_man_p129_001",
+              "similarity": 0.655611,
+              "keyword_score": null,
+              "fusion_score": 0.086129,
+              "page": 129,
+              "disease_name": "benh_than_man",
+              "section_type": "clinical_features",
+              "doc_type": "disease_guideline",
+              "biomarker": "ACR",
+              "vector_rank": 2,
+              "keyword_rank": null,
+              "preview": "A. Biểu hiện tổn thương thận tồn tại kéo dài ≥ 3 tháng (có 1 hoặc nhiều hơn những triệu\nchứng dưới đây)\n•\nCó Albumin niệu (tỷ lệ albumin/creatinine nước tiểu > 30mg/g hoặc albumin niệu ≥"
+            }
+          ],
+          "router_plan": {
+            "needs_medical_tool": true,
+            "tool_call": {
+              "tool_name": "medical_tools.evaluate",
+              "method": "POST",
+              "endpoint": "/mcp/medical-tools/evaluate",
+              "parameters": {
+                "text": "ACR 350 mg/g có ý nghĩa gì?",
+                "measurements": null,
+                "disease_name": "benh_than_man",
+                "formula_ids": [],
+                "include_debug": false
+              }
+            },
+            "rag_plan": {
+              "should_retrieve": true,
+              "query": "ACR 350 mg/g có ý nghĩa gì?",
+              "filters": {
+                "disease_name": "benh_than_man",
+                "section_type": "classification",
+                "source_type": "chunk",
+                "biomarker": null
+              }
+            },
+            "missing_inputs": [],
+            "reason": "heuristic_threshold_values"
+          },
+          "router_error": null,
+          "medical_tool_result": {
+            "input": {
+              "text": "ACR 350 mg/g có ý nghĩa gì?",
+              "disease_name": "benh_than_man"
+            },
+            "detected_measurements": [
+              {
+                "name": "ACR",
+                "value": 350.0,
+                "unit": "mg/g",
+                "source": "text"
+              }
+            ],
+            "derived_measurements": [],
+            "threshold_matches": [
+              {
+                "biomarker": "ACR",
+                "input_value": 350.0,
+                "input_unit": "mg/g",
+                "comparison_value": 350.0,
+                "comparison_unit": "mg/g",
+                "matched": true,
+                "status": "condition_met",
+                "unit_matches": true,
+                "threshold": {
+                  "threshold_id": "benh_than_man_acr_gt_30_p129_101",
+                  "op": ">",
+                  "value": 30.0,
+                  "value_min": null,
+                  "value_max": null,
+                  "unit": "mg/g",
+                  "label": null,
+                  "severity": null,
+                  "disease_name": "benh_than_man",
+                  "section_type": "clinical_features"
+                },
+                "source": {
+                  "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+                  "source_text": "Biểu hiện tổn thương thận tồn tại kéo dài ≥ 3 tháng (có 1 hoặc nhiều hơn những triệu chứng dưới đây) • Có Albumin niệu (tỷ lệ albumin/creatinine nước tiểu > 30mg/g hoặc albumin niệu ≥ 24 giờ > 30mg/24giờ).",
+                  "disease_name": "benh_than_man",
+                  "section_type": "clinical_features"
+                }
+              }
+            ],
+            "threshold_evaluations": [
+              {
+                "biomarker": "ACR",
+                "input_value": 350.0,
+                "input_unit": "mg/g",
+                "comparison_value": 350.0,
+                "comparison_unit": "mg/g",
+                "matched": true,
+                "status": "condition_met",
+                "unit_matches": true,
+                "threshold": {
+                  "threshold_id": "benh_than_man_acr_gt_30_p129_101",
+                  "op": ">",
+                  "value": 30.0,
+                  "value_min": null,
+                  "value_max": null,
+                  "unit": "mg/g",
+                  "label": null,
+                  "severity": null,
+                  "disease_name": "benh_than_man",
+                  "section_type": "clinical_features"
+                },
+                "source": {
+                  "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+                  "source_text": "Biểu hiện tổn thương thận tồn tại kéo dài ≥ 3 tháng (có 1 hoặc nhiều hơn những triệu chứng dưới đây) • Có Albumin niệu (tỷ lệ albumin/creatinine nước tiểu > 30mg/g hoặc albumin niệu ≥ 24 giờ > 30mg/24giờ).",
+                  "disease_name": "benh_than_man",
+                  "section_type": "clinical_features"
+                }
+              }
+            ],
+            "classifications": [],
+            "formula_results": [],
+            "safety": {
+              "medical_disclaimer": "Kết quả chỉ mang tính tham khảo, không thay thế đánh giá của bác sĩ.",
+              "unit_warning": "Chỉ so sánh trực tiếp khi đơn vị input khớp hoặc không có đơn vị trong dữ liệu ngưỡng."
+            }
+          }
+        }
+      },
+      "evaluation": {
+        "passed": false,
+        "checks": [
+          {
+            "name": "min_answer_chars",
+            "passed": true,
+            "detail": "actual=379, expected>=40"
+          },
+          {
+            "name": "require_route",
+            "passed": true,
+            "detail": "actual=retrieve, expected=retrieve"
+          },
+          {
+            "name": "require_tool_called",
+            "passed": true,
+            "detail": "needs_medical_tool=True"
+          },
+          {
+            "name": "require_tool_success",
+            "passed": true,
+            "detail": "tool_status=None"
+          },
+          {
+            "name": "require_threshold_match_min",
+            "passed": true,
+            "detail": "actual=1, expected>=1"
+          },
+          {
+            "name": "require_classification_min",
+            "passed": false,
+            "detail": "actual=0, expected>=1"
+          },
+          {
+            "name": "must_include_any",
+            "passed": true,
+            "detail": "tokens=['acr', 'albumin']"
+          },
+          {
+            "name": "must_not_include_any",
+            "passed": true,
+            "detail": "tokens=['tool_name', 'endpoint không được phép']"
+          }
+        ]
+      }
+    },
+    {
+      "category": "threshold_qa",
+      "id": "threshold_002",
+      "title": "GFR giam muc vua",
+      "query": "GFR 55 ml/ph/1.73m2 có ý nghĩa gì?",
+      "response": {
+        "query": "GFR 55 ml/ph/1.73m2 có ý nghĩa gì?",
+        "answer": "Mình ghi nhận các chỉ số bạn cung cấp: GFR 55 ml/ph/1.73m2.\n\n- GFR 55 ml/ph/1.73m2 thuộc CKD stage III (từ 30 đến dưới 60 ml/ph/1.73m2).\n- GFR 55 ml/ph/1.73m2 thuộc G3a (từ 45 đến dưới 60 ml/ph/1.73m2).\n\nDiễn giải:\n- GFR được xếp vào nhóm CKD stage III theo khoảng ngưỡng tương ứng.\n- GFR được xếp vào nhóm G3a theo khoảng ngưỡng tương ứng.\n\nKết quả này chỉ mang tính tham khảo, không đủ để tự khẳng định chẩn đoán cá nhân và không thay thế đánh giá của bác sĩ.",
+        "route": "retrieve",
+        "sources": [],
+        "debug": {
+          "filters": {
+            "disease_name": "benh_than_man",
+            "section_type": null,
+            "source_type": null,
+            "biomarker": "GFR"
+          },
+          "query_understanding": {
+            "disease_hint": "benh_than_man",
+            "section_hint": "classification",
+            "biomarker_hint": "GFR",
+            "embedding_query": "Câu hỏi người dùng: GFR 55 ml/ph/1.73m2 có ý nghĩa gì?\nChỉ số: GFR\nNgưỡng/phân loại: GFR 30.0-60.0 ml/ph/1.73m2 CKD stage III; GFR 45.0-60.0 ml/ph/1.73m2 G3a\nÝ nghĩa lâm sàng: CKD stage III, G3a\nĐoạn liên quan: if 30 <= gfr < 60 then CKD stage III if 45 <= gfr < 60 then G3a\nBệnh trọng tâm: Bệnh thận mạn\nMục cần tìm: Phân loại\nChỉ số trọng tâm: GFR",
+            "keyword_query": "GFR 55 ml/ph/1.73m2 có ý nghĩa gì?\nChỉ số: GFR\nNgưỡng/phân loại: GFR 30.0-60.0 ml/ph/1.73m2 CKD stage III; GFR 45.0-60.0 ml/ph/1.73m2 G3a\nÝ nghĩa lâm sàng: CKD stage III, G3a\nĐoạn liên quan: if 30 <= gfr < 60 then CKD stage III if 45 <= gfr < 60 then G3a"
+          },
+          "results": [
+            {
+              "document_id": "chunk::benh_than_man_p144_001",
+              "source_type": "chunk",
+              "source_id": "benh_than_man_p144_001",
+              "similarity": 0.650444,
+              "keyword_score": null,
+              "fusion_score": 0.166129,
+              "page": 144,
+              "disease_name": "benh_than_man",
+              "section_type": "classification",
+              "doc_type": "threshold_reference",
+              "biomarker": "GFR",
+              "vector_rank": 2,
+              "keyword_rank": null,
+              "preview": "},\n},\n}\n],\nđoạn I khi GFR ≥90 và giai đoạn V khi GFR <15 ml/phút/1.73m2.\",\n}\n}\n],\n}"
+            },
+            {
+              "document_id": "threshold::benh_than_man_gfr_between_30_0_p143_003",
+              "source_type": "threshold",
+              "source_id": "benh_than_man_gfr_between_30_0_p143_003",
+              "similarity": 0.644585,
+              "keyword_score": null,
+              "fusion_score": 0.165873,
+              "page": 143,
+              "disease_name": "benh_than_man",
+              "section_type": "classification",
+              "doc_type": "threshold_reference",
+              "biomarker": "GFR",
+              "vector_rank": 3,
+              "keyword_rank": null,
+              "preview": "Trong bối cảnh Bệnh thận mạn, chỉ số Mức lọc cầu thận có ngưỡng nằm trong khoảng 30.0 đến 60.0 ml/ph/1.73m2. Phân loại: CKD stage III. Trích từ trang 143."
+            },
+            {
+              "document_id": "threshold::benh_than_man_gfr_lt_15_0_p144_002",
+              "source_type": "threshold",
+              "source_id": "benh_than_man_gfr_lt_15_0_p144_002",
+              "similarity": 0.638011,
+              "keyword_score": null,
+              "fusion_score": 0.165625,
+              "page": 144,
+              "disease_name": "benh_than_man",
+              "section_type": "classification",
+              "doc_type": "threshold_reference",
+              "biomarker": "GFR",
+              "vector_rank": 4,
+              "keyword_rank": null,
+              "preview": "Trong bối cảnh Bệnh thận mạn, chỉ số Mức lọc cầu thận có ngưỡng nhỏ hơn 15.0 ml/ph/1.73m2. Phân loại: CKD stage V. Trích từ trang 144."
+            },
+            {
+              "document_id": "threshold::benh_than_man_gfr_gteq_90_0_p143_001",
+              "source_type": "threshold",
+              "source_id": "benh_than_man_gfr_gteq_90_0_p143_001",
+              "similarity": 0.637084,
+              "keyword_score": null,
+              "fusion_score": 0.165385,
+              "page": 143,
+              "disease_name": "benh_than_man",
+              "section_type": "classification",
+              "doc_type": "threshold_reference",
+              "biomarker": "GFR",
+              "vector_rank": 5,
+              "keyword_rank": null,
+              "preview": "Trong bối cảnh Bệnh thận mạn, chỉ số Mức lọc cầu thận có ngưỡng lớn hơn hoặc bằng 90.0 ml/ph/1.73m2. Phân loại: CKD stage I. Trích từ trang 143."
+            },
+            {
+              "document_id": "threshold::benh_than_man_gfr_between_60_0_p143_002",
+              "source_type": "threshold",
+              "source_id": "benh_than_man_gfr_between_60_0_p143_002",
+              "similarity": 0.633471,
+              "keyword_score": null,
+              "fusion_score": 0.165152,
+              "page": 143,
+              "disease_name": "benh_than_man",
+              "section_type": "classification",
+              "doc_type": "threshold_reference",
+              "biomarker": "GFR",
+              "vector_rank": 6,
+              "keyword_rank": null,
+              "preview": "Trong bối cảnh Bệnh thận mạn, chỉ số Mức lọc cầu thận có ngưỡng nằm trong khoảng 60.0 đến 90.0 ml/ph/1.73m2. Phân loại: CKD stage II. Trích từ trang 143."
+            }
+          ],
+          "router_plan": {
+            "needs_medical_tool": true,
+            "tool_call": {
+              "tool_name": "medical_tools.evaluate",
+              "method": "POST",
+              "endpoint": "/mcp/medical-tools/evaluate",
+              "parameters": {
+                "text": "GFR 55 ml/ph/1.73m2 có ý nghĩa gì?",
+                "measurements": null,
+                "disease_name": "benh_than_man",
+                "formula_ids": [],
+                "include_debug": false
+              }
+            },
+            "rag_plan": {
+              "should_retrieve": true,
+              "query": "GFR 55 ml/ph/1.73m2 có ý nghĩa gì?",
+              "filters": {
+                "disease_name": "benh_than_man",
+                "section_type": "classification",
+                "source_type": "chunk",
+                "biomarker": null
+              }
+            },
+            "missing_inputs": [],
+            "reason": "heuristic_threshold_values"
+          },
+          "router_error": null,
+          "medical_tool_result": {
+            "input": {
+              "text": "GFR 55 ml/ph/1.73m2 có ý nghĩa gì?",
+              "disease_name": "benh_than_man"
+            },
+            "detected_measurements": [
+              {
+                "name": "GFR",
+                "value": 55.0,
+                "unit": "ml/ph/1.73m2",
+                "source": "text"
+              }
+            ],
+            "derived_measurements": [],
+            "threshold_matches": [
+              {
+                "biomarker": "GFR",
+                "input_value": 55.0,
+                "input_unit": "ml/ph/1.73m2",
+                "comparison_value": 55.0,
+                "comparison_unit": "ml/ph/1.73m2",
+                "matched": true,
+                "status": "condition_met",
+                "unit_matches": true,
+                "threshold": {
+                  "threshold_id": "benh_than_man_gfr_between_30_0_p143_003",
+                  "op": "between",
+                  "value": 30.0,
+                  "value_min": 30.0,
+                  "value_max": 60.0,
+                  "unit": "ml/ph/1.73m2",
+                  "label": "CKD stage III",
+                  "severity": null,
+                  "disease_name": "benh_than_man",
+                  "section_type": "classification"
+                },
+                "source": {
+                  "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+                  "source_text": "if 30 <= gfr < 60 then CKD stage III",
+                  "disease_name": "benh_than_man",
+                  "section_type": "classification"
+                }
+              },
+              {
+                "biomarker": "GFR",
+                "input_value": 55.0,
+                "input_unit": "ml/ph/1.73m2",
+                "comparison_value": 55.0,
+                "comparison_unit": "ml/ph/1.73m2",
+                "matched": true,
+                "status": "condition_met",
+                "unit_matches": true,
+                "threshold": {
+                  "threshold_id": "benh_than_man_gfr_between_45_0_p150_001",
+                  "op": "between",
+                  "value": 45.0,
+                  "value_min": 45.0,
+                  "value_max": 60.0,
+                  "unit": "ml/ph/1.73m2",
+                  "label": "G3a",
+                  "severity": null,
+                  "disease_name": "benh_than_man",
+                  "section_type": "classification"
+                },
+                "source": {
+                  "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+                  "source_text": "if 45 <= gfr < 60 then G3a",
+                  "disease_name": "benh_than_man",
+                  "section_type": "classification"
+                }
+              }
+            ],
+            "threshold_evaluations": [
+              {
+                "biomarker": "GFR",
+                "input_value": 55.0,
+                "input_unit": "ml/ph/1.73m2",
+                "comparison_value": 55.0,
+                "comparison_unit": "ml/ph/1.73m2",
+                "matched": false,
+                "status": "condition_not_met",
+                "unit_matches": true,
+                "threshold": {
+                  "threshold_id": "benh_than_man_gfr_gteq_90_0_p143_001",
+                  "op": ">=",
+                  "value": 90.0,
+                  "value_min": null,
+                  "value_max": null,
+                  "unit": "ml/ph/1.73m2",
+                  "label": "CKD stage I",
+                  "severity": null,
+                  "disease_name": "benh_than_man",
+                  "section_type": "classification"
+                },
+                "source": {
+                  "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+                  "source_text": "if gfr >= 90 then CKD stage I",
+                  "disease_name": "benh_than_man",
+                  "section_type": "classification"
+                }
+              },
+              {
+                "biomarker": "GFR",
+                "input_value": 55.0,
+                "input_unit": "ml/ph/1.73m2",
+                "comparison_value": 55.0,
+                "comparison_unit": "ml/ph/1.73m2",
+                "matched": false,
+                "status": "condition_not_met",
+                "unit_matches": true,
+                "threshold": {
+                  "threshold_id": "benh_than_man_gfr_between_60_0_p143_002",
+                  "op": "between",
+                  "value": 60.0,
+                  "value_min": 60.0,
+                  "value_max": 90.0,
+                  "unit": "ml/ph/1.73m2",
+                  "label": "CKD stage II",
+                  "severity": null,
+                  "disease_name": "benh_than_man",
+                  "section_type": "classification"
+                },
+                "source": {
+                  "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+                  "source_text": "if 60 <= gfr < 90 then CKD stage II",
+                  "disease_name": "benh_than_man",
+                  "section_type": "classification"
+                }
+              },
+              {
+                "biomarker": "GFR",
+                "input_value": 55.0,
+                "input_unit": "ml/ph/1.73m2",
+                "comparison_value": 55.0,
+                "comparison_unit": "ml/ph/1.73m2",
+                "matched": true,
+                "status": "condition_met",
+                "unit_matches": true,
+                "threshold": {
+                  "threshold_id": "benh_than_man_gfr_between_30_0_p143_003",
+                  "op": "between",
+                  "value": 30.0,
+                  "value_min": 30.0,
+                  "value_max": 60.0,
+                  "unit": "ml/ph/1.73m2",
+                  "label": "CKD stage III",
+                  "severity": null,
+                  "disease_name": "benh_than_man",
+                  "section_type": "classification"
+                },
+                "source": {
+                  "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+                  "source_text": "if 30 <= gfr < 60 then CKD stage III",
+                  "disease_name": "benh_than_man",
+                  "section_type": "classification"
+                }
+              },
+              {
+                "biomarker": "GFR",
+                "input_value": 55.0,
+                "input_unit": "ml/ph/1.73m2",
+                "comparison_value": 55.0,
+                "comparison_unit": "ml/ph/1.73m2",
+                "matched": false,
+                "status": "condition_not_met",
+                "unit_matches": true,
+                "threshold": {
+                  "threshold_id": "benh_than_man_gfr_lt_15_p144_101",
+                  "op": "<",
+                  "value": 15.0,
+                  "value_min": null,
+                  "value_max": null,
+                  "unit": "ml/ph/1.73m2",
+                  "label": null,
+                  "severity": null,
+                  "disease_name": "benh_than_man",
+                  "section_type": "classification"
+                },
+                "source": {
+                  "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+                  "source_text": "}, }, } ], đoạn I khi GFR ≥90 và giai đoạn V khi GFR <15 ml/phút/1.73m2.\", } } ], }",
+                  "disease_name": "benh_than_man",
+                  "section_type": "classification"
+                }
+              },
+              {
+                "biomarker": "GFR",
+                "input_value": 55.0,
+                "input_unit": "ml/ph/1.73m2",
+                "comparison_value": 55.0,
+                "comparison_unit": "ml/ph/1.73m2",
+                "matched": false,
+                "status": "condition_not_met",
+                "unit_matches": true,
+                "threshold": {
+                  "threshold_id": "benh_than_man_gfr_between_15_0_p144_001",
+                  "op": "between",
+                  "value": 15.0,
+                  "value_min": 15.0,
+                  "value_max": 30.0,
+                  "unit": "ml/ph/1.73m2",
+                  "label": "CKD stage IV",
+                  "severity": null,
+                  "disease_name": "benh_than_man",
+                  "section_type": "classification"
+                },
+                "source": {
+                  "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+                  "source_text": "if 15 <= gfr < 30 then CKD stage IV",
+                  "disease_name": "benh_than_man",
+                  "section_type": "classification"
+                }
+              },
+              {
+                "biomarker": "GFR",
+                "input_value": 55.0,
+                "input_unit": "ml/ph/1.73m2",
+                "comparison_value": 55.0,
+                "comparison_unit": "ml/ph/1.73m2",
+                "matched": false,
+                "status": "condition_not_met",
+                "unit_matches": true,
+                "threshold": {
+                  "threshold_id": "benh_than_man_gfr_lt_15_0_p144_002",
+                  "op": "<",
+                  "value": 15.0,
+                  "value_min": null,
+                  "value_max": null,
+                  "unit": "ml/ph/1.73m2",
+                  "label": "CKD stage V",
+                  "severity": null,
+                  "disease_name": "benh_than_man",
+                  "section_type": "classification"
+                },
+                "source": {
+                  "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+                  "source_text": "if gfr < 15 then CKD stage V",
+                  "disease_name": "benh_than_man",
+                  "section_type": "classification"
+                }
+              },
+              {
+                "biomarker": "GFR",
+                "input_value": 55.0,
+                "input_unit": "ml/ph/1.73m2",
+                "comparison_value": 55.0,
+                "comparison_unit": "ml/ph/1.73m2",
+                "matched": false,
+                "status": "condition_not_met",
+                "unit_matches": true,
+                "threshold": {
+                  "threshold_id": "benh_than_man_gfr_gteq_90_0_p149_001",
+                  "op": ">=",
+                  "value": 90.0,
+                  "value_min": null,
+                  "value_max": null,
+                  "unit": "ml/ph/1.73m2",
+                  "label": "G1",
+                  "severity": null,
+                  "disease_name": "benh_than_man",
+                  "section_type": "classification"
+                },
+                "source": {
+                  "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+                  "source_text": "if gfr >= 90 then G1",
+                  "disease_name": "benh_than_man",
+                  "section_type": "classification"
+                }
+              },
+              {
+                "biomarker": "GFR",
+                "input_value": 55.0,
+                "input_unit": "ml/ph/1.73m2",
+                "comparison_value": 55.0,
+                "comparison_unit": "ml/ph/1.73m2",
+                "matched": true,
+                "status": "condition_met",
+                "unit_matches": true,
+                "threshold": {
+                  "threshold_id": "benh_than_man_gfr_between_45_0_p150_001",
+                  "op": "between",
+                  "value": 45.0,
+                  "value_min": 45.0,
+                  "value_max": 60.0,
+                  "unit": "ml/ph/1.73m2",
+                  "label": "G3a",
+                  "severity": null,
+                  "disease_name": "benh_than_man",
+                  "section_type": "classification"
+                },
+                "source": {
+                  "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+                  "source_text": "if 45 <= gfr < 60 then G3a",
+                  "disease_name": "benh_than_man",
+                  "section_type": "classification"
+                }
+              },
+              {
+                "biomarker": "GFR",
+                "input_value": 55.0,
+                "input_unit": "ml/ph/1.73m2",
+                "comparison_value": 55.0,
+                "comparison_unit": "ml/ph/1.73m2",
+                "matched": false,
+                "status": "condition_not_met",
+                "unit_matches": true,
+                "threshold": {
+                  "threshold_id": "benh_than_man_gfr_between_30_0_p150_002",
+                  "op": "between",
+                  "value": 30.0,
+                  "value_min": 30.0,
+                  "value_max": 45.0,
+                  "unit": "ml/ph/1.73m2",
+                  "label": "G3b",
+                  "severity": null,
+                  "disease_name": "benh_than_man",
+                  "section_type": "classification"
+                },
+                "source": {
+                  "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+                  "source_text": "if 30 <= gfr < 45 then G3b",
+                  "disease_name": "benh_than_man",
+                  "section_type": "classification"
+                }
+              },
+              {
+                "biomarker": "GFR",
+                "input_value": 55.0,
+                "input_unit": "ml/ph/1.73m2",
+                "comparison_value": 55.0,
+                "comparison_unit": "ml/ph/1.73m2",
+                "matched": false,
+                "status": "condition_not_met",
+                "unit_matches": true,
+                "threshold": {
+                  "threshold_id": "benh_than_man_gfr_between_15_0_p150_003",
+                  "op": "between",
+                  "value": 15.0,
+                  "value_min": 15.0,
+                  "value_max": 30.0,
+                  "unit": "ml/ph/1.73m2",
+                  "label": "G4",
+                  "severity": null,
+                  "disease_name": "benh_than_man",
+                  "section_type": "classification"
+                },
+                "source": {
+                  "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+                  "source_text": "if 15 <= gfr < 30 then G4",
+                  "disease_name": "benh_than_man",
+                  "section_type": "classification"
+                }
+              }
+            ],
+            "classifications": [
+              {
+                "biomarker": "GFR",
+                "input_value": 55.0,
+                "input_unit": "ml/ph/1.73m2",
+                "comparison_value": 55.0,
+                "comparison_unit": "ml/ph/1.73m2",
+                "matched": true,
+                "status": "condition_met",
+                "unit_matches": true,
+                "threshold": {
+                  "threshold_id": "benh_than_man_gfr_between_30_0_p143_003",
+                  "op": "between",
+                  "value": 30.0,
+                  "value_min": 30.0,
+                  "value_max": 60.0,
+                  "unit": "ml/ph/1.73m2",
+                  "label": "CKD stage III",
+                  "severity": null,
+                  "disease_name": "benh_than_man",
+                  "section_type": "classification"
+                },
+                "source": {
+                  "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+                  "source_text": "if 30 <= gfr < 60 then CKD stage III",
+                  "disease_name": "benh_than_man",
+                  "section_type": "classification"
+                }
+              },
+              {
+                "biomarker": "GFR",
+                "input_value": 55.0,
+                "input_unit": "ml/ph/1.73m2",
+                "comparison_value": 55.0,
+                "comparison_unit": "ml/ph/1.73m2",
+                "matched": true,
+                "status": "condition_met",
+                "unit_matches": true,
+                "threshold": {
+                  "threshold_id": "benh_than_man_gfr_between_45_0_p150_001",
+                  "op": "between",
+                  "value": 45.0,
+                  "value_min": 45.0,
+                  "value_max": 60.0,
+                  "unit": "ml/ph/1.73m2",
+                  "label": "G3a",
+                  "severity": null,
+                  "disease_name": "benh_than_man",
+                  "section_type": "classification"
+                },
+                "source": {
+                  "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+                  "source_text": "if 45 <= gfr < 60 then G3a",
+                  "disease_name": "benh_than_man",
+                  "section_type": "classification"
+                }
+              }
+            ],
+            "formula_results": [],
+            "safety": {
+              "medical_disclaimer": "Kết quả chỉ mang tính tham khảo, không thay thế đánh giá của bác sĩ.",
+              "unit_warning": "Chỉ so sánh trực tiếp khi đơn vị input khớp hoặc không có đơn vị trong dữ liệu ngưỡng."
+            }
+          }
+        }
+      },
+      "evaluation": {
+        "passed": true,
+        "checks": [
+          {
+            "name": "min_answer_chars",
+            "passed": true,
+            "detail": "actual=461, expected>=40"
+          },
+          {
+            "name": "require_route",
+            "passed": true,
+            "detail": "actual=retrieve, expected=retrieve"
+          },
+          {
+            "name": "require_tool_called",
+            "passed": true,
+            "detail": "needs_medical_tool=True"
+          },
+          {
+            "name": "require_tool_success",
+            "passed": true,
+            "detail": "tool_status=None"
+          },
+          {
+            "name": "require_threshold_match_min",
+            "passed": true,
+            "detail": "actual=2, expected>=1"
+          },
+          {
+            "name": "must_include_any",
+            "passed": true,
+            "detail": "tokens=['gfr', 'thận']"
+          },
+          {
+            "name": "must_not_include_any",
+            "passed": true,
+            "detail": "tokens=['tool_name']"
+          }
+        ]
+      }
+    }
+  ]
+}

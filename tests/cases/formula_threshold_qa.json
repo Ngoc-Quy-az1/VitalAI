@@ -1,0 +1,38 @@
+{
+  "category": "formula_threshold_qa",
+  "description": "Cau hoi vua can tinh cong thuc, vua can xem xet nguong/phan loai.",
+  "cases": [
+    {
+      "id": "formula_threshold_001",
+      "title": "Danh gia chuc nang than tu creatinine va ACR",
+      "query": "Nữ 60 tuổi, cân nặng 55 kg, chiều cao 160 cm, creatinine 1.4 mg/dL, ACR 350 mg/g. Hãy đánh giá chức năng thận.",
+      "top_k": 5,
+      "expected": {
+        "require_route": "retrieve",
+        "require_tool_called": true,
+        "require_tool_success": true,
+        "require_formula_result_min": 1,
+        "require_threshold_match_min": 1,
+        "require_classification_min": 1,
+        "min_answer_chars": 50,
+        "must_include_any": ["acr", "gfr", "thận"],
+        "must_not_include_any": ["tool_name"]
+      }
+    },
+    {
+      "id": "formula_threshold_002",
+      "title": "Tinh eGFR va xem xet bat thuong",
+      "query": "Nữ 60 tuổi, cân nặng 55 kg, chiều cao 160 cm, creatinine 1.4 mg/dL. Hãy tính eGFR và cho biết có bất thường không.",
+      "top_k": 5,
+      "expected": {
+        "require_route": "retrieve",
+        "require_tool_called": true,
+        "require_tool_success": true,
+        "require_formula_result_min": 1,
+        "min_answer_chars": 40,
+        "must_include_any": ["gfr", "egfr", "thận"],
+        "must_not_include_any": ["tool_name"]
+      }
+    }
+  ]
+}

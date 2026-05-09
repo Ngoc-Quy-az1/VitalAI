@@ -1,0 +1,37 @@
+{
+  "category": "threshold_qa",
+  "description": "Cau hoi lien quan nguong va phan loai chi so xet nghiem.",
+  "cases": [
+    {
+      "id": "threshold_001",
+      "title": "ACR muc cao",
+      "query": "ACR 350 mg/g có ý nghĩa gì?",
+      "top_k": 5,
+      "expected": {
+        "require_route": "retrieve",
+        "require_tool_called": true,
+        "require_tool_success": true,
+        "require_threshold_match_min": 1,
+        "require_classification_min": 1,
+        "min_answer_chars": 40,
+        "must_include_any": ["acr", "albumin"],
+        "must_not_include_any": ["tool_name", "endpoint không được phép"]
+      }
+    },
+    {
+      "id": "threshold_002",
+      "title": "GFR giam muc vua",
+      "query": "GFR 55 ml/ph/1.73m2 có ý nghĩa gì?",
+      "top_k": 5,
+      "expected": {
+        "require_route": "retrieve",
+        "require_tool_called": true,
+        "require_tool_success": true,
+        "require_threshold_match_min": 1,
+        "min_answer_chars": 40,
+        "must_include_any": ["gfr", "thận"],
+        "must_not_include_any": ["tool_name"]
+      }
+    }
+  ]
+}

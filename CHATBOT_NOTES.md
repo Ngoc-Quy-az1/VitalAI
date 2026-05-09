@@ -432,7 +432,7 @@ Các node đã tích hợp vào LangGraph:
 - `call_medical_tools`: validate endpoint rồi gọi `POST /mcp/medical-tools/evaluate` nếu cần
 - `retrieve_context`: dùng `rag_plan` từ router để enrich query/filter retrieval
 - `build_prompt`: đưa `structured_context` đã sanitize và `evidence_context` vào final answer prompt
-- `generate_response`: nếu RAG không có evidence nhưng structured tool đã có threshold/classification đủ dùng, graph trả lời bằng deterministic structured answer thay vì để LLM tự diễn giải rộng
+- `generate_response`: gọi LLM để sinh câu trả lời cuối từ prompt đã có `structured_context` và `evidence_context`
 
 Tối ưu token cho structured tool:
 
@@ -440,16 +440,16 @@ Tối ưu token cho structured tool:
 - `build_structured_context(...)` chỉ giữ các ý đã làm sạch: chỉ số nhận diện, ngưỡng khớp, phân loại, công thức tính được hoặc missing input thật sự liên quan.
 - Loại bỏ khỏi final prompt các field nội bộ như `threshold_id`, `source_file`, `source_text`, `section_type`, `formula_id`, debug payload.
 - Router mặc định gửi `formula_ids: []` nếu người dùng chỉ cung cấp chỉ số đo sẵn; chỉ yêu cầu công thức cụ thể khi user hỏi rõ về công thức.
-- `build_structured_answer(...)` hiện được dùng làm facts/fallback khi LLM lỗi, không còn chặn câu trả lời dài của LLM sau khi final answer đã sinh ra.
+- Không còn dùng `build_structured_answer(...)` trong graph. Cơ chế `safe_structured_answer` đã được bỏ theo yêu cầu hiện tại để LLM tự diễn giải từ `structured_context`.
 - Với các câu hỏi công thức/chỉ số rõ ràng như FENa, eGFR, BSA, ACR/GFR, graph có heuristic router để không cần gọi LLM router. Điều này tránh UI stream nhầm JSON router plan ra user và giảm latency.
 - FENa không yêu cầu user nói tên công thức. Nếu input có đủ `Na niệu`, `Na máu`, `creatinine niệu`, `creatinine máu`, graph tự chọn `fena_formula`, gọi medical tools service, rồi so threshold FENa.
-- Answer deterministic có thêm phần diễn giải threshold, ví dụ FENa dưới 1% gợi ý hướng suy thận cấp trước thận nhưng không khẳng định chẩn đoán cá nhân.
 - Sau khi có kết quả công thức/ngưỡng, graph tạo RAG query mới từ chính formula, biomarker, threshold, classification và source_text liên quan. Retrieval lúc này nới filter `source_type/section_type` để lấy được cả chunk, threshold hoặc formula reference.
 - Evidence hậu-tool được lọc lại để bỏ chunk nhiễu/debug JSON; nếu DB chưa index được rule mới, graph dùng source_text của threshold match làm evidence fallback đã sanitize.
-- Final prompt cho structured answer đã rút gọn: chỉ còn facts bắt buộc, RAG bổ sung và luật chống leak/hallucination cốt lõi để giảm input token. Theo yêu cầu hiện tại, output cuối giữ nguyên câu LLM sinh ra sau cleanup metadata nhẹ, không fallback vì diễn giải dài.
+- Final prompt hiện chỉ dùng `RAG_ANSWER_PROMPT`. Structured result được đưa vào dưới dạng `structured_context`, rồi để LLM tự tạo answer cuối. Output cuối chỉ qua cleanup metadata nhẹ, không có lớp chặn diễn giải rộng.
 - Các LLM call nội bộ của router được tag `internal_router`; LLM call sinh answer cuối được tag `final_answer`. Nếu UI dùng streaming events, chỉ stream event `final_answer` hoặc output `answer` từ public QA service.
 - Router heuristic hiện gom nhiều công thức trong cùng một câu hỏi thay vì dừng ở công thức đầu tiên. Ví dụ một câu có đủ Na niệu/Na máu/creatinine niệu/creatinine máu, tuổi, giới, race, cân nặng, chiều cao sẽ gọi đồng thời `fena_formula`, `mdrd_gfr`, `cockcroft_gault`, `body_surface_area`.
 - Medical tools service tự map `creatinine máu` / `plasma_creatinine` đơn vị `mg/dL` sang biến `creatinine_mg_dl` cho MDRD và Cockcroft-Gault. Nhờ vậy input lâm sàng tự nhiên như `creatinine máu 2.1 mg/dL` không còn bị báo thiếu `creatinine_mg_dl`.
+- `mdrd_gfr` hiện mặc định `race=other` nếu câu hỏi không nêu `race`. Service vẫn trả kèm giả định này trong `formula_results` để caller biết cách tool đã tính.
 - Khi cùng tồn tại GFR user nhập và GFR tính từ MDRD, threshold/classification ưu tiên GFR user nhập; GFR tính từ công thức vẫn được trả riêng trong phần công thức. Điều này tránh việc công thức ghi đè chỉ số đo sẵn của user.
 - Facts đưa vào final prompt đã ghi rõ output từng công thức: MDRD tính `eGFR`, Cockcroft-Gault tính `độ thanh thải creatinine`, BSA tính `diện tích da cơ thể`, FENa tính `FENa`. Mục tiêu là giảm nhầm lẫn khi LLM diễn giải câu trả lời dài.
 - Với câu hỏi có lời chào ở đầu như `hi, lupus ban do la gi?`, graph không còn coi cả câu là direct/small-talk. Chỉ lời chào đơn thuần như `hi`, `hello`, `cảm ơn` mới đi direct; lời chào kèm câu hỏi y khoa vẫn đi RAG.
