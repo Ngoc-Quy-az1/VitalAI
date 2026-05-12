@@ -101,9 +101,9 @@ Request schema:
 
 ```json
 {
-  "text": "string | null",
-  "measurements": "object | array | null",
-  "disease_name": "string | null",
+  "text": "string",
+  "measurements": "object | array (optional)",
+  "disease_name": "string (optional)",
   "formula_ids": ["string"],
   "include_debug": false
 }
@@ -112,10 +112,17 @@ Request schema:
 Field meanings:
 
 - `text`: nguyên văn user input hoặc đoạn input đã rút gọn chứa chỉ số.
-- `measurements`: chỉ số đã parse sẵn nếu router agent đủ tự tin.
-- `disease_name`: filter disease nếu router nhận diện được context bệnh.
+- `measurements`: chỉ số đã parse sẵn nếu graph/router đã xác định chắc chắn. Nếu không có thì bỏ hẳn field này.
+- `disease_name`: filter disease nếu router nhận diện được context bệnh. Nếu không có thì bỏ hẳn field này.
 - `formula_ids`: danh sách công thức cần tính. Dùng `[]` khi user chỉ cung cấp chỉ số đo sẵn để so ngưỡng/phân loại; chỉ đưa id cụ thể khi user hỏi tính công thức.
 - `include_debug`: luôn để `false` trong production answer flow.
+
+Payload rules:
+
+- Không truyền `null` trong request body.
+- Chỉ dùng field có trong danh sách biomarker/variable/formula service hỗ trợ.
+- Nếu graph đã trích xuất được `measurements` hợp lệ, ưu tiên dùng đúng các field đó thay vì tự đổi tên hoặc bịa thêm số.
+- Nếu không chắc một field, bỏ field đó nhưng vẫn giữ `text` nguyên văn để service parse thêm.
 
 Request bằng text:
 
@@ -242,9 +249,7 @@ Router output schema:
     "method": "POST",
     "endpoint": "/mcp/medical-tools/evaluate",
     "parameters": {
-      "text": "string | null",
-      "measurements": null,
-      "disease_name": "string | null",
+      "text": "string",
       "formula_ids": [],
       "include_debug": false
     }
@@ -253,10 +258,10 @@ Router output schema:
     "should_retrieve": true,
     "query": "string",
     "filters": {
-      "disease_name": "string | null",
-      "section_type": "string | null",
+      "disease_name": "string (optional)",
+      "section_type": "string (optional)",
       "source_type": "chunk",
-      "biomarker": "string | null"
+      "biomarker": "string (optional)"
     }
   },
   "missing_inputs": [],
@@ -292,8 +297,10 @@ Router rules:
 - Nếu user input có chỉ số xét nghiệm, số đo, hoặc yêu cầu tính công thức/ngưỡng, set `needs_medical_tool=true`.
 - Nếu user hỏi khái niệm chung không có chỉ số, set `needs_medical_tool=false` và để RAG xử lý.
 - Nếu thiếu biến bắt buộc cho công thức, vẫn có thể gọi tool với input hiện có; service sẽ trả `missing_inputs`. Đồng thời thêm biến còn thiếu vào `missing_inputs` nếu router biết.
-- Không tự bịa đơn vị. Nếu user không nói đơn vị, để unit null hoặc truyền nguyên `text` để service parse.
+- Không tự bịa đơn vị. Nếu user không nói đơn vị, bỏ field unit hoặc truyền nguyên `text` để service parse.
 - Không đưa page/source_id/document_id/score vào tool payload.
+- Không truyền `null` trong `tool_call.parameters`; field không chắc thì bỏ hẳn.
+- Nếu graph đã cung cấp extracted payload candidate, ưu tiên dùng lại đúng payload đó.
 - `include_debug` phải là `false` trừ khi developer explicitly bật debug.
 
 ## Router Examples
@@ -317,7 +324,6 @@ Router JSON:
     "endpoint": "/mcp/medical-tools/evaluate",
     "parameters": {
       "text": "ACR 350 mg/g, GFR 55 ml/ph/1.73m2",
-      "measurements": null,
       "disease_name": "benh_than_man",
       "formula_ids": [],
       "include_debug": false
@@ -357,8 +363,15 @@ Router JSON:
     "endpoint": "/mcp/medical-tools/evaluate",
     "parameters": {
       "text": "nữ 60 tuổi, creatinine 1.4 mg/dL, cân nặng 55 kg, cao 160 cm, race other",
-      "measurements": null,
-      "disease_name": null,
+      "measurements": {
+        "sex": {"value": "female"},
+        "race": {"value": "other"},
+        "age": {"value": 60},
+        "weight_kg": {"value": 55, "unit": "kg"},
+        "height_cm": {"value": 160, "unit": "cm"},
+        "creatinine": {"value": 1.4, "unit": "mg/dL"},
+        "creatinine_mg_dl": {"value": 1.4, "unit": "mg/dL"}
+      },
       "formula_ids": ["mdrd_gfr", "cockcroft_gault", "body_surface_area"],
       "include_debug": false
     }
@@ -397,7 +410,10 @@ Router JSON:
     "endpoint": "/mcp/medical-tools/evaluate",
     "parameters": {
       "text": "Na niệu 20 và Na máu 140",
-      "measurements": null,
+      "measurements": {
+        "urine_na": {"value": 20},
+        "plasma_na": {"value": 140}
+      },
       "disease_name": "acute_kidney_injury",
       "formula_ids": ["fena_formula"],
       "include_debug": false

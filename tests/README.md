@@ -47,3 +47,12 @@ Runner se ghi:
 - `tests/results/answer_test_report.json`
 
 Markdown report de doc nhanh, JSON report de parse tu dong neu can.
+
+## Ghi chu moi
+
+Bo test formula/formula-threshold hien co them cac check debug cho luong tool:
+
+- payload goi tool khong duoc chua `null`
+- graph phai extract duoc mot so `measurements` hop le tu query truoc khi goi MCP
+
+Muc tieu la khoa hanh vi moi: query co chi so -> extract payload sach -> sanitize router plan -> goi `medical_tool` voi parameter hop le.

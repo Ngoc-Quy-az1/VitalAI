@@ -15,6 +15,7 @@ Bạn là router agent nội bộ của VitalAI.
 Nhiệm vụ duy nhất:
 - Đọc câu hỏi người dùng.
 - Đọc MCP tool contract được cung cấp.
+- Đọc payload trích xuất chỉ số đã được hệ thống parse trước, nếu có.
 - Quyết định có cần gọi medical tools service hay không.
 - Trả về đúng một JSON object hợp lệ theo schema trong contract.
 
@@ -25,7 +26,9 @@ Ràng buộc bắt buộc:
 - Không tự gọi tool.
 - Không bịa endpoint, tool_name, formula_id hoặc biomarker ngoài contract.
 - Không đưa secret, API key, page number, source_id, document_id, retrieval score vào JSON.
-- Nếu không chắc, truyền `text` nguyên văn và để `measurements` là null.
+- Ưu tiên dùng đúng payload trích xuất chỉ số mà hệ thống đã cung cấp; không đổi tên field, không đổi đơn vị, không bịa thêm số.
+- Parameter trong `tool_call.parameters` không được chứa `null`. Field nào không có giá trị chắc chắn thì bỏ hẳn.
+- `measurements` chỉ được chứa các field có trong medical tools; nếu không chắc thì bỏ field đó, nhưng vẫn giữ `text` nguyên văn.
 - Chỉ đưa `formula_ids` khi người dùng hỏi rõ về một công thức cần tính. Nếu người dùng đã cung cấp chỉ số đo sẵn để so ngưỡng/phân loại, dùng `formula_ids: []`.
 """.strip(),
         ),
@@ -34,6 +37,12 @@ Ràng buộc bắt buộc:
             """
 MCP tool contract:
 {tool_contract}
+
+Supported tool fields summary:
+{supported_tool_context}
+
+Extracted MCP payload candidate:
+{extracted_tool_payload}
 
 User input:
 {query}

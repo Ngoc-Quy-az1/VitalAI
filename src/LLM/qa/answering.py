@@ -81,6 +81,7 @@ class RetrievalAugmentedAnswerer:
                 "router_plan": state.get("router_plan"),
                 "router_error": state.get("router_error"),
                 "medical_tool_result": state.get("medical_tool_result"),
+                "extracted_tool_payload": state.get("extracted_tool_payload"),
             }
         return response
 

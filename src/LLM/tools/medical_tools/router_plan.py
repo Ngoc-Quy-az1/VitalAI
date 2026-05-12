@@ -9,6 +9,7 @@ from src.LLM.tools.medical_tools.constants import (
     ALLOWED_SOURCE_TYPES,
     DISEASE_NAME_ALIASES,
 )
+from src.LLM.tools.medical_tools.request_builder import sanitize_tool_parameters
 from src.LLM.tools.medical_tools.text_utils import normalize_for_match
 
 
@@ -30,24 +31,23 @@ def parse_router_plan(raw_content: str) -> dict[str, Any]:
     return plan
 
 
-def normalize_router_plan(plan: dict[str, Any], query: str) -> dict[str, Any]:
+def normalize_router_plan(
+    plan: dict[str, Any],
+    query: str,
+    *,
+    extracted_payload: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     """Apply safe defaults to router plan."""
 
     needs_tool = bool(plan.get("needs_medical_tool"))
     tool_call = plan.get("tool_call") if needs_tool else None
     if tool_call:
         endpoint = tool_call.get("endpoint") or "/mcp/medical-tools/evaluate"
-        parameters = tool_call.get("parameters") or {}
-        if not isinstance(parameters, dict):
-            parameters = {}
-        parameters.setdefault("text", query)
-        parameters.setdefault("measurements", None)
-        parameters.setdefault("disease_name", None)
-        parameters["disease_name"] = canonical_disease_name(parameters.get("disease_name"))
-        parameters.setdefault("formula_ids", [])
-        if parameters.get("formula_ids") is None:
-            parameters["formula_ids"] = []
-        parameters["include_debug"] = False
+        parameters = sanitize_tool_parameters(
+            tool_call.get("parameters") or {},
+            query=query,
+            extracted_payload=extracted_payload,
+        )
         tool_call = {
             "tool_name": "medical_tools.evaluate",
             "method": "POST",

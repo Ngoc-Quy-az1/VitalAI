@@ -81,6 +81,7 @@ def evaluate_case(case: dict[str, Any], response: dict[str, Any]) -> dict[str, A
     debug = response.get("debug") or {}
     router_plan = debug.get("router_plan") or {}
     medical_tool_result = debug.get("medical_tool_result") or {}
+    extracted_tool_payload = debug.get("extracted_tool_payload") or {}
     formula_results = medical_tool_result.get("formula_results") or []
     threshold_matches = medical_tool_result.get("threshold_matches") or []
     classifications = medical_tool_result.get("classifications") or []
@@ -118,6 +119,20 @@ def evaluate_case(case: dict[str, Any], response: dict[str, Any]) -> dict[str, A
         status = medical_tool_result.get("tool_status")
         ok = bool(medical_tool_result) and status not in TOOL_ERROR_STATUSES
         add("require_tool_success", ok, f"tool_status={status}")
+
+    if expected.get("require_no_null_tool_parameters"):
+        params = (router_plan.get("tool_call") or {}).get("parameters") or {}
+        ok = not contains_null(params)
+        add("require_no_null_tool_parameters", ok, f"parameters={params}")
+
+    require_extracted_measurements_min = expected.get("require_extracted_measurements_min")
+    if require_extracted_measurements_min is not None:
+        measurements = extracted_tool_payload.get("measurements") or {}
+        add(
+            "require_extracted_measurements_min",
+            len(measurements) >= int(require_extracted_measurements_min),
+            f"actual={len(measurements)}, expected>={int(require_extracted_measurements_min)}",
+        )
 
     require_formula_result_min = expected.get("require_formula_result_min")
     if require_formula_result_min is not None:
@@ -173,6 +188,16 @@ def evaluate_case(case: dict[str, Any], response: dict[str, Any]) -> dict[str, A
 
 def normalize_text(value: str) -> str:
     return " ".join((value or "").lower().split())
+
+
+def contains_null(value: Any) -> bool:
+    if value is None:
+        return True
+    if isinstance(value, dict):
+        return any(contains_null(item) for item in value.values())
+    if isinstance(value, list):
+        return any(contains_null(item) for item in value)
+    return False
 
 
 def build_markdown_report(results: list[dict[str, Any]], started_at: str) -> str:

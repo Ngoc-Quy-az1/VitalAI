@@ -227,6 +227,80 @@ Nếu bạn thấy chatbot trả sai ở câu hỏi công thức/ngưỡng, hãy
 - sai ở `structured_context` là sai khâu truyền dữ liệu vào prompt
 - sai ở câu trả lời cuối dù `structured_context` đúng là sai do LLM diễn giải
 
+## Thay đổi mới nhất về routing và payload tool
+
+Để giảm lỗi khi gọi `medical_tool`, graph hiện có thêm một lớp tiền xử lý trước router:
+
+```text
+User query
+  -> prepare_input
+  -> extract_tool_payload
+  -> route_with_medical_tools
+  -> call_medical_tools
+```
+
+Ý nghĩa của `extract_tool_payload`:
+
+- đọc câu hỏi và trích xuất sớm các field mà `medical_tool` thực sự hỗ trợ
+- canonicalize tên field như `ACR`, `creatinine_mg_dl`, `weight_kg`, `urine_na`
+- giữ lại `text` nguyên văn
+- bỏ hẳn field không chắc hoặc không hỗ trợ
+- không tạo `null`
+
+Ví dụ trước đây có thể xuất hiện:
+
+```json
+{
+  "text": "ACR 350 mg/g",
+  "measurements": null,
+  "disease_name": null,
+  "formula_ids": [],
+  "include_debug": false
+}
+```
+
+Hiện tại payload mục tiêu là:
+
+```json
+{
+  "text": "ACR 350 mg/g",
+  "formula_ids": [],
+  "include_debug": false
+}
+```
+
+Nếu parse được chỉ số, payload sẽ có `measurements` thật:
+
+```json
+{
+  "text": "Nữ 60 tuổi, creatinine 1.4 mg/dL, ACR 350 mg/g",
+  "measurements": {
+    "sex": {"value": "female"},
+    "age": {"value": 60},
+    "creatinine": {"value": 1.4, "unit": "mg/dL"},
+    "creatinine_mg_dl": {"value": 1.4, "unit": "mg/dL"},
+    "ACR": {"value": 350, "unit": "mg/g"}
+  },
+  "formula_ids": [],
+  "include_debug": false
+}
+```
+
+### Quy tắc payload hiện tại
+
+- Không truyền `null` trong `tool_call.parameters`.
+- `measurements` chỉ chứa field có trong medical tool API.
+- Nếu graph đã extract được `measurements`, router phải ưu tiên dùng lại đúng payload đó.
+- Nếu router/LLM trả thêm field lạ hoặc `formula_id` lạ, lớp sanitize sẽ loại bỏ trước khi gọi MCP.
+- `formula_ids` luôn là list hợp lệ; khi không cần công thức thì dùng `[]`.
+
+### Mục tiêu của thay đổi này
+
+- giảm lỗi sai parameter khi gọi MCP server
+- tránh việc router bịa field hoặc truyền `null` cho đủ schema
+- tăng chất lượng dữ liệu đi vào `medical_tool`
+- giúp `structured_context` cuối cùng đáng tin hơn cho bước answer synthesis
+
 ## Rebuild thresholds bổ sung
 
 Khi `chunks.jsonl` thay đổi, chạy lại:

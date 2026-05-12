@@ -13,6 +13,7 @@ Graph này tách rõ các bước:
 """
 
 import re
+import json
 from typing import Any, Literal, TypedDict
 
 from langchain_core.messages import BaseMessage
@@ -24,9 +25,12 @@ from src.LLM.retrieval.vector_search import NeonVectorSearcher
 from src.LLM.tools import (
     MedicalToolsClient,
     build_structured_context,
+    build_supported_tool_context,
+    build_tool_input_payload,
     load_medical_tools_contract,
     normalize_router_plan,
     parse_router_plan,
+    tool_payload_has_supported_inputs,
 )
 
 
@@ -58,6 +62,8 @@ class ChatbotGraphState(TypedDict, total=False):
     router_error: str | None
     medical_tool_result: dict[str, Any] | None
     structured_context: str
+    extracted_tool_payload: dict[str, Any]
+    supported_tool_context: str
 
 
 def build_chatbot_graph(
@@ -81,6 +87,8 @@ def build_chatbot_graph(
             "router_plan": None,
             "medical_tool_result": None,
             "structured_context": "Không có kết quả phân tích chỉ số.",
+            "extracted_tool_payload": {"text": query},
+            "supported_tool_context": build_supported_tool_context(),
             "filters": {
                 "disease_name": state.get("disease_name"),
                 "section_type": state.get("section_type"),
@@ -95,13 +103,25 @@ def build_chatbot_graph(
             return "direct"
         return "retrieve"
 
+    async def extract_tool_payload(state: ChatbotGraphState) -> ChatbotGraphState:
+        payload = build_tool_input_payload(state["query"])
+        return {
+            **state,
+            "extracted_tool_payload": payload,
+            "supported_tool_context": build_supported_tool_context(),
+        }
+
     async def route_with_medical_tools(state: ChatbotGraphState) -> ChatbotGraphState:
-        heuristic_plan = _build_heuristic_router_plan(state["query"])
+        heuristic_plan = _build_heuristic_router_plan(state["query"], state.get("extracted_tool_payload"))
         if heuristic_plan:
             return {
                 **state,
                 "tool_contract": "",
-                "router_plan": normalize_router_plan(heuristic_plan, state["query"]),
+                "router_plan": normalize_router_plan(
+                    heuristic_plan,
+                    state["query"],
+                    extracted_payload=state.get("extracted_tool_payload"),
+                ),
                 "router_error": None,
             }
 
@@ -110,6 +130,12 @@ def build_chatbot_graph(
             prompt = MEDICAL_TOOL_ROUTER_PROMPT.invoke(
                 {
                     "tool_contract": tool_contract,
+                    "supported_tool_context": state.get("supported_tool_context") or build_supported_tool_context(),
+                    "extracted_tool_payload": json.dumps(
+                        state.get("extracted_tool_payload") or {"text": state["query"]},
+                        ensure_ascii=False,
+                        indent=2,
+                    ),
                     "query": state["query"],
                 }
             )
@@ -118,7 +144,11 @@ def build_chatbot_graph(
                 config={"tags": ["internal_router"], "metadata": {"internal": True}},
             )
             raw_plan = parse_router_plan(str(response.content))
-            router_plan = normalize_router_plan(raw_plan, state["query"])
+            router_plan = normalize_router_plan(
+                raw_plan,
+                state["query"],
+                extracted_payload=state.get("extracted_tool_payload"),
+            )
             return {**state, "tool_contract": tool_contract, "router_plan": router_plan, "router_error": None}
         except Exception as exc:  # Router failure should degrade to normal RAG.
             fallback_plan = normalize_router_plan(
@@ -130,6 +160,7 @@ def build_chatbot_graph(
                     "reason": "router_failed_fallback_to_rag",
                 },
                 state["query"],
+                extracted_payload=state.get("extracted_tool_payload"),
             )
             return {**state, "router_plan": fallback_plan, "router_error": str(exc)}
 
@@ -253,6 +284,7 @@ def build_chatbot_graph(
 
     graph = StateGraph(ChatbotGraphState)
     graph.add_node("prepare_input", prepare_input)
+    graph.add_node("extract_tool_payload", extract_tool_payload)
     graph.add_node("route_with_medical_tools", route_with_medical_tools)
     graph.add_node("call_medical_tools", call_medical_tools)
     graph.add_node("retrieve_context", retrieve_context)
@@ -261,8 +293,9 @@ def build_chatbot_graph(
     graph.add_node("cleanup_response", cleanup_response)
 
     graph.set_entry_point("prepare_input")
+    graph.add_edge("prepare_input", "extract_tool_payload")
     graph.add_conditional_edges(
-        "prepare_input",
+        "extract_tool_payload",
         route_input,
         {
             "retrieve": "route_with_medical_tools",
@@ -319,7 +352,7 @@ def cleanup_user_answer(answer: str) -> str:
     return cleaned.strip()
 
 
-def _build_heuristic_router_plan(query: str) -> dict[str, Any] | None:
+def _build_heuristic_router_plan(query: str, extracted_tool_payload: dict[str, Any] | None = None) -> dict[str, Any] | None:
     """Route obvious numeric/formula questions without an LLM router call.
 
     This prevents internal router JSON from being streamed to UI for common
@@ -328,24 +361,7 @@ def _build_heuristic_router_plan(query: str) -> dict[str, Any] | None:
 
     normalized = _normalize_query_text(query)
     formula_ids = _detect_formula_ids(normalized, query)
-    has_threshold_values = bool(
-        re.search(r"\d", query)
-        and any(
-            keyword in normalized
-            for keyword in (
-                "acr",
-                "gfr",
-                "creatinine",
-                "creatinin",
-                "hba1c",
-                "ldl",
-                "kali",
-                "potassium",
-                "cholesterol",
-                "huyet ap",
-            )
-        )
-    )
+    has_threshold_values = tool_payload_has_supported_inputs(extracted_tool_payload)
 
     if formula_ids:
         disease_name = "acute_kidney_injury" if "fena_formula" in formula_ids else "benh_than_man"
@@ -362,6 +378,7 @@ def _build_heuristic_router_plan(query: str) -> dict[str, Any] | None:
             rag_query=rag_query,
             section_type="general",
             biomarker=None,
+            extracted_tool_payload=extracted_tool_payload,
             reason="heuristic_formula_and_threshold_values" if has_threshold_values else "heuristic_formula_values",
         )
 
@@ -373,6 +390,7 @@ def _build_heuristic_router_plan(query: str) -> dict[str, Any] | None:
             rag_query=query,
             section_type="classification",
             biomarker=None,
+            extracted_tool_payload=extracted_tool_payload,
             reason="heuristic_threshold_values",
         )
 
@@ -644,27 +662,35 @@ def _tool_plan(
     rag_query: str,
     section_type: str | None,
     biomarker: str | None,
+    extracted_tool_payload: dict[str, Any] | None,
     reason: str,
 ) -> dict[str, Any]:
+    extracted_payload = dict(extracted_tool_payload or {})
+    parameters: dict[str, Any] = {
+        "text": extracted_payload.get("text") or query,
+        "formula_ids": formula_ids,
+        "include_debug": False,
+    }
+    measurements = extracted_payload.get("measurements")
+    if isinstance(measurements, dict) and measurements:
+        parameters["measurements"] = measurements
+    chosen_disease_name = disease_name or extracted_payload.get("disease_name")
+    if chosen_disease_name:
+        parameters["disease_name"] = chosen_disease_name
+
     return {
         "needs_medical_tool": True,
         "tool_call": {
             "tool_name": "medical_tools.evaluate",
             "method": "POST",
             "endpoint": "/mcp/medical-tools/evaluate",
-            "parameters": {
-                "text": query,
-                "measurements": None,
-                "disease_name": disease_name,
-                "formula_ids": formula_ids,
-                "include_debug": False,
-            },
+            "parameters": parameters,
         },
         "rag_plan": {
             "should_retrieve": True,
             "query": rag_query,
             "filters": {
-                "disease_name": disease_name,
+                "disease_name": chosen_disease_name,
                 "section_type": section_type,
                 "source_type": "chunk",
                 "biomarker": biomarker,
