@@ -37,6 +37,25 @@
         "must_include_any": ["gfr", "egfr", "thận"],
         "must_not_include_any": ["tool_name"]
       }
+    },
+    {
+      "id": "formula_threshold_003",
+      "title": "Danh gia chuc nang than khi co du bien tinh eGFR",
+      "query": "Nam 58 tuổi, creatinine 1.8 mg/dL, ACR 320 mg/g. Hãy đánh giá chức năng thận.",
+      "top_k": 5,
+      "expected": {
+        "require_route": "retrieve",
+        "require_tool_called": true,
+        "require_tool_success": true,
+        "require_no_null_tool_parameters": true,
+        "require_formula_result_min": 1,
+        "require_formula_ids_any": ["ckd_epi_2021_creatinine"],
+        "require_threshold_match_min": 1,
+        "require_classification_min": 1,
+        "min_answer_chars": 50,
+        "must_include_any": ["acr", "gfr", "thận"],
+        "must_not_include_any": ["tool_name"]
+      }
     }
   ]
 }

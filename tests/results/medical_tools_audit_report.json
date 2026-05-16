@@ -1,0 +1,777 @@
+{
+  "generated_at": "2026-05-16T04:52:40+00:00",
+  "total": 19,
+  "passed": 19,
+  "failed": 0,
+  "results": [
+    {
+      "id": "formula_ckd_epi_2021",
+      "title": "CKD-EPI 2021 computes race-free eGFR",
+      "query": "Nữ 60 tuổi, creatinine 1.4 mg/dL. Hãy ước tính eGFR.",
+      "formula_ids": [
+        "ckd_epi_2021_creatinine"
+      ],
+      "disease_name": null,
+      "passed": true,
+      "checks": [
+        {
+          "name": "check",
+          "passed": true,
+          "detail": "formula=ckd_epi_2021_creatinine, actual=computed, expected=computed"
+        },
+        {
+          "name": "check",
+          "passed": true,
+          "detail": "formula=ckd_epi_2021_creatinine, actual=43.0698, expected=43.0698±0.0001"
+        },
+        {
+          "name": "check",
+          "passed": true,
+          "detail": "actual=['CKD stage III', 'G3b'], expected_contains=G3b"
+        }
+      ],
+      "output_summary": {
+        "detected_measurements": [
+          {
+            "name": "creatinine",
+            "value": 1.4,
+            "unit": "mg/dL",
+            "source": "text"
+          }
+        ],
+        "derived_measurements": [
+          {
+            "name": "GFR",
+            "value": 43.0698,
+            "unit": "ml/ph/1.73m2",
+            "source": "formula:ckd_epi_2021_creatinine"
+          }
+        ],
+        "classifications": [
+          "CKD stage III",
+          "G3b"
+        ],
+        "formula_results": [
+          {
+            "formula_id": "ckd_epi_2021_creatinine",
+            "formula_name": "CKD-EPI 2021 creatinine eGFR",
+            "output_name": "gfr_ml_min_1_73m2",
+            "unit": "ml/ph/1.73m2",
+            "required_variables": [
+              "age",
+              "alpha",
+              "creatinine_mg_dl",
+              "female_factor",
+              "kappa"
+            ],
+            "status": "computed",
+            "value": 43.0698
+          }
+        ]
+      }
+    },
+    {
+      "id": "formula_mdrd_default_race",
+      "title": "MDRD computes with default race assumption",
+      "query": "Nữ 60 tuổi, creatinine 1.4 mg/dL. Hãy ước tính eGFR.",
+      "formula_ids": [
+        "mdrd_gfr"
+      ],
+      "disease_name": null,
+      "passed": true,
+      "checks": [
+        {
+          "name": "check",
+          "passed": true,
+          "detail": "formula=mdrd_gfr, actual=computed, expected=computed"
+        },
+        {
+          "name": "check",
+          "passed": true,
+          "detail": "formula=mdrd_gfr, actual=40.7681, expected=40.7681±0.0001"
+        },
+        {
+          "name": "check",
+          "passed": true,
+          "detail": "actual=['CKD stage III', 'G3b'], expected_contains=G3b"
+        }
+      ],
+      "output_summary": {
+        "detected_measurements": [
+          {
+            "name": "creatinine",
+            "value": 1.4,
+            "unit": "mg/dL",
+            "source": "text"
+          }
+        ],
+        "derived_measurements": [
+          {
+            "name": "GFR",
+            "value": 40.7681,
+            "unit": "ml/ph/1.73m2",
+            "source": "formula:mdrd_gfr"
+          }
+        ],
+        "classifications": [
+          "CKD stage III",
+          "G3b"
+        ],
+        "formula_results": [
+          {
+            "formula_id": "mdrd_gfr",
+            "formula_name": "MDRD eGFR",
+            "output_name": "gfr_ml_min_1_73m2",
+            "unit": "ml/ph/1.73m2",
+            "required_variables": [
+              "age",
+              "creatinine_mg_dl",
+              "race_factor",
+              "sex_factor"
+            ],
+            "assumptions": [
+              "Giả định race=other (hệ số 1.0) vì câu hỏi không cung cấp race."
+            ],
+            "status": "computed",
+            "value": 40.7681
+          }
+        ]
+      }
+    },
+    {
+      "id": "formula_cockcroft_gault",
+      "title": "Cockcroft-Gault computes expected creatinine clearance",
+      "query": "Nam 65 tuổi, nặng 70 kg, creatinine 1.6 mg/dL. Tính Cockcroft-Gault.",
+      "formula_ids": [
+        "cockcroft_gault"
+      ],
+      "disease_name": null,
+      "passed": true,
+      "checks": [
+        {
+          "name": "check",
+          "passed": true,
+          "detail": "formula=cockcroft_gault, actual=computed, expected=computed"
+        },
+        {
+          "name": "check",
+          "passed": true,
+          "detail": "formula=cockcroft_gault, actual=45.5729, expected=45.5729±0.0001"
+        }
+      ],
+      "output_summary": {
+        "detected_measurements": [
+          {
+            "name": "creatinine",
+            "value": 1.6,
+            "unit": "mg/dL",
+            "source": "text"
+          }
+        ],
+        "derived_measurements": [
+          {
+            "name": "creatinine_clearance",
+            "value": 45.5729,
+            "unit": "ml/ph",
+            "source": "formula:cockcroft_gault"
+          }
+        ],
+        "classifications": [],
+        "formula_results": [
+          {
+            "formula_id": "cockcroft_gault",
+            "formula_name": "Cockcroft-Gault",
+            "output_name": "creatinine_clearance_ml_min",
+            "unit": "ml/ph",
+            "required_variables": [
+              "age",
+              "creatinine_mg_dl",
+              "sex_factor",
+              "weight_kg"
+            ],
+            "status": "computed",
+            "value": 45.5729
+          }
+        ]
+      }
+    },
+    {
+      "id": "formula_bsa",
+      "title": "Body surface area computes expected result",
+      "query": "Cân nặng 55 kg, chiều cao 160 cm. Tính BSA.",
+      "formula_ids": [
+        "body_surface_area"
+      ],
+      "disease_name": null,
+      "passed": true,
+      "checks": [
+        {
+          "name": "check",
+          "passed": true,
+          "detail": "formula=body_surface_area, actual=computed, expected=computed"
+        },
+        {
+          "name": "check",
+          "passed": true,
+          "detail": "formula=body_surface_area, actual=1.5635, expected=1.5635±0.0001"
+        }
+      ],
+      "output_summary": {
+        "detected_measurements": [],
+        "derived_measurements": [
+          {
+            "name": "BSA",
+            "value": 1.5635,
+            "unit": "m2",
+            "source": "formula:body_surface_area"
+          }
+        ],
+        "classifications": [],
+        "formula_results": [
+          {
+            "formula_id": "body_surface_area",
+            "formula_name": "Diện tích da cơ thể (BSA)",
+            "output_name": "bsa_m2",
+            "unit": "m2",
+            "required_variables": [
+              "height_cm",
+              "weight_kg"
+            ],
+            "status": "computed",
+            "value": 1.5635
+          }
+        ]
+      }
+    },
+    {
+      "id": "formula_fena_vietnamese",
+      "title": "FENa computes from Vietnamese aliases",
+      "query": "Natri niệu 20 mmol/L, natri máu 140 mmol/L, creatinine niệu 100 mg/dL, creatinine máu 1 mg/dL. Tính FENa.",
+      "formula_ids": [
+        "fena_formula"
+      ],
+      "disease_name": "acute_kidney_injury",
+      "passed": true,
+      "checks": [
+        {
+          "name": "check",
+          "passed": true,
+          "detail": "formula=fena_formula, actual=computed, expected=computed"
+        },
+        {
+          "name": "check",
+          "passed": true,
+          "detail": "formula=fena_formula, actual=0.1429, expected=0.1429±0.0001"
+        },
+        {
+          "name": "check",
+          "passed": true,
+          "detail": "actual=['prerenal_aki_suggestive'], expected_contains=prerenal_aki_suggestive"
+        }
+      ],
+      "output_summary": {
+        "detected_measurements": [],
+        "derived_measurements": [
+          {
+            "name": "FENa",
+            "value": 0.1429,
+            "unit": null,
+            "source": "formula:fena_formula"
+          }
+        ],
+        "classifications": [
+          "prerenal_aki_suggestive"
+        ],
+        "formula_results": [
+          {
+            "formula_id": "fena_formula",
+            "formula_name": "Fractional Excretion of Sodium (FENa)",
+            "output_name": "fena_percent",
+            "unit": null,
+            "required_variables": [
+              "plasma_creatinine",
+              "plasma_na",
+              "urine_creatinine",
+              "urine_na"
+            ],
+            "status": "computed",
+            "value": 0.1429
+          }
+        ]
+      }
+    },
+    {
+      "id": "formula_fena_english_words",
+      "title": "FENa computes from natural English wording",
+      "query": "Urine Na 20 mmol/L, plasma Na 140 mmol/L, urine creatinine 100 mg/dL, plasma creatinine 1 mg/dL. Tính FENa.",
+      "formula_ids": [
+        "fena_formula"
+      ],
+      "disease_name": "acute_kidney_injury",
+      "passed": true,
+      "checks": [
+        {
+          "name": "check",
+          "passed": true,
+          "detail": "formula=fena_formula, actual=computed, expected=computed"
+        },
+        {
+          "name": "check",
+          "passed": true,
+          "detail": "formula=fena_formula, actual=0.1429, expected=0.1429±0.0001"
+        },
+        {
+          "name": "check",
+          "passed": true,
+          "detail": "actual=['creatinine'], expected_missing=sodium"
+        }
+      ],
+      "output_summary": {
+        "detected_measurements": [
+          {
+            "name": "creatinine",
+            "value": 100.0,
+            "unit": "mg/dL",
+            "source": "text"
+          }
+        ],
+        "derived_measurements": [
+          {
+            "name": "FENa",
+            "value": 0.1429,
+            "unit": null,
+            "source": "formula:fena_formula"
+          }
+        ],
+        "classifications": [
+          "prerenal_aki_suggestive"
+        ],
+        "formula_results": [
+          {
+            "formula_id": "fena_formula",
+            "formula_name": "Fractional Excretion of Sodium (FENa)",
+            "output_name": "fena_percent",
+            "unit": null,
+            "required_variables": [
+              "plasma_creatinine",
+              "plasma_na",
+              "urine_creatinine",
+              "urine_na"
+            ],
+            "status": "computed",
+            "value": 0.1429
+          }
+        ]
+      }
+    },
+    {
+      "id": "acr_a1",
+      "title": "ACR below 30 maps to A1",
+      "query": "ACR 29 mg/g",
+      "formula_ids": [],
+      "disease_name": null,
+      "passed": true,
+      "checks": [
+        {
+          "name": "check",
+          "passed": true,
+          "detail": "actual=['A1'], expected_contains=A1"
+        }
+      ],
+      "output_summary": {
+        "detected_measurements": [
+          {
+            "name": "ACR",
+            "value": 29.0,
+            "unit": "mg/g",
+            "source": "text"
+          }
+        ],
+        "derived_measurements": [],
+        "classifications": [
+          "A1"
+        ],
+        "formula_results": []
+      }
+    },
+    {
+      "id": "acr_a2",
+      "title": "ACR from 30 to 299 maps to A2",
+      "query": "ACR 299 mg/g",
+      "formula_ids": [],
+      "disease_name": null,
+      "passed": true,
+      "checks": [
+        {
+          "name": "check",
+          "passed": true,
+          "detail": "actual=['A2'], expected_contains=A2"
+        }
+      ],
+      "output_summary": {
+        "detected_measurements": [
+          {
+            "name": "ACR",
+            "value": 299.0,
+            "unit": "mg/g",
+            "source": "text"
+          }
+        ],
+        "derived_measurements": [],
+        "classifications": [
+          "A2"
+        ],
+        "formula_results": []
+      }
+    },
+    {
+      "id": "acr_300_boundary",
+      "title": "ACR 300 mg/g maps to A3",
+      "query": "ACR 300 mg/g",
+      "formula_ids": [],
+      "disease_name": null,
+      "passed": true,
+      "checks": [
+        {
+          "name": "check",
+          "passed": true,
+          "detail": "actual=['A3'], expected_contains=A3"
+        }
+      ],
+      "output_summary": {
+        "detected_measurements": [
+          {
+            "name": "ACR",
+            "value": 300.0,
+            "unit": "mg/g",
+            "source": "text"
+          }
+        ],
+        "derived_measurements": [],
+        "classifications": [
+          "A3"
+        ],
+        "formula_results": []
+      }
+    },
+    {
+      "id": "acr_ckd_context",
+      "title": "ACR classification survives CKD disease filter",
+      "query": "ACR 350 mg/g",
+      "formula_ids": [],
+      "disease_name": "benh_than_man",
+      "passed": true,
+      "checks": [
+        {
+          "name": "check",
+          "passed": true,
+          "detail": "actual=['A3'], expected_contains=A3"
+        }
+      ],
+      "output_summary": {
+        "detected_measurements": [
+          {
+            "name": "ACR",
+            "value": 350.0,
+            "unit": "mg/g",
+            "source": "text"
+          }
+        ],
+        "derived_measurements": [],
+        "classifications": [
+          "A3"
+        ],
+        "formula_results": []
+      }
+    },
+    {
+      "id": "gfr_g2",
+      "title": "GFR 75 maps to G2",
+      "query": "GFR 75 ml/ph/1.73m2",
+      "formula_ids": [],
+      "disease_name": "benh_than_man",
+      "passed": true,
+      "checks": [
+        {
+          "name": "check",
+          "passed": true,
+          "detail": "actual=['CKD stage II', 'G2'], expected_contains=G2"
+        }
+      ],
+      "output_summary": {
+        "detected_measurements": [
+          {
+            "name": "GFR",
+            "value": 75.0,
+            "unit": "ml/ph/1.73m2",
+            "source": "text"
+          }
+        ],
+        "derived_measurements": [],
+        "classifications": [
+          "CKD stage II",
+          "G2"
+        ],
+        "formula_results": []
+      }
+    },
+    {
+      "id": "gfr_g3a",
+      "title": "GFR 55 maps to G3a",
+      "query": "GFR 55 ml/ph/1.73m2",
+      "formula_ids": [],
+      "disease_name": "benh_than_man",
+      "passed": true,
+      "checks": [
+        {
+          "name": "check",
+          "passed": true,
+          "detail": "actual=['CKD stage III', 'G3a'], expected_contains=G3a"
+        }
+      ],
+      "output_summary": {
+        "detected_measurements": [
+          {
+            "name": "GFR",
+            "value": 55.0,
+            "unit": "ml/ph/1.73m2",
+            "source": "text"
+          }
+        ],
+        "derived_measurements": [],
+        "classifications": [
+          "CKD stage III",
+          "G3a"
+        ],
+        "formula_results": []
+      }
+    },
+    {
+      "id": "gfr_g5",
+      "title": "GFR 10 maps to G5",
+      "query": "GFR 10 ml/ph/1.73m2",
+      "formula_ids": [],
+      "disease_name": "benh_than_man",
+      "passed": true,
+      "checks": [
+        {
+          "name": "check",
+          "passed": true,
+          "detail": "actual=['CKD stage V', 'G5'], expected_contains=G5"
+        }
+      ],
+      "output_summary": {
+        "detected_measurements": [
+          {
+            "name": "GFR",
+            "value": 10.0,
+            "unit": "ml/ph/1.73m2",
+            "source": "text"
+          }
+        ],
+        "derived_measurements": [],
+        "classifications": [
+          "CKD stage V",
+          "G5"
+        ],
+        "formula_results": []
+      }
+    },
+    {
+      "id": "proteinuria_threshold",
+      "title": "Nephrotic-range proteinuria threshold matches",
+      "query": "Protein niệu 24h 4 g/24h",
+      "formula_ids": [],
+      "disease_name": "hoi_chung_than_hu",
+      "passed": true,
+      "checks": [
+        {
+          "name": "check",
+          "passed": true,
+          "detail": "biomarker=protein_niệu_24h, label=None, matched_count=1"
+        }
+      ],
+      "output_summary": {
+        "detected_measurements": [
+          {
+            "name": "protein_niệu_24h",
+            "value": 4.0,
+            "unit": "g/24h",
+            "source": "text"
+          }
+        ],
+        "derived_measurements": [],
+        "classifications": [],
+        "formula_results": []
+      }
+    },
+    {
+      "id": "albumin_unit_conversion",
+      "title": "Albumin converts g/dL to g/L before threshold compare",
+      "query": "Albumin máu 2.8 g/dL",
+      "formula_ids": [],
+      "disease_name": "hoi_chung_than_hu",
+      "passed": true,
+      "checks": [
+        {
+          "name": "check",
+          "passed": true,
+          "detail": "biomarker=albumin_máu, label=None, matched_count=1"
+        }
+      ],
+      "output_summary": {
+        "detected_measurements": [
+          {
+            "name": "albumin_máu",
+            "value": 2.8,
+            "unit": "g/dL",
+            "source": "text"
+          }
+        ],
+        "derived_measurements": [],
+        "classifications": [],
+        "formula_results": []
+      }
+    },
+    {
+      "id": "blood_pressure_parser",
+      "title": "Blood pressure parser extracts systolic and diastolic values",
+      "query": "Huyết áp 128/78 mmHg",
+      "formula_ids": [],
+      "disease_name": "benh_than_man",
+      "passed": true,
+      "checks": [
+        {
+          "name": "check",
+          "passed": true,
+          "detail": "actual=['systolic_bp', 'diastolic_bp'], expected_contains=systolic_bp"
+        },
+        {
+          "name": "check",
+          "passed": true,
+          "detail": "actual=['systolic_bp', 'diastolic_bp'], expected_contains=diastolic_bp"
+        },
+        {
+          "name": "check",
+          "passed": true,
+          "detail": "biomarker=systolic_bp, label=blood_pressure_target, matched_count=1"
+        },
+        {
+          "name": "check",
+          "passed": true,
+          "detail": "biomarker=diastolic_bp, label=blood_pressure_target, matched_count=1"
+        }
+      ],
+      "output_summary": {
+        "detected_measurements": [
+          {
+            "name": "systolic_bp",
+            "value": 128.0,
+            "unit": "mmHg",
+            "source": "text"
+          },
+          {
+            "name": "diastolic_bp",
+            "value": 78.0,
+            "unit": "mmHg",
+            "source": "text"
+          }
+        ],
+        "derived_measurements": [],
+        "classifications": [
+          "blood_pressure_target",
+          "blood_pressure_target"
+        ],
+        "formula_results": []
+      }
+    },
+    {
+      "id": "hyperkalemia_boundary",
+      "title": "Potassium 6.5 reaches severe hyperkalemia threshold",
+      "query": "Kali 6.5 mmol/L",
+      "formula_ids": [],
+      "disease_name": "acute_kidney_injury",
+      "passed": true,
+      "checks": [
+        {
+          "name": "check",
+          "passed": true,
+          "detail": "actual=['severe_hyperkalemia'], expected_contains=severe_hyperkalemia"
+        }
+      ],
+      "output_summary": {
+        "detected_measurements": [
+          {
+            "name": "potassium",
+            "value": 6.5,
+            "unit": "mmol/L",
+            "source": "text"
+          }
+        ],
+        "derived_measurements": [],
+        "classifications": [
+          "severe_hyperkalemia"
+        ],
+        "formula_results": []
+      }
+    },
+    {
+      "id": "hemoglobin_male_who",
+      "title": "Male Hb 12 g/dL is recognized as below WHO threshold",
+      "query": "Nam, Hb 12 g/dL",
+      "formula_ids": [],
+      "disease_name": "benh_than_man",
+      "passed": true,
+      "checks": [
+        {
+          "name": "check",
+          "passed": true,
+          "detail": "actual=['anemia_threshold'], expected_contains=anemia_threshold"
+        }
+      ],
+      "output_summary": {
+        "detected_measurements": [
+          {
+            "name": "hemoglobin",
+            "value": 12.0,
+            "unit": "g/dL",
+            "source": "text"
+          }
+        ],
+        "derived_measurements": [],
+        "classifications": [
+          "anemia_threshold"
+        ],
+        "formula_results": []
+      }
+    },
+    {
+      "id": "hemoglobin_female_boundary",
+      "title": "Female Hb 12 g/dL does not cross female anemia threshold",
+      "query": "Nữ, Hb 12 g/dL",
+      "formula_ids": [],
+      "disease_name": "benh_than_man",
+      "passed": true,
+      "checks": [
+        {
+          "name": "check",
+          "passed": true,
+          "detail": "actual=[], expected_missing=anemia_threshold_female"
+        }
+      ],
+      "output_summary": {
+        "detected_measurements": [
+          {
+            "name": "hemoglobin",
+            "value": 12.0,
+            "unit": "g/dL",
+            "source": "text"
+          }
+        ],
+        "derived_measurements": [],
+        "classifications": [],
+        "formula_results": []
+      }
+    }
+  ]
+}

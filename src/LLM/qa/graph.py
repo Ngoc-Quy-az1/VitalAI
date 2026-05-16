@@ -432,7 +432,8 @@ def _detect_formula_ids(normalized: str, original_query: str) -> list[str]:
     has_weight = any(keyword in normalized for keyword in ("nang", "can nang", "kg", "weight"))
     has_height = any(keyword in normalized for keyword in ("cao", "chieu cao", "cm", "height"))
 
-    explicit_mdrd = any(keyword in normalized for keyword in ("mdrd", "egfr", "e gfr", "tinh gfr", "uoc tinh gfr"))
+    explicit_mdrd = "mdrd" in normalized
+    explicit_egfr = any(keyword in normalized for keyword in ("egfr", "e gfr", "tinh gfr", "uoc tinh gfr"))
     explicit_cockcroft = any(
         keyword in normalized
         for keyword in (
@@ -443,9 +444,33 @@ def _detect_formula_ids(normalized: str, original_query: str) -> list[str]:
         )
     )
     explicit_bsa = any(keyword in normalized for keyword in ("bsa", "dien tich da"))
+    asks_for_renal_assessment = any(
+        keyword in normalized
+        for keyword in (
+            "danh gia chuc nang than",
+            "chuc nang than",
+            "danh gia than",
+            "co bat thuong khong",
+        )
+    )
 
-    if explicit_mdrd or (asks_to_calculate and not mentions_interpretation and has_creatinine and has_age and has_sex and has_race and any(keyword in normalized for keyword in ("gfr", "egfr"))):
+    if explicit_mdrd:
         formula_ids.append("mdrd_gfr")
+    elif explicit_egfr or (
+        has_creatinine
+        and has_age
+        and has_sex
+        and (
+            asks_for_renal_assessment
+            or (
+                asks_to_calculate
+                and not mentions_interpretation
+                and has_race
+                and any(keyword in normalized for keyword in ("gfr", "egfr"))
+            )
+        )
+    ):
+        formula_ids.append("ckd_epi_2021_creatinine")
     if explicit_cockcroft:
         formula_ids.append("cockcroft_gault")
     if explicit_bsa:
@@ -457,6 +482,7 @@ def _detect_formula_ids(normalized: str, original_query: str) -> list[str]:
 def _formula_rag_query(*, query: str, formula_ids: list[str], has_threshold_values: bool) -> str:
     labels = {
         "fena_formula": "FENa trong chẩn đoán suy thận cấp",
+        "ckd_epi_2021_creatinine": "CKD-EPI 2021 eGFR và phân loại bệnh thận mạn",
         "mdrd_gfr": "MDRD eGFR và phân loại bệnh thận mạn",
         "cockcroft_gault": "Cockcroft-Gault creatinine clearance",
         "body_surface_area": "diện tích da cơ thể BSA",
@@ -579,6 +605,12 @@ def _tool_source_evidence_items(tool_result: dict[str, Any] | None, *, limit: in
         for item in tool_result.get("threshold_matches", [])
         if isinstance(item, dict) and item.get("matched")
     )
+    formula_texts = _unique_non_empty(
+        item.get("source_text")
+        for item in tool_result.get("formula_results", [])
+        if isinstance(item, dict)
+    )
+    source_texts = _unique_non_empty([*source_texts, *formula_texts])
     evidence_items: list[dict[str, Any]] = []
     for index, text in enumerate(source_texts[:limit], start=1):
         evidence_items.append(

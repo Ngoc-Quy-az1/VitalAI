@@ -14,12 +14,13 @@ Giới hạn hiện tại:
 """
 
 import os
+from collections.abc import AsyncIterator
 from typing import Any
 
 from langchain_mistralai import ChatMistralAI
 
 from src.LLM.observability import configure_langsmith_from_env
-from src.LLM.qa.graph import build_chatbot_graph
+from src.LLM.qa.graph import build_chatbot_graph, cleanup_user_answer
 from src.LLM.retrieval.vector_search import NeonVectorSearcher, build_searcher_from_env
 
 
@@ -84,6 +85,94 @@ class RetrievalAugmentedAnswerer:
                 "extracted_tool_payload": state.get("extracted_tool_payload"),
             }
         return response
+
+    async def stream_answer(
+        self,
+        query: str,
+        top_k: int = 5,
+        disease_name: str | None = None,
+        section_type: str | None = None,
+        source_type: str | None = None,
+        biomarker: str | None = None,
+        include_debug: bool = False,
+    ) -> AsyncIterator[dict[str, Any]]:
+        """Stream token của final answer và kết thúc bằng event `done`.
+
+        Graph có cả LLM router nội bộ lẫn LLM tạo câu trả lời cuối. Ta chỉ public
+        token từ run được tag `final_answer` để UI không bao giờ thấy JSON router.
+        """
+
+        graph_input = {
+            "query": query,
+            "top_k": top_k,
+            "disease_name": disease_name,
+            "section_type": section_type,
+            "source_type": source_type,
+            "biomarker": biomarker,
+        }
+        streamed_text = ""
+        final_state: dict[str, Any] | None = None
+
+        async for event in self.graph.astream_events(graph_input, version="v2"):
+            event_name = str(event.get("event") or "")
+            tags = set(event.get("tags") or [])
+
+            if event_name == "on_chat_model_stream" and "final_answer" in tags:
+                token = _chunk_text((event.get("data") or {}).get("chunk"))
+                if token:
+                    streamed_text += token
+                    yield {"event": "token", "token": token}
+                continue
+
+            if event_name == "on_chain_end":
+                output = (event.get("data") or {}).get("output")
+                if isinstance(output, dict) and (
+                    "final_answer" in output
+                    or "raw_answer" in output
+                    or "user_sources" in output
+                ):
+                    final_state = output
+
+        final_answer = cleanup_user_answer(
+            str((final_state or {}).get("final_answer") or streamed_text or "")
+        )
+        response: dict[str, Any] = {
+            "event": "done",
+            "query": query,
+            "answer": final_answer,
+            "route": (final_state or {}).get("route"),
+            "sources": (final_state or {}).get("user_sources", []),
+        }
+        if include_debug:
+            response["debug"] = {
+                "filters": (final_state or {}).get("filters"),
+                "query_understanding": (final_state or {}).get("query_understanding"),
+                "results": (final_state or {}).get("debug_results", []),
+                "router_plan": (final_state or {}).get("router_plan"),
+                "router_error": (final_state or {}).get("router_error"),
+                "medical_tool_result": (final_state or {}).get("medical_tool_result"),
+                "extracted_tool_payload": (final_state or {}).get("extracted_tool_payload"),
+            }
+        yield response
+
+
+def _chunk_text(chunk: Any) -> str:
+    """Lấy text từ các shape chunk LangChain thường trả về."""
+
+    content = getattr(chunk, "content", chunk)
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        parts: list[str] = []
+        for item in content:
+            if isinstance(item, str):
+                parts.append(item)
+            elif isinstance(item, dict):
+                text = item.get("text") or item.get("content")
+                if isinstance(text, str):
+                    parts.append(text)
+        return "".join(parts)
+    return ""
 
 
 def build_answerer_from_env() -> RetrievalAugmentedAnswerer:

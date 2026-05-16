@@ -20,6 +20,7 @@ from services.medical_tools.safe_eval import FormulaEvaluationError, expression_
 
 NUMBER_RE = r"-?\d+(?:[.,]\d+)?"
 UNIT_RE = r"g/24\s*(?:giờ|gio|h)|g/l|g/dl|mmol/l|mg/g|mg/mmol|mg/dl|μmol/l|µmol/l|umol/l|ml/ph(?:út|ut)?/1[.,]73m2|ml/ph(?:út|ut)?|mmhg|kg|cm|m2|%"
+PORTABLE_CLASSIFICATION_BIOMARKERS = {"ACR", "GFR"}
 
 
 @dataclass(frozen=True)
@@ -103,6 +104,7 @@ class MedicalToolsService:
         threshold_evaluations = self._evaluate_thresholds(
             measurements=all_measurements,
             disease_name=disease_name,
+            categorical_values=categorical_values,
         )
         threshold_evaluations = self._dedupe_evaluations(threshold_evaluations)
         threshold_matches = [item for item in threshold_evaluations if item["matched"]]
@@ -160,6 +162,13 @@ class MedicalToolsService:
                 else:
                     variables["sex_factor"] = self._sex_factor(formula["formula_id"], sex)
 
+            if {"kappa", "alpha", "female_factor"} & names:
+                sex = self._normalize_sex(categorical_values.get("sex"))
+                if sex is None:
+                    missing.append("sex")
+                else:
+                    variables.update(self._sex_parameters(formula["formula_id"], sex))
+
             if "race_factor" in names:
                 race = self._normalize_race(categorical_values.get("race"))
                 if race is None:
@@ -171,7 +180,8 @@ class MedicalToolsService:
                 if race is not None:
                     variables["race_factor"] = 1.21 if race == "black" else 1.0
 
-            for name in sorted(names - {"sex_factor", "race_factor"}):
+            derived_variable_names = {"sex_factor", "race_factor", "kappa", "alpha", "female_factor"}
+            for name in sorted(names - derived_variable_names):
                 if name not in formula_values:
                     missing.append(name)
                 else:
@@ -204,6 +214,7 @@ class MedicalToolsService:
         *,
         measurements: dict[str, ParsedValue],
         disease_name: str | None,
+        categorical_values: dict[str, str],
     ) -> list[dict[str, Any]]:
         results: list[dict[str, Any]] = []
         for biomarker, parsed in measurements.items():
@@ -211,9 +222,16 @@ class MedicalToolsService:
             if disease_name:
                 disease_matches = [item for item in candidates if item.get("disease_name") == disease_name]
                 if disease_matches:
-                    candidates = disease_matches
+                    portable_classifications = [
+                        item
+                        for item in candidates
+                        if biomarker in PORTABLE_CLASSIFICATION_BIOMARKERS and item.get("label")
+                    ]
+                    candidates = self._merge_threshold_candidates(disease_matches, portable_classifications)
 
             for threshold in candidates:
+                if not self._threshold_applies(threshold, categorical_values):
+                    continue
                 comparison_value = self._convert_value(parsed.value, parsed.unit, threshold.get("threshold_unit"))
                 if comparison_value is None:
                     continue
@@ -289,6 +307,8 @@ class MedicalToolsService:
             cholesterol = measurements["cholesterol"]
             if ldl.value == cholesterol.value and ldl.unit == cholesterol.unit and "ldl" in normalized:
                 del measurements["cholesterol"]
+        if "sodium" in measurements and {"urine_na", "plasma_na"} <= set(formula_variables):
+            del measurements["sodium"]
 
         bp = re.search(r"(?P<systolic>\d{2,3})\s*/\s*(?P<diastolic>\d{2,3})\s*(?:mmHg|mmhg)?", text)
         if bp and ("huyết áp" in text.lower() or "ha" in normalized or "blood pressure" in normalized):
@@ -411,6 +431,7 @@ class MedicalToolsService:
             "severity": threshold.get("severity"),
             "disease_name": threshold.get("disease_name"),
             "section_type": threshold.get("section_type"),
+            "sex": threshold.get("sex"),
         }
 
     def _safe_source(self, item: dict[str, Any]) -> dict[str, Any]:
@@ -439,6 +460,35 @@ class MedicalToolsService:
         if normalized_input == "g/L" and normalized_threshold == "g/dL":
             return value / 10
         return None
+
+    def _merge_threshold_candidates(self, *groups: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        merged: list[dict[str, Any]] = []
+        seen: set[tuple[Any, ...]] = set()
+        for group in groups:
+            for item in group:
+                key = (
+                    item.get("biomarker"),
+                    item.get("threshold_op"),
+                    item.get("threshold_value"),
+                    item.get("threshold_value_min"),
+                    item.get("threshold_value_max"),
+                    item.get("threshold_unit"),
+                    item.get("label"),
+                    item.get("disease_name"),
+                    item.get("sex"),
+                )
+                if key in seen:
+                    continue
+                seen.add(key)
+                merged.append(item)
+        return merged
+
+    def _threshold_applies(self, threshold: dict[str, Any], categorical_values: dict[str, str]) -> bool:
+        required_sex = self._normalize_sex(threshold.get("sex"))
+        if required_sex is None:
+            return True
+        actual_sex = self._normalize_sex(categorical_values.get("sex"))
+        return actual_sex == required_sex
 
     def _between_upper_inclusive(self, threshold: dict[str, Any]) -> bool:
         source = str(threshold.get("source_text") or "")
@@ -513,6 +563,15 @@ class MedicalToolsService:
         if formula_id == "mdrd_gfr":
             return 0.742 if sex == "female" else 1.0
         return 1.0
+
+    def _sex_parameters(self, formula_id: str, sex: str) -> dict[str, float]:
+        if formula_id == "ckd_epi_2021_creatinine":
+            return {
+                "kappa": 0.7 if sex == "female" else 0.9,
+                "alpha": -0.241 if sex == "female" else -0.302,
+                "female_factor": 1.012 if sex == "female" else 1.0,
+            }
+        return {}
 
     def _normalize_ascii(self, text: str) -> str:
         normalized = unicodedata.normalize("NFKD", text.replace("đ", "d").replace("Đ", "D"))

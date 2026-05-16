@@ -4,8 +4,26 @@
   "cases": [
     {
       "id": "formula_001",
-      "title": "Uoc tinh eGFR bang MDRD",
+      "title": "Uoc tinh eGFR bang CKD-EPI 2021",
       "query": "Nữ 60 tuổi, creatinine 1.4 mg/dL. Hãy ước tính eGFR.",
+      "top_k": 5,
+      "expected": {
+        "require_route": "retrieve",
+        "require_tool_called": true,
+        "require_tool_success": true,
+        "require_no_null_tool_parameters": true,
+        "require_extracted_measurements_min": 3,
+        "require_formula_result_min": 1,
+        "require_formula_ids_any": ["ckd_epi_2021_creatinine"],
+        "min_answer_chars": 30,
+        "must_include_any": ["gfr", "egfr", "creatinin", "creatinine"],
+        "must_not_include_any": ["tool_name"]
+      }
+    },
+    {
+      "id": "formula_006",
+      "title": "Tinh MDRD khi nguoi dung goi dich danh",
+      "query": "Nữ 60 tuổi, creatinine 1.4 mg/dL. Hãy tính MDRD.",
       "top_k": 5,
       "expected": {
         "require_route": "retrieve",
@@ -16,7 +34,7 @@
         "require_formula_result_min": 1,
         "require_formula_ids_any": ["mdrd_gfr"],
         "min_answer_chars": 30,
-        "must_include_any": ["gfr", "egfr", "creatinin", "creatinine"],
+        "must_include_any": ["mdrd", "gfr", "egfr"],
         "must_not_include_any": ["tool_name"]
       }
     },
@@ -35,6 +53,57 @@
         "require_formula_ids_any": ["cockcroft_gault"],
         "min_answer_chars": 30,
         "must_include_any": ["cockcroft", "gault", "creatinine clearance", "thanh thải"],
+        "must_not_include_any": ["tool_name"]
+      }
+    },
+    {
+      "id": "formula_003",
+      "title": "Tinh FENa bang alias tieng Viet",
+      "query": "Natri niệu 20 mmol/L, natri máu 140 mmol/L, creatinine niệu 100 mg/dL, creatinine máu 1 mg/dL. Tính FENa.",
+      "top_k": 5,
+      "expected": {
+        "require_route": "retrieve",
+        "require_tool_called": true,
+        "require_tool_success": true,
+        "require_no_null_tool_parameters": true,
+        "require_formula_result_min": 1,
+        "require_formula_ids_any": ["fena_formula"],
+        "min_answer_chars": 40,
+        "must_include_any": ["fena", "suy thận"],
+        "must_not_include_any": ["tool_name"]
+      }
+    },
+    {
+      "id": "formula_004",
+      "title": "Tinh dien tich da co the",
+      "query": "Cân nặng 55 kg, chiều cao 160 cm. Tính BSA.",
+      "top_k": 5,
+      "expected": {
+        "require_route": "retrieve",
+        "require_tool_called": true,
+        "require_tool_success": true,
+        "require_no_null_tool_parameters": true,
+        "require_formula_result_min": 1,
+        "require_formula_ids_any": ["body_surface_area"],
+        "min_answer_chars": 30,
+        "must_include_any": ["bsa", "diện tích da"],
+        "must_not_include_any": ["tool_name"]
+      }
+    },
+    {
+      "id": "formula_005",
+      "title": "Tinh FENa bang cach viet tieng Anh tu nhien",
+      "query": "Urine Na 20 mmol/L, plasma Na 140 mmol/L, urine creatinine 100 mg/dL, plasma creatinine 1 mg/dL. Tính FENa.",
+      "top_k": 5,
+      "expected": {
+        "require_route": "retrieve",
+        "require_tool_called": true,
+        "require_tool_success": true,
+        "require_no_null_tool_parameters": true,
+        "require_formula_result_min": 1,
+        "require_formula_ids_any": ["fena_formula"],
+        "min_answer_chars": 40,
+        "must_include_any": ["fena", "suy thận"],
         "must_not_include_any": ["tool_name"]
       }
     }

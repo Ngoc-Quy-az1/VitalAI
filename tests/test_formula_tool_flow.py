@@ -17,6 +17,19 @@ class FormulaToolFlowTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.service = MedicalToolsService()
 
+    def test_ckd_epi_2021_computes_without_race(self) -> None:
+        query = "Nữ 60 tuổi, creatinine 1.4 mg/dL. Hãy ước tính eGFR."
+        result = self.service.evaluate(text=query, formula_ids=["ckd_epi_2021_creatinine"])
+
+        formula = result["formula_results"][0]
+        self.assertEqual(formula["formula_id"], "ckd_epi_2021_creatinine")
+        self.assertEqual(formula["status"], "computed")
+        self.assertAlmostEqual(formula["value"], 43.0698, places=4)
+        self.assertNotIn("assumptions", formula)
+
+        structured_context = build_structured_context(result, query=query)
+        self.assertIn("43.0698", structured_context)
+
     def test_mdrd_computes_with_default_race_other(self) -> None:
         query = "Nữ 60 tuổi, creatinine 1.4 mg/dL. Hãy ước tính eGFR."
         result = self.service.evaluate(text=query, formula_ids=["mdrd_gfr"])

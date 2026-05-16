@@ -51,8 +51,8 @@ FORMULA_VARIABLE_ALIASES: dict[str, list[str]] = {
     "weight_kg": ["cân nặng", "can nang", "weight", "weight_kg", "kg"],
     "height_cm": ["chiều cao", "chieu cao", "height", "height_cm", "cm"],
     "creatinine_mg_dl": ["creatinine", "creatinin", "creatinine_mg_dl"],
-    "urine_na": ["urine_na", "una", "na niệu", "na nieu", "natri niệu", "natri nieu"],
-    "plasma_na": ["plasma_na", "pna", "na máu", "na mau", "natri máu", "natri mau"],
+    "urine_na": ["urine_na", "urine na", "una", "na niệu", "na nieu", "natri niệu", "natri nieu"],
+    "plasma_na": ["plasma_na", "plasma na", "pna", "na máu", "na mau", "natri máu", "natri mau"],
     "urine_creatinine": [
         "urine_creatinine",
         "urine creatinine",

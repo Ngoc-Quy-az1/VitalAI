@@ -106,13 +106,15 @@ Response chính gồm:
 
 Dựa trên `formulas.json` hiện tại:
 
+- `ckd_epi_2021_creatinine`
 - `mdrd_gfr`
 - `cockcroft_gault`
 - `body_surface_area`
 - `fena_formula`
 
 Lưu ý:
-- `mdrd_gfr` sẽ mặc định `race=other` nếu câu hỏi không cung cấp `race`, và kết quả sẽ ghi rõ giả định đó trong `formula_results`.
+- `ckd_epi_2021_creatinine` là lựa chọn mặc định nên ưu tiên cho câu hỏi eGFR chung vì không cần biến `race`.
+- `mdrd_gfr` vẫn được hỗ trợ khi người dùng gọi đích danh, và sẽ mặc định `race=other` nếu câu hỏi không cung cấp `race`; kết quả sẽ ghi rõ giả định đó trong `formula_results`.
 
 Evaluator chỉ cho phép toán số học cơ bản qua AST whitelist, không cho phép function call, import, attribute access hoặc code execution.
 
@@ -167,7 +169,7 @@ Việc bỏ `safe_structured_answer` không có nghĩa là bỏ tool.
 Tool service vẫn chịu trách nhiệm:
 
 - parse các chỉ số từ câu hỏi
-- tính công thức như `MDRD`, `Cockcroft-Gault`, `FENa`, `BSA`
+- tính công thức như `CKD-EPI 2021`, `MDRD`, `Cockcroft-Gault`, `FENa`, `BSA`
 - so ngưỡng và phân loại
 
 Phần chatbot chỉ làm:
@@ -183,7 +185,17 @@ Nói ngắn gọn:
 - `graph.py` quyết định đưa số liệu vào prompt thế nào
 - LLM quyết định cách diễn đạt câu trả lời cuối
 
-### 3. Sửa lỗi MDRD thiếu `race`
+### 3. Ưu tiên CKD-EPI 2021 cho eGFR chung
+
+Hiện tại:
+
+- câu hỏi eGFR chung dùng `ckd_epi_2021_creatinine`
+- công thức này không cần biến `race`
+- `mdrd_gfr` chỉ còn là lựa chọn explicit khi user yêu cầu tính `MDRD`
+
+Điều này tránh việc route mặc định phải dựa vào giả định `race=other`.
+
+### 4. Sửa lỗi MDRD thiếu `race`
 
 Một lỗi quan trọng trước đó là:
 
@@ -199,7 +211,7 @@ Hiện tại:
 
 Điều này giúp tool không còn dừng ở trạng thái `missing_inputs` cho các câu eGFR phổ biến.
 
-### 4. Điều gì còn "an toàn" và điều gì không
+### 5. Điều gì còn "an toàn" và điều gì không
 
 Sau thay đổi này:
 
@@ -212,7 +224,7 @@ Vì vậy behavior hiện tại là:
 - an toàn ở mức format và giấu metadata nội bộ
 - không còn an toàn ở mức kiểm soát chặt nội dung diễn giải y khoa cuối
 
-### 5. Khi nào nên nhớ điều này lúc debug
+### 6. Khi nào nên nhớ điều này lúc debug
 
 Nếu bạn thấy chatbot trả sai ở câu hỏi công thức/ngưỡng, hãy tách kiểm tra theo thứ tự:
 

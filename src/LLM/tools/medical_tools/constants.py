@@ -53,4 +53,9 @@ DISEASE_NAME_ALIASES = {
 LABEL_TRANSLATIONS = {
     "prerenal_aki_suggestive": "gợi ý suy thận cấp trước thận",
     "intrinsic_aki_suggestive": "gợi ý suy thận cấp tại thận",
+    "anemia_threshold": "ngưỡng thiếu máu",
+    "anemia_threshold_female": "ngưỡng thiếu máu ở nữ",
+    "hematocrit_low": "hematocrit thấp",
+    "blood_pressure_target": "mục tiêu huyết áp",
+    "severe_hyperkalemia": "tăng kali máu nặng",
 }

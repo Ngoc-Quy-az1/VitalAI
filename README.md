@@ -7,6 +7,27 @@ Mục tiêu dài hạn của project:
 1. Trả lời câu hỏi y khoa có trích dẫn nguồn rõ ràng.
 2. Đọc kết quả xét nghiệm, đối chiếu ngưỡng tham chiếu, áp công thức khi cần, rồi sinh báo cáo tham khảo an toàn.
 
+## Chạy service
+
+AI service public:
+
+```bash
+./scripts/run_ai_service.sh
+```
+
+Structured medical tools service:
+
+```bash
+./scripts/run_medical_tools_service.sh
+```
+
+Frontend Vite mặc định proxy `/api/*` sang AI service ở `http://localhost:8008`.
+
+Các endpoint chat chính:
+
+- `POST /chat/answer`: trả JSON sync
+- `POST /chat/stream`: trả SSE, chỉ stream token của câu trả lời cuối cùng
+
 ## Trạng thái hiện tại
 
 ### Đã có

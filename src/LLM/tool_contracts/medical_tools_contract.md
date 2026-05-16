@@ -73,11 +73,11 @@ Response rút gọn:
   "threshold_biomarkers": ["ACR", "GFR", "HbA1c", "hemoglobin"],
   "formulas": [
     {
-      "formula_id": "mdrd_gfr",
-      "formula_name": "MDRD eGFR",
+      "formula_id": "ckd_epi_2021_creatinine",
+      "formula_name": "CKD-EPI 2021 creatinine eGFR",
       "output_name": "gfr_ml_min_1_73m2",
       "output_unit": "ml/ph/1.73m2",
-      "variables": ["creatinine_mg_dl", "age", "sex", "race"]
+      "variables": ["creatinine_mg_dl", "age", "sex"]
     }
   ]
 }
@@ -152,8 +152,8 @@ Request tính công thức:
 
 ```json
 {
-  "text": "nữ 60 tuổi, cân nặng 55 kg, chiều cao 160 cm, creatinine 1.4 mg/dL, race other",
-  "formula_ids": ["mdrd_gfr", "cockcroft_gault", "body_surface_area"],
+  "text": "nữ 60 tuổi, cân nặng 55 kg, chiều cao 160 cm, creatinine 1.4 mg/dL",
+  "formula_ids": ["ckd_epi_2021_creatinine", "cockcroft_gault", "body_surface_area"],
   "include_debug": false
 }
 ```
@@ -175,7 +175,7 @@ Response fields chính:
 Response meaning:
 
 - `detected_measurements`: chỉ số lấy từ text/input.
-- `derived_measurements`: chỉ số tính ra từ formula, ví dụ GFR từ MDRD.
+  - `derived_measurements`: chỉ số tính ra từ formula, ví dụ GFR từ CKD-EPI 2021.
 - `threshold_matches`: rule có điều kiện đúng.
 - `threshold_evaluations`: tất cả rule liên quan, gồm cả `condition_not_met`.
 - `classifications`: stage/class có label, ví dụ `A3`, `G3a`, `CKD stage III`.
@@ -215,6 +215,7 @@ urea
 ## Supported Formula IDs
 
 ```text
+ckd_epi_2021_creatinine
 mdrd_gfr
 cockcroft_gault
 body_surface_area
@@ -223,6 +224,7 @@ fena_formula
 
 Formula input notes:
 
+- `ckd_epi_2021_creatinine` cần `creatinine_mg_dl`, `age`, `sex` và là lựa chọn nên dùng cho câu hỏi eGFR chung.
 - `mdrd_gfr` cần `creatinine_mg_dl`, `age`, `sex`; nếu thiếu `race`, service sẽ mặc định `other` và trả kèm giả định này trong `formula_results`.
 - `cockcroft_gault` cần `age`, `weight_kg`, `creatinine_mg_dl`, `sex`.
 - `body_surface_area` cần `weight_kg`, `height_cm`.

@@ -2,8 +2,8 @@
   "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
   "page_count": 210,
   "chunk_count": 815,
-  "threshold_count": 74,
-  "formula_count": 4,
+  "threshold_count": 76,
+  "formula_count": 5,
   "chunk_content_types": {
     "prose": 806,
     "json_block": 9
@@ -17,9 +17,10 @@
     "sodium": 3,
     "urea": 2,
     "ACR": 9,
-    "GFR": 27
+    "GFR": 29
   },
   "formula_names": [
+    "CKD-EPI 2021 creatinine eGFR",
     "Cockcroft-Gault",
     "Diện tích da cơ thể (BSA)",
     "Fractional Excretion of Sodium (FENa)",

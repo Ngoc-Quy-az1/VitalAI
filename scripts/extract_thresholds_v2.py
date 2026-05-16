@@ -51,8 +51,28 @@ def _extract_from_chunk(chunk: dict[str, Any]) -> list[dict[str, Any]]:
     metadata = chunk["metadata"]
     results: list[dict[str, Any]] = []
 
-    results.extend(_simple_matches(chunk, r"Hb\s*<\s*(?P<value>\d+(?:[.,]\d+)?)\s*g/?l", "hemoglobin", "<", "g/L", "anemia_threshold"))
-    results.extend(_simple_matches(chunk, r"(?:và|,)\s*<\s*(?P<value>\d+(?:[.,]\d+)?)\s*g/?l\s*ở\s*nữ", "hemoglobin", "<", "g/L", "anemia_threshold_female"))
+    results.extend(
+        _simple_matches(
+            chunk,
+            r"Hb\s*<\s*(?P<value>\d+(?:[.,]\d+)?)\s*g/?l(?:\s*\([^)]*\))?\s*ở\s*nam",
+            "hemoglobin",
+            "<",
+            "g/L",
+            "anemia_threshold",
+            sex="male",
+        )
+    )
+    results.extend(
+        _simple_matches(
+            chunk,
+            r"(?:và|,)\s*<\s*(?P<value>\d+(?:[.,]\d+)?)\s*g/?l\s*ở\s*nữ|Hb\s*<\s*(?P<value_alt>\d+(?:[.,]\d+)?)\s*g/?l(?:\s*\([^)]*\))?\s*ở\s*nữ",
+            "hemoglobin",
+            "<",
+            "g/L",
+            "anemia_threshold_female",
+            sex="female",
+        )
+    )
     results.extend(_simple_matches(chunk, r"Hct\s*<\s*(?P<value>\d+(?:[.,]\d+)?)\s*%?", "hematocrit", "<", "%", "hematocrit_low"))
     results.extend(_simple_matches(chunk, r"pH\s*<\s*(?P<value>\d+(?:[.,]\d+)?)", "pH", "<", None, "metabolic_acidosis"))
     results.extend(_simple_matches(chunk, r"Bicarbonat\s*<\s*(?P<value>\d+(?:[.,]\d+)?)\s*mmol/?l", "bicarbonate", "<", "mmol/L", "severe_metabolic_acidosis"))
@@ -99,10 +119,21 @@ def _simple_matches(
     op: str,
     unit: str | None,
     label: str,
+    sex: str | None = None,
 ) -> Iterable[dict[str, Any]]:
     text = chunk["content"]
     for match in re.finditer(pattern, text, flags=re.IGNORECASE):
-        yield _build_threshold(chunk, biomarker, op, _to_float(match.group("value")), unit, label, _window(text, match.start(), match.end()))
+        value = match.groupdict().get("value") or match.groupdict().get("value_alt")
+        yield _build_threshold(
+            chunk,
+            biomarker,
+            op,
+            _to_float(value),
+            unit,
+            label,
+            _window(text, match.start(), match.end()),
+            sex=sex,
+        )
 
 
 def _build_threshold(
@@ -113,13 +144,20 @@ def _build_threshold(
     unit: str | None,
     label: str,
     source_text: str,
+    sex: str | None = None,
 ) -> dict[str, Any]:
     metadata = chunk["metadata"]
-    return {
+    normalized_value = value
+    # Một vài đoạn OCR trong PDF ghi Hb theo dạng 13/12 g/L dù ngữ cảnh thực tế là 130/120 g/L.
+    # Chuẩn hóa sớm để evaluator không vô tình coi 12 g/dL là bình thường.
+    if biomarker == "hemoglobin" and unit == "g/L" and value is not None and value < 30:
+        normalized_value = value * 10
+
+    item = {
         "threshold_id": "",
         "biomarker": biomarker,
         "threshold_op": op,
-        "threshold_value": value,
+        "threshold_value": normalized_value,
         "threshold_unit": unit,
         "label": label,
         "severity": None,
@@ -132,6 +170,9 @@ def _build_threshold(
         "language": metadata.get("language", "vi"),
         "extraction_method": "thresholds_v2_targeted",
     }
+    if sex:
+        item["sex"] = sex
+    return item
 
 
 def _looks_medical_threshold(item: dict[str, Any], metadata: dict[str, Any]) -> bool:

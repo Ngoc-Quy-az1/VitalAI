@@ -32,6 +32,114 @@
         "must_include_any": ["gfr", "thận"],
         "must_not_include_any": ["tool_name"]
       }
+    },
+    {
+      "id": "threshold_003",
+      "title": "ACR tai moc 300",
+      "query": "ACR 300 mg/g được xếp nhóm nào?",
+      "top_k": 5,
+      "expected": {
+        "require_route": "retrieve",
+        "require_tool_called": true,
+        "require_tool_success": true,
+        "require_classification_min": 1,
+        "min_answer_chars": 30,
+        "must_include_any": ["a3", "acr"],
+        "must_not_include_any": ["tool_name"]
+      }
+    },
+    {
+      "id": "threshold_004",
+      "title": "GFR nhom G2",
+      "query": "GFR 75 ml/ph/1.73m2 thuộc nhóm nào?",
+      "top_k": 5,
+      "expected": {
+        "require_route": "retrieve",
+        "require_tool_called": true,
+        "require_tool_success": true,
+        "require_classification_min": 1,
+        "min_answer_chars": 30,
+        "must_include_any": ["g2", "gfr"],
+        "must_not_include_any": ["tool_name"]
+      }
+    },
+    {
+      "id": "threshold_005",
+      "title": "GFR nhom G5",
+      "query": "GFR 10 ml/ph/1.73m2 thuộc nhóm nào?",
+      "top_k": 5,
+      "expected": {
+        "require_route": "retrieve",
+        "require_tool_called": true,
+        "require_tool_success": true,
+        "require_classification_min": 1,
+        "min_answer_chars": 30,
+        "must_include_any": ["g5", "gfr"],
+        "must_not_include_any": ["tool_name"]
+      }
+    },
+    {
+      "id": "threshold_006",
+      "title": "Tang kali mau nang",
+      "query": "Kali 6.5 mmol/L có ý nghĩa gì?",
+      "top_k": 5,
+      "expected": {
+        "require_route": "retrieve",
+        "require_tool_called": true,
+        "require_tool_success": true,
+        "require_threshold_match_min": 1,
+        "require_classification_min": 1,
+        "min_answer_chars": 40,
+        "must_include_any": ["kali", "tăng kali"],
+        "must_not_include_any": ["tool_name"]
+      }
+    },
+    {
+      "id": "threshold_007",
+      "title": "Huyet ap muc tieu",
+      "query": "Huyết áp 128/78 mmHg có đạt mục tiêu không?",
+      "top_k": 5,
+      "expected": {
+        "require_route": "retrieve",
+        "require_tool_called": true,
+        "require_tool_success": true,
+        "require_threshold_match_min": 2,
+        "require_classification_min": 2,
+        "min_answer_chars": 40,
+        "must_include_any": ["huyết áp", "128", "78"],
+        "must_not_include_any": ["tool_name"]
+      }
+    },
+    {
+      "id": "threshold_008",
+      "title": "Thieu mau o nam",
+      "query": "Nam, Hb 12 g/dL có thiếu máu không?",
+      "top_k": 5,
+      "expected": {
+        "require_route": "retrieve",
+        "require_tool_called": true,
+        "require_tool_success": true,
+        "require_threshold_match_min": 1,
+        "require_classification_min": 1,
+        "min_answer_chars": 40,
+        "must_include_any": ["hb", "thiếu máu"],
+        "must_not_include_any": ["tool_name"]
+      }
+    },
+    {
+      "id": "threshold_009",
+      "title": "Albumin mau doi don vi",
+      "query": "Albumin máu 2.8 g/dL có bất thường không?",
+      "top_k": 5,
+      "expected": {
+        "require_route": "retrieve",
+        "require_tool_called": true,
+        "require_tool_success": true,
+        "require_threshold_match_min": 1,
+        "min_answer_chars": 40,
+        "must_include_any": ["albumin"],
+        "must_not_include_any": ["tool_name"]
+      }
     }
   ]
 }

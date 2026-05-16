@@ -11,7 +11,7 @@ from src.LLM.tools.medical_tools.text_utils import normalize_for_match
 NUMBER_RE = r"-?\d+(?:[.,]\d+)?"
 UNIT_RE = r"g/24\s*(?:giờ|gio|h)|g/l|g/dl|mmol/l|mg/g|mg/mmol|mg/dl|μmol/l|µmol/l|umol/l|ml/ph(?:út|ut)?/1[.,]73m2|ml/ph(?:út|ut)?|mmhg|kg|cm|m2|%"
 SUPPORTED_MEASUREMENT_NAMES = set(BIOMARKER_ALIASES) | set(FORMULA_VARIABLE_ALIASES)
-SUPPORTED_FORMULA_IDS = {"mdrd_gfr", "cockcroft_gault", "body_surface_area", "fena_formula"}
+SUPPORTED_FORMULA_IDS = {"ckd_epi_2021_creatinine", "mdrd_gfr", "cockcroft_gault", "body_surface_area", "fena_formula"}
 
 
 def build_tool_input_payload(query: str) -> dict[str, Any]:

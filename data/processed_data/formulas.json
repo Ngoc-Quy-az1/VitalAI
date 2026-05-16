@@ -1,5 +1,39 @@
 [
   {
+    "formula_id": "ckd_epi_2021_creatinine",
+    "formula_name": "CKD-EPI 2021 creatinine eGFR",
+    "formula_type": "calculation",
+    "expression": "142 * (min(creatinine_mg_dl / kappa, 1) ** alpha) * (max(creatinine_mg_dl / kappa, 1) ** -1.2) * (0.9938 ** age) * female_factor",
+    "variables": [
+      {
+        "name": "creatinine_mg_dl",
+        "description": "serum creatinine mg dl",
+        "unit": "mg/dL",
+        "required": true
+      },
+      {
+        "name": "age",
+        "description": "age",
+        "unit": null,
+        "required": true
+      },
+      {
+        "name": "sex",
+        "description": "sex",
+        "unit": null,
+        "required": true
+      }
+    ],
+    "output_name": "gfr_ml_min_1_73m2",
+    "output_unit": "ml/ph/1.73m2",
+    "disease_name": "benh_than_man",
+    "section_type": "classification",
+    "source_text": "eGFR = 142 x min(SCr/kappa,1)^alpha x max(SCr/kappa,1)^-1.200 x 0.9938^Age x 1.012 [if female].",
+    "source_file": "NIDDK eGFR Equations for Adults",
+    "page": null,
+    "language": "en"
+  },
+  {
     "formula_id": "mdrd_gfr",
     "formula_name": "MDRD eGFR",
     "formula_type": "calculation",

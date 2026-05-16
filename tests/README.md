@@ -29,6 +29,20 @@ Ghi report ra file khac:
 python3 tests/run_answer_tests.py --output tests/results/my_report.md --json-output tests/results/my_report.json
 ```
 
+Chay audit deterministic cho `medical_tools` (khong can LLM hay vector DB):
+
+```bash
+python3 tests/run_medical_tools_audit.py
+```
+
+Chay unit/API tests noi bo:
+
+```bash
+python3 -m unittest discover -s tests -v
+```
+
+`test_ai_service_api.py` kiem tra `POST /chat/answer` va SSE `POST /chat/stream` bang fake answerer, nen khong can goi LLM that khi backend dependencies da duoc cai.
+
 ## Yeu cau truoc khi chay
 
 - `.env` da duoc cau hinh dung
@@ -47,6 +61,13 @@ Runner se ghi:
 - `tests/results/answer_test_report.json`
 
 Markdown report de doc nhanh, JSON report de parse tu dong neu can.
+
+Audit `medical_tools` se ghi them:
+
+- `tests/results/medical_tools_audit_report.md`
+- `tests/results/medical_tools_audit_report.json`
+
+Bo audit nay tap trung vao cong thuc, boundary, parser, disease filter, unit conversion va classification de phat hien loi nghiep vu ma black-box answer test co the che mat.
 
 ## Ghi chu moi
 
