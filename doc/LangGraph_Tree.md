@@ -46,7 +46,8 @@ flowchart TD
     extract_tool_payload -->|"route_input = retrieve"| route_with_medical_tools["route_with_medical_tools"]
 
     route_with_medical_tools --> call_medical_tools["call_medical_tools"]
-    call_medical_tools --> retrieve_context["retrieve_context"]
+    call_medical_tools --> understand_retrieval_query["understand_retrieval_query"]
+    understand_retrieval_query --> retrieve_context["retrieve_context"]
 
     retrieve_context -->|"route_after_retrieval = build_prompt"| build_prompt
     retrieve_context -. "configured edge, hiện không được chọn<br/>route_after_retrieval không trả generate_response" .-> generate_response["generate_response"]
@@ -65,7 +66,8 @@ Edge table:
 | `extract_tool_payload` | `route_input` | `_is_direct_query(query) == True` | `build_prompt` | Bỏ qua router/tool/RAG cho lời chào/cảm ơn/hỏi khả năng hệ thống |
 | `extract_tool_payload` | `route_input` | otherwise | `route_with_medical_tools` | Luồng y khoa hoặc câu hỏi cần RAG |
 | `route_with_medical_tools` | none | always | `call_medical_tools` | Dù có cần tool hay không, node sau vẫn đọc `router_plan` |
-| `call_medical_tools` | none | always | `retrieve_context` | Nếu không cần tool thì chỉ set structured context rỗng |
+| `call_medical_tools` | none | always | `understand_retrieval_query` | Nếu không cần tool thì chỉ set structured context rỗng |
+| `understand_retrieval_query` | none | always | `retrieve_context` | Tạo retrieval plan an toàn bằng hard filters + soft hints |
 | `retrieve_context` | `route_after_retrieval` | always returns `build_prompt` | `build_prompt` | Đây là hành vi hiện tại |
 | `retrieve_context` | `route_after_retrieval` | `generate_response` branch exists but not returned | `generate_response` | Edge được khai báo nhưng hiện không reachable |
 | `build_prompt` | none | always | `generate_response` | Dựng prompt trước khi gọi final LLM |
@@ -79,7 +81,7 @@ State được định nghĩa bằng `ChatbotGraphState`.
 Các field chính:
 
 - Input/request: `query`, `top_k`, `disease_name`, `section_type`, `source_type`, `biomarker`.
-- Route/retrieval: `route`, `retrieval`, `filters`, `query_understanding`, `debug_results`.
+- Route/retrieval: `route`, `retrieval`, `retrieval_plan`, `filters`, `query_understanding`, `debug_results`.
 - Evidence/prompt: `evidence_items`, `evidence_context`, `prompt_messages`.
 - Medical tool: `tool_contract`, `router_plan`, `router_error`, `medical_tool_result`, `structured_context`, `extracted_tool_payload`, `supported_tool_context`.
 - Output: `raw_answer`, `final_answer`, `user_sources`.
@@ -352,26 +354,91 @@ Formula hiện support:
 - `body_surface_area`
 - `fena_formula`
 
-### 6. `retrieve_context`
+### 6. `understand_retrieval_query`
 
 Mục tiêu:
 
-- Chọn query/filter để RAG.
-- Nếu đã có medical tool result, tạo query RAG mới từ kết quả tool.
+- Tách retrieval understanding khỏi router medical tool.
+- Hợp nhất tín hiệu từ user query, request filters, `router_plan`, `extracted_tool_payload` và `medical_tool_result`.
+- Chỉ dùng hard filter khi có bằng chứng rõ hoặc confidence cao.
+- Đưa tín hiệu chưa chắc vào `soft_hints` và `query` để retriever rerank, tránh khóa cứng làm mất recall.
+
+Tool/sub-flow gọi:
+
+- `build_retrieval_plan(...)` trong `src/LLM/retrieval/query_planner.py`.
+
+Output `retrieval_plan`:
+
+```json
+{
+  "strategy": "deterministic_tool_aware_query_planner_v1",
+  "query_type": "medical_qa | threshold | formula | definition",
+  "query": "query đã enrich bằng bệnh/chỉ số/mục cần tìm",
+  "filters": {
+    "disease_name": "string hoặc null",
+    "section_type": "string hoặc null",
+    "source_type": "chunk",
+    "biomarker": "string hoặc null"
+  },
+  "soft_hints": {
+    "disease_names": [],
+    "section_types": [],
+    "biomarkers": [],
+    "terms": []
+  },
+  "candidates": {
+    "diseases": [],
+    "sections": [],
+    "biomarkers": []
+  },
+  "confidence": {
+    "disease": 0.9,
+    "section": 0.8,
+    "biomarker": 0.9
+  },
+  "reason": "..."
+}
+```
+
+Hard filter policy:
+
+- `disease_name`: chỉ hard khi request filter explicit hoặc medical tool trả disease rõ. Query alias chỉ là soft hint vì nhiều evidence đúng đang nằm dưới metadata rộng như `benh_ly_cau_than`.
+- `section_type`: chỉ hard khi request filter explicit; nếu do intent suy ra thì để soft hint vì metadata section trong corpus có thể chưa hoàn hảo.
+- `biomarker`: chỉ hard khi request filter explicit; còn lại dùng soft hint để tránh miss chunk có biomarker metadata lệch.
+- `source_type`: mặc định `chunk`.
+
+```mermaid
+flowchart TD
+    A["understand_retrieval_query"] --> B["Đọc state.query"]
+    B --> C["Đọc router_plan.rag_plan"]
+    C --> D["Đọc extracted_tool_payload"]
+    D --> E["Đọc medical_tool_result nếu có"]
+    E --> F["build_retrieval_plan(...)"]
+    F --> G["state.retrieval_plan"]
+    G --> H["state.filters = retrieval_plan.filters"]
+```
+
+### 7. `retrieve_context`
+
+Mục tiêu:
+
+- Chọn query/filter từ `retrieval_plan`.
+- Nếu chưa có `retrieval_plan`, fallback về `router_plan.rag_plan` và tool-informed query cũ.
 - Gọi retriever hybrid.
 - Lọc evidence nhiễu.
 - Nếu DB chưa có evidence phù hợp nhưng tool có source text, dùng tool source text làm fallback evidence.
 
 ```mermaid
 flowchart TD
-    A["retrieve_context"] --> B["Lấy rag_plan từ router_plan"]
-    B --> C["query = rag_plan.query hoặc state.query"]
-    C --> D["filters = rag_plan.filters hoặc request filters"]
+    A["retrieve_context"] --> B{"state.retrieval_plan có tồn tại?"}
+    B -->|"Yes"| C["query = retrieval_plan.query<br/>filters = retrieval_plan.filters"]
+    B -->|"No"| D["fallback: rag_plan từ router_plan"]
     D --> E{"medical_tool_result usable?"}
     E -->|"Yes"| F["_build_tool_informed_retrieval(state)"]
     F --> G["Override retrieval_query/filter bằng formula, biomarker, threshold, label, source_text"]
     E -->|"No"| H["Giữ query/filter từ rag_plan"]
-    G --> I["searcher.search(...)"]
+    C --> I["searcher.search(...)"]
+    G --> I
     H --> I
     I --> J["NeonVectorSearcher<br/>OpenAI embedding + Neon hybrid search"]
     J --> K["retrieval.results"]
@@ -405,6 +472,7 @@ Retriever thật:
 - `_search_vector_rows(...)` query vector similarity từ bảng `medical_documents`.
 - `_search_keyword_rows(...)` query full-text search.
 - `_fuse_rows(...)` hợp nhất bằng reciprocal-rank-fusion style.
+- `_expand_result_contexts(...)` mở rộng result bằng heading/chunk lân cận khi cần, rồi trả `content` đầy đủ hơn cho prompt/eval.
 
 State ghi ra:
 
@@ -413,10 +481,10 @@ State ghi ra:
 - `evidence_items`
 - `evidence_context`
 - `debug_results`
-- `query_understanding`
+- `query_understanding` gồm `retrieval_planner` và `searcher`
 - `filters`
 
-### 7. Conditional `route_after_retrieval`
+### 8. Conditional `route_after_retrieval`
 
 Hàm hiện tại:
 
@@ -430,7 +498,7 @@ Kết luận:
 - Edge `retrieve_context -> build_prompt` luôn được chọn.
 - Edge `retrieve_context -> generate_response` có khai báo trong graph map nhưng hiện không reachable.
 
-### 8. `build_prompt`
+### 9. `build_prompt`
 
 Mục tiêu:
 
@@ -461,7 +529,7 @@ RAG prompt rule quan trọng:
 - Không lộ source/page/citation/JSON/endpoint/MCP/router/graph/id/score/metadata nội bộ.
 - Nếu dữ liệu chỉ gợi ý thì không biến thành chẩn đoán chắc chắn.
 
-### 9. `generate_response`
+### 10. `generate_response`
 
 Mục tiêu:
 
@@ -483,7 +551,7 @@ LLM call:
 - Tag: `final_answer`.
 - Metadata: `{"internal": False}`.
 
-### 10. `cleanup_response`
+### 11. `cleanup_response`
 
 Mục tiêu:
 
@@ -535,13 +603,14 @@ Ví dụ: câu hỏi y khoa không có chỉ số/công thức rõ ràng và rou
 
 ```mermaid
 flowchart LR
-    START --> prepare_input --> extract_tool_payload --> route_with_medical_tools --> call_medical_tools --> retrieve_context --> build_prompt --> generate_response --> cleanup_response --> END
+    START --> prepare_input --> extract_tool_payload --> route_with_medical_tools --> call_medical_tools --> understand_retrieval_query --> retrieve_context --> build_prompt --> generate_response --> cleanup_response --> END
 ```
 
 Đặc điểm:
 
 - `route_with_medical_tools` có thể gọi router LLM nội bộ.
 - `call_medical_tools` không gọi HTTP tool nếu `needs_medical_tool = false`.
+- `understand_retrieval_query` vẫn tạo plan để RAG có query/filter/soft hints rõ hơn.
 - `retrieve_context` vẫn gọi RAG.
 - Prompt dùng `RAG_ANSWER_PROMPT`.
 
@@ -555,11 +624,12 @@ Ví dụ:
 
 ```mermaid
 flowchart LR
-    START --> prepare_input --> extract_tool_payload --> route_with_medical_tools --> call_medical_tools --> retrieve_context --> build_prompt --> generate_response --> cleanup_response --> END
+    START --> prepare_input --> extract_tool_payload --> route_with_medical_tools --> call_medical_tools --> understand_retrieval_query --> retrieve_context --> build_prompt --> generate_response --> cleanup_response --> END
 
     route_with_medical_tools -. "router_plan.needs_medical_tool = true" .-> call_medical_tools
     call_medical_tools -. "HTTP POST /mcp/medical-tools/evaluate" .-> MedicalTools["Medical Tools Service"]
-    retrieve_context -. "tool-informed query" .-> RAG["Hybrid RAG"]
+    understand_retrieval_query -. "tool-aware retrieval plan" .-> retrieve_context
+    retrieve_context -. "planned query + hard/soft hints" .-> RAG["Hybrid RAG"]
 ```
 
 Đặc điểm:
@@ -567,14 +637,14 @@ flowchart LR
 - Heuristic thường bắt được, không cần router LLM.
 - Medical tool trả kết quả structured.
 - `structured_context` được inject vào final prompt.
-- RAG query có thể được viết lại theo tool result.
+- RAG query được viết lại qua `retrieval_plan`; tool result dùng để hard filter disease khi chắc và enrich query bằng ngưỡng/label/source text. Query alias bệnh không hard filter nếu không có tool result.
 
 ### Branch D: Router Failure Fallback
 
 ```mermaid
 flowchart LR
     route_with_medical_tools -->|"exception"| fallback["fallback router_plan<br/>needs_medical_tool=false<br/>rag_plan query=user query"]
-    fallback --> call_medical_tools --> retrieve_context --> build_prompt --> generate_response
+    fallback --> call_medical_tools --> understand_retrieval_query --> retrieve_context --> build_prompt --> generate_response
 ```
 
 Đặc điểm:
@@ -589,7 +659,7 @@ flowchart LR
 flowchart LR
     call_medical_tools -->|"medical_tools_client is None hoặc HTTP lỗi"| unavailable["tool_status unavailable/http_error/timeout"]
     unavailable --> structured["build_structured_context: tool không khả dụng"]
-    structured --> retrieve_context --> build_prompt --> generate_response
+    structured --> understand_retrieval_query --> retrieve_context --> build_prompt --> generate_response
 ```
 
 Đặc điểm:
@@ -618,21 +688,22 @@ flowchart TD
         N2["extract_tool_payload"]
         N3["route_with_medical_tools"]
         N4["call_medical_tools"]
-        N5["retrieve_context"]
-        N6["build_prompt"]
-        N7["generate_response"]
-        N8["cleanup_response"]
+        N5["understand_retrieval_query"]
+        N6["retrieve_context"]
+        N7["build_prompt"]
+        N8["generate_response"]
+        N9["cleanup_response"]
     end
 
-    Graph --> N1 --> N2 --> N3 --> N4 --> N5 --> N6 --> N7 --> N8
-    N2 -. "direct branch" .-> N6
+    Graph --> N1 --> N2 --> N3 --> N4 --> N5 --> N6 --> N7 --> N8 --> N9
+    N2 -. "direct branch" .-> N7
 
     N3 -. "internal_router LLM" .-> MistralRouter["ChatMistralAI<br/>tag internal_router"]
     N4 -. "HTTP POST" .-> MedicalAPI["Medical Tools FastAPI<br/>:8010"]
     MedicalAPI --> MedicalEngine["MedicalToolsService<br/>thresholds + formulas"]
-    N5 -. "embedding" .-> OpenAIEmbeddings["OpenAI Embeddings"]
-    N5 -. "hybrid search" .-> Neon["Neon/Postgres<br/>medical_documents"]
-    N7 -. "final answer" .-> MistralFinal["ChatMistralAI<br/>tag final_answer"]
+    N6 -. "embedding" .-> OpenAIEmbeddings["OpenAI Embeddings"]
+    N6 -. "hybrid search" .-> Neon["Neon/Postgres<br/>medical_documents"]
+    N8 -. "final answer" .-> MistralFinal["ChatMistralAI<br/>tag final_answer"]
 ```
 
 ## Tool Inventory
@@ -641,13 +712,14 @@ flowchart TD
 
 | Tool/function | File | Được gọi ở node | Vai trò |
 |---|---|---|---|
-| `build_supported_tool_context` | `src/LLM/tools/medical_tools/request_builder.py` | `prepare_input`, `extract_tool_payload`, `route_with_medical_tools` | Tóm tắt supported biomarkers/formula variables/formula ids cho router |
+| `build_supported_tool_context` | `src/LLM/tools/medical_tools/request_builder.py` | `prepare_input`, `extract_tool_payload`, `route_with_medical_tools` | Tóm tắt supported biomarkers/formula variables/formula ids/disease names/section types cho router |
 | `build_tool_input_payload` | `src/LLM/tools/medical_tools/request_builder.py` | `extract_tool_payload` | Parse deterministic chỉ số từ query |
 | `tool_payload_has_supported_inputs` | `src/LLM/tools/medical_tools/request_builder.py` | `_build_heuristic_router_plan` | Xác định query có measurement để gọi tool |
 | `sanitize_tool_parameters` | `src/LLM/tools/medical_tools/request_builder.py` | `normalize_router_plan` | Merge extracted payload + router output, drop null, filter field lạ |
 | `parse_router_plan` | `src/LLM/tools/medical_tools/router_plan.py` | `route_with_medical_tools` | Parse JSON router output |
 | `normalize_router_plan` | `src/LLM/tools/medical_tools/router_plan.py` | `route_with_medical_tools` | Canonicalize/sanitize plan |
 | `build_structured_context` | `src/LLM/tools/medical_tools/context_formatter.py` | `call_medical_tools` | Convert tool JSON thành text sạch cho prompt |
+| `build_retrieval_plan` | `src/LLM/retrieval/query_planner.py` | `understand_retrieval_query` | Tạo query/filter/soft hints an toàn cho RAG |
 | `cleanup_user_answer` | `src/LLM/qa/graph.py` | `cleanup_response`, `stream_answer` | Xóa metadata nội bộ khỏi answer |
 
 ### LLM tools/calls

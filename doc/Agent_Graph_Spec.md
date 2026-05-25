@@ -72,6 +72,26 @@ Graph chỉ nên xử lý:
 - synthesize
 - safety check
 
+### Update 2026-05-25 — Retrieval understanding node
+
+Implementation hiện tại đã thêm node `understand_retrieval_query` vào graph thật.
+
+Vị trí:
+
+```text
+route_with_medical_tools
+-> call_medical_tools
+-> understand_retrieval_query
+-> retrieve_context
+```
+
+Vai trò:
+
+- Tạo `retrieval_plan` riêng cho RAG thay vì để router medical tool quyết định toàn bộ retrieval.
+- Hợp nhất tín hiệu từ query, request filters, router JSON, deterministic payload và medical tool result.
+- Chỉ hard filter khi đủ chắc; còn lại dùng soft hints để rerank.
+- Cho phép debug/evaluate router accuracy qua `retrieval_plan.candidates` và `retrieval_plan.confidence`.
+
 ### 2. Structured-first cho lab input
 
 Nếu input là `lab_record` hoặc `mixed`, graph phải ưu tiên:

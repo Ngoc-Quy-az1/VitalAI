@@ -11,9 +11,41 @@
         "require_route": "retrieve",
         "min_answer_chars": 60,
         "require_sources_min": 1,
-        "must_include_any": ["lupus"],
-        "must_not_include_any": ["source_id=", "document_id=", "tool_name"]
-      }
+        "must_include_any": [
+          "lupus"
+        ],
+        "must_not_include_any": [
+          "source_id=",
+          "document_id=",
+          "tool_name"
+        ]
+      },
+      "reference_answer": "Lupus ban đỏ hệ thống là bệnh tự miễn có biểu hiện đa cơ quan. Trong tài liệu thận, bệnh thận lupus/viêm thận lupus là tổn thương phổ biến và quan trọng; bệnh nhân lupus cần được tầm soát tổn thương thận vì tổn thương thận ảnh hưởng nhiều đến tiên lượng.",
+      "required_facts": [
+        "Lupus ban đỏ hệ thống là một bệnh tự miễn ảnh hưởng đến nhiều hệ thống cơ quan.",
+        "Tổn thương thận là nguyên nhân quan trọng dẫn đến tử vong trong lupus ban đỏ hệ thống.",
+        "Bệnh thận lupus hay viêm thận lupus là tổn thương phổ biến và quan trọng.",
+        "Bệnh nhân lupus cần được tầm soát tổn thương thận."
+      ],
+      "relevant_document_ids": [
+        "chunk::lupus_nephritis_p25_002",
+        "chunk::lupus_nephritis_p25_003",
+        "chunk::lupus_nephritis_p25_004",
+        "chunk::lupus_nephritis_p27_003"
+      ],
+      "relevant_source_ids": [
+        "lupus_nephritis_p25_002",
+        "lupus_nephritis_p25_003",
+        "lupus_nephritis_p25_004",
+        "lupus_nephritis_p27_003"
+      ],
+      "eval_tags": [
+        "general",
+        "definition",
+        "lupus_nephritis",
+        "rag_only"
+      ],
+      "eval_notes": "Cần trả lời khái niệm lupus, không tự mở rộng sang phác đồ điều trị."
     },
     {
       "id": "general_002",
@@ -24,9 +56,41 @@
         "require_route": "retrieve",
         "min_answer_chars": 50,
         "require_sources_min": 1,
-        "must_include_any": ["gfr"],
-        "must_not_include_any": ["source_id=", "document_id="]
-      }
+        "must_include_any": [
+          "gfr"
+        ],
+        "must_not_include_any": [
+          "source_id=",
+          "document_id="
+        ]
+      },
+      "reference_answer": "GFR là mức lọc cầu thận, dùng để đánh giá chức năng thận và phân giai đoạn bệnh thận mạn. Trong tài liệu, GFR < 60 ml/ph/1,73m2 kéo dài trên 3 tháng là tiêu chuẩn chẩn đoán bệnh thận mạn; GFR có thể được ước tính bằng công thức như MDRD dựa trên creatinin huyết thanh, tuổi, giới và chủng tộc.",
+      "required_facts": [
+        "GFR là mức lọc cầu thận.",
+        "GFR được dùng để đánh giá chức năng thận và phân giai đoạn bệnh thận mạn.",
+        "GFR <60 ml/ph/1,73m2 kéo dài trên 3 tháng là tiêu chuẩn chẩn đoán bệnh thận mạn.",
+        "GFR có thể được ước tính bằng công thức MDRD dựa trên creatinin huyết thanh, tuổi, giới và chủng tộc."
+      ],
+      "relevant_document_ids": [
+        "chunk::benh_than_man_p133_002",
+        "chunk::benh_than_man_p133_003",
+        "chunk::benh_than_man_p141_002",
+        "chunk::benh_than_man_p141_003"
+      ],
+      "relevant_source_ids": [
+        "benh_than_man_p133_002",
+        "benh_than_man_p133_003",
+        "benh_than_man_p141_002",
+        "benh_than_man_p141_003"
+      ],
+      "eval_tags": [
+        "general",
+        "definition",
+        "gfr",
+        "ckd",
+        "rag_only"
+      ],
+      "eval_notes": "Cần nêu được vai trò đánh giá chức năng thận và mốc <60 kéo dài trên 3 tháng."
     },
     {
       "id": "general_003",
@@ -37,9 +101,43 @@
         "require_route": "retrieve",
         "min_answer_chars": 40,
         "require_sources_min": 1,
-        "must_include_any": ["acr", "albumin"],
-        "must_not_include_any": ["source_id=", "document_id="]
-      }
+        "must_include_any": [
+          "acr",
+          "albumin"
+        ],
+        "must_not_include_any": [
+          "source_id=",
+          "document_id="
+        ]
+      },
+      "reference_answer": "ACR là tỷ lệ albumin/creatinin niệu, dùng để đánh giá albumin niệu/tổn thương thận. Theo phân loại KDIGO trong dữ liệu, A1 là <30 mg/g, A2 là 30-300 mg/g, A3 là >=300 mg/g hoặc >300 mg/g tùy đoạn nguồn, với nguy cơ bệnh thận mạn tăng dần.",
+      "required_facts": [
+        "ACR là tỷ lệ albumin/creatinin niệu.",
+        "ACR >30 mg/g là biểu hiện albumin niệu trong tiêu chuẩn tổn thương thận.",
+        "A1 là ACR <30 mg/g.",
+        "A2 là ACR 30-300 mg/g.",
+        "A3 là ACR >=300 mg/g hoặc >300 mg/g theo nguồn phân loại."
+      ],
+      "relevant_document_ids": [
+        "chunk::benh_than_man_p129_001",
+        "chunk::benh_than_man_p202_005",
+        "threshold::benh_than_man_acr_gt_30_p129_101",
+        "threshold::benh_than_man_acr_gteq_300_0_p201_003"
+      ],
+      "relevant_source_ids": [
+        "benh_than_man_p129_001",
+        "benh_than_man_p202_005",
+        "benh_than_man_acr_gt_30_p129_101",
+        "benh_than_man_acr_gteq_300_0_p201_003"
+      ],
+      "eval_tags": [
+        "general",
+        "definition",
+        "acr",
+        "albuminuria",
+        "rag_only"
+      ],
+      "eval_notes": "Không cần tool vì không có giá trị ACR cụ thể, nhưng context nên có phân loại A1/A2/A3."
     },
     {
       "id": "general_004",
@@ -50,9 +148,41 @@
         "require_route": "retrieve",
         "min_answer_chars": 40,
         "require_sources_min": 1,
-        "must_include_any": ["fena"],
-        "must_not_include_any": ["source_id=", "document_id="]
-      }
+        "must_include_any": [
+          "fena"
+        ],
+        "must_not_include_any": [
+          "source_id=",
+          "document_id="
+        ]
+      },
+      "reference_answer": "FENa là phân suất bài tiết natri, được tính từ natri niệu, natri máu, creatinin niệu và creatinin máu. Trong tổn thương thận cấp, FENa <1% gợi ý suy thận trước thận; FENa >1% gợi ý suy thận tại thận.",
+      "required_facts": [
+        "FENa là Fractional Excretion of Sodium.",
+        "FENa dùng natri niệu, natri máu, creatinin niệu và creatinin máu.",
+        "FENa <1% gợi ý suy thận trước thận.",
+        "FENa >1% gợi ý suy thận tại thận."
+      ],
+      "relevant_document_ids": [
+        "formula::fena_formula",
+        "chunk::acute_kidney_injury_p186_003",
+        "threshold::extra_acute_kidney_injury_fena_lt_1_0_p186_025",
+        "threshold::extra_acute_kidney_injury_fena_gt_1_0_p186_026"
+      ],
+      "relevant_source_ids": [
+        "fena_formula",
+        "acute_kidney_injury_p186_003",
+        "extra_acute_kidney_injury_fena_lt_1_0_p186_025",
+        "extra_acute_kidney_injury_fena_gt_1_0_p186_026"
+      ],
+      "eval_tags": [
+        "general",
+        "definition",
+        "fena",
+        "aki",
+        "formula_knowledge"
+      ],
+      "eval_notes": "Câu hỏi định nghĩa nên không bắt buộc tính toán, nhưng answer phải nêu đúng ý nghĩa ngưỡng."
     }
   ]
 }

@@ -14,9 +14,39 @@
         "require_threshold_match_min": 1,
         "require_classification_min": 1,
         "min_answer_chars": 40,
-        "must_include_any": ["acr", "albumin"],
-        "must_not_include_any": ["tool_name", "endpoint không được phép"]
-      }
+        "must_include_any": [
+          "acr",
+          "albumin"
+        ],
+        "must_not_include_any": [
+          "tool_name",
+          "endpoint không được phép"
+        ]
+      },
+      "reference_answer": "ACR 350 mg/g vượt ngưỡng 300 mg/g nên được xếp nhóm A3, nghĩa là albumin niệu tăng nặng/nguy cơ bệnh thận mạn tăng. Kết quả này cần được diễn giải cùng bối cảnh lâm sàng và không thay thế đánh giá của bác sĩ.",
+      "required_facts": [
+        "ACR 350 mg/g >= 300 mg/g.",
+        "ACR >= 300 mg/g thuộc nhóm A3.",
+        "A3 tương ứng albumin niệu tăng nặng hoặc nguy cơ bệnh thận mạn tăng."
+      ],
+      "relevant_document_ids": [
+        "threshold::benh_than_man_acr_gteq_300_0_p201_003",
+        "chunk::benh_than_man_p202_005",
+        "threshold::benh_than_man_acr_gt_30_p129_101"
+      ],
+      "relevant_source_ids": [
+        "benh_than_man_acr_gteq_300_0_p201_003",
+        "benh_than_man_p202_005",
+        "benh_than_man_acr_gt_30_p129_101"
+      ],
+      "eval_tags": [
+        "threshold",
+        "acr",
+        "a3",
+        "medical_tool",
+        "classification"
+      ],
+      "eval_notes": "Tool phải trả classification A3 và answer không được chỉ nói chung chung."
     },
     {
       "id": "threshold_002",
@@ -29,9 +59,40 @@
         "require_tool_success": true,
         "require_threshold_match_min": 1,
         "min_answer_chars": 40,
-        "must_include_any": ["gfr", "thận"],
-        "must_not_include_any": ["tool_name"]
-      }
+        "must_include_any": [
+          "gfr",
+          "thận"
+        ],
+        "must_not_include_any": [
+          "tool_name"
+        ]
+      },
+      "reference_answer": "GFR 55 ml/ph/1,73m2 nằm trong khoảng 45-60 nên thuộc nhóm G3a; theo phân loại 5 giai đoạn cũ, 30-60 cũng tương ứng CKD stage III. Nếu GFR <60 kéo dài trên 3 tháng, đây là tiêu chuẩn bệnh thận mạn.",
+      "required_facts": [
+        "GFR 55 ml/ph/1,73m2 nằm trong khoảng 45 đến dưới 60.",
+        "45 <= GFR < 60 thuộc nhóm G3a.",
+        "30 <= GFR < 60 tương ứng CKD stage III.",
+        "GFR <60 kéo dài trên 3 tháng là tiêu chuẩn chẩn đoán bệnh thận mạn."
+      ],
+      "relevant_document_ids": [
+        "threshold::benh_than_man_gfr_between_45_0_p150_001",
+        "threshold::benh_than_man_gfr_between_30_0_p143_003",
+        "chunk::benh_than_man_p133_002"
+      ],
+      "relevant_source_ids": [
+        "benh_than_man_gfr_between_45_0_p150_001",
+        "benh_than_man_gfr_between_30_0_p143_003",
+        "benh_than_man_p133_002"
+      ],
+      "eval_tags": [
+        "threshold",
+        "gfr",
+        "g3a",
+        "ckd",
+        "medical_tool",
+        "classification"
+      ],
+      "eval_notes": "Cần phân biệt G3a với CKD stage III, không kết luận bệnh thận mạn nếu thiếu yếu tố kéo dài 3 tháng."
     },
     {
       "id": "threshold_003",
@@ -44,9 +105,37 @@
         "require_tool_success": true,
         "require_classification_min": 1,
         "min_answer_chars": 30,
-        "must_include_any": ["a3", "acr"],
-        "must_not_include_any": ["tool_name"]
-      }
+        "must_include_any": [
+          "a3",
+          "acr"
+        ],
+        "must_not_include_any": [
+          "tool_name"
+        ]
+      },
+      "reference_answer": "ACR 300 mg/g nằm đúng mốc vào nhóm A3 vì rule trong tool là ACR >= 300 thì A3. Không nên xếp A2 vì A2 chỉ từ 30 đến dưới 300 mg/g.",
+      "required_facts": [
+        "ACR 300 mg/g đạt điều kiện >= 300 mg/g.",
+        "ACR >= 300 mg/g thuộc A3.",
+        "A2 là 30 <= ACR < 300 mg/g."
+      ],
+      "relevant_document_ids": [
+        "threshold::benh_than_man_acr_gteq_300_0_p201_003",
+        "threshold::benh_than_man_acr_between_30_0_p201_002"
+      ],
+      "relevant_source_ids": [
+        "benh_than_man_acr_gteq_300_0_p201_003",
+        "benh_than_man_acr_between_30_0_p201_002"
+      ],
+      "eval_tags": [
+        "threshold",
+        "acr",
+        "boundary",
+        "a3",
+        "medical_tool",
+        "classification"
+      ],
+      "eval_notes": "Boundary case: 300 phải là A3."
     },
     {
       "id": "threshold_004",
@@ -59,9 +148,36 @@
         "require_tool_success": true,
         "require_classification_min": 1,
         "min_answer_chars": 30,
-        "must_include_any": ["g2", "gfr"],
-        "must_not_include_any": ["tool_name"]
-      }
+        "must_include_any": [
+          "g2",
+          "gfr"
+        ],
+        "must_not_include_any": [
+          "tool_name"
+        ]
+      },
+      "reference_answer": "GFR 75 ml/ph/1,73m2 nằm trong khoảng 60 đến dưới 90 nên thuộc nhóm G2; trong bảng 5 giai đoạn cũ cũng tương ứng CKD stage II.",
+      "required_facts": [
+        "GFR 75 nằm trong khoảng 60 đến dưới 90.",
+        "60 <= GFR < 90 thuộc nhóm G2.",
+        "60 <= GFR < 90 cũng tương ứng CKD stage II trong phân loại cũ."
+      ],
+      "relevant_document_ids": [
+        "threshold::benh_than_man_gfr_between_60_0_p149_002",
+        "threshold::benh_than_man_gfr_between_60_0_p143_002"
+      ],
+      "relevant_source_ids": [
+        "benh_than_man_gfr_between_60_0_p149_002",
+        "benh_than_man_gfr_between_60_0_p143_002"
+      ],
+      "eval_tags": [
+        "threshold",
+        "gfr",
+        "g2",
+        "medical_tool",
+        "classification"
+      ],
+      "eval_notes": "Answer phải có G2, không được nhầm sang G3."
     },
     {
       "id": "threshold_005",
@@ -74,9 +190,39 @@
         "require_tool_success": true,
         "require_classification_min": 1,
         "min_answer_chars": 30,
-        "must_include_any": ["g5", "gfr"],
-        "must_not_include_any": ["tool_name"]
-      }
+        "must_include_any": [
+          "g5",
+          "gfr"
+        ],
+        "must_not_include_any": [
+          "tool_name"
+        ]
+      },
+      "reference_answer": "GFR 10 ml/ph/1,73m2 nhỏ hơn 15 nên thuộc nhóm G5; theo bảng giai đoạn CKD cũng tương ứng CKD stage V/giai đoạn cuối.",
+      "required_facts": [
+        "GFR 10 nhỏ hơn 15.",
+        "GFR <15 thuộc nhóm G5.",
+        "GFR <15 tương ứng CKD stage V."
+      ],
+      "relevant_document_ids": [
+        "threshold::benh_than_man_gfr_lt_15_0_p150_004",
+        "threshold::benh_than_man_gfr_lt_15_0_p144_002",
+        "threshold::benh_than_man_gfr_lt_15_p170_1301"
+      ],
+      "relevant_source_ids": [
+        "benh_than_man_gfr_lt_15_0_p150_004",
+        "benh_than_man_gfr_lt_15_0_p144_002",
+        "benh_than_man_gfr_lt_15_p170_1301"
+      ],
+      "eval_tags": [
+        "threshold",
+        "gfr",
+        "g5",
+        "ckd_stage_v",
+        "medical_tool",
+        "classification"
+      ],
+      "eval_notes": "Cần trả lời mạnh vào phân nhóm G5/stage V, không tự tư vấn điều trị thay thế thận nếu không có hỏi."
     },
     {
       "id": "threshold_006",
@@ -90,9 +236,39 @@
         "require_threshold_match_min": 1,
         "require_classification_min": 1,
         "min_answer_chars": 40,
-        "must_include_any": ["kali", "tăng kali"],
-        "must_not_include_any": ["tool_name"]
-      }
+        "must_include_any": [
+          "kali",
+          "tăng kali"
+        ],
+        "must_not_include_any": [
+          "tool_name"
+        ]
+      },
+      "reference_answer": "Kali 6.5 mmol/L đạt ngưỡng tăng kali máu nặng trong tài liệu tổn thương thận cấp. Nguồn nêu kali máu >=6,5 mmol/L kèm biến đổi điện tim là chỉ định cần xử trí/lọc máu sớm trong bối cảnh phù hợp.",
+      "required_facts": [
+        "Kali 6.5 mmol/L đạt ngưỡng >=6.5 mmol/L.",
+        "Ngưỡng >=6.5 mmol/L được gắn nhãn severe_hyperkalemia.",
+        "Tài liệu nêu tăng kali máu kèm biến đổi điện tim là dấu hiệu nguy hiểm."
+      ],
+      "relevant_document_ids": [
+        "threshold::extra_acute_kidney_injury_potassium_gte_6_5_p126_005",
+        "threshold::extra_acute_kidney_injury_potassium_gte_6_5_p194_030",
+        "chunk::acute_kidney_injury_p194_001"
+      ],
+      "relevant_source_ids": [
+        "extra_acute_kidney_injury_potassium_gte_6_5_p126_005",
+        "extra_acute_kidney_injury_potassium_gte_6_5_p194_030",
+        "acute_kidney_injury_p194_001"
+      ],
+      "eval_tags": [
+        "threshold",
+        "potassium",
+        "hyperkalemia",
+        "boundary",
+        "medical_tool",
+        "safety"
+      ],
+      "eval_notes": "Cần nhấn mạnh nguy hiểm nhưng không kê toa; có thể khuyến nghị đánh giá y tế khẩn nếu có triệu chứng/ECG bất thường."
     },
     {
       "id": "threshold_007",
@@ -106,9 +282,43 @@
         "require_threshold_match_min": 2,
         "require_classification_min": 2,
         "min_answer_chars": 40,
-        "must_include_any": ["huyết áp", "128", "78"],
-        "must_not_include_any": ["tool_name"]
-      }
+        "must_include_any": [
+          "huyết áp",
+          "128",
+          "78"
+        ],
+        "must_not_include_any": [
+          "tool_name"
+        ]
+      },
+      "reference_answer": "Huyết áp 128/78 mmHg thấp hơn mục tiêu <130/80 mmHg nên đạt mục tiêu trong bối cảnh bệnh thận mạn/bệnh thận đái tháo đường được tài liệu nêu. Cần hiểu đây là so sánh theo ngưỡng, còn mục tiêu cá thể hóa phụ thuộc bác sĩ điều trị.",
+      "required_facts": [
+        "Huyết áp tâm thu 128 mmHg < 130 mmHg.",
+        "Huyết áp tâm trương 78 mmHg < 80 mmHg.",
+        "Mục tiêu huyết áp trong nguồn là <130/80 mmHg."
+      ],
+      "relevant_document_ids": [
+        "threshold::extra_benh_than_man_systolic_bp_lt_130_0_p75_001",
+        "threshold::extra_benh_than_man_diastolic_bp_lt_80_0_p75_002",
+        "chunk::benh_than_man_p75_007",
+        "chunk::diabetic_kidney_disease_p204_001",
+        "chunk::diabetic_kidney_disease_p210_005"
+      ],
+      "relevant_source_ids": [
+        "extra_benh_than_man_systolic_bp_lt_130_0_p75_001",
+        "extra_benh_than_man_diastolic_bp_lt_80_0_p75_002",
+        "benh_than_man_p75_007",
+        "diabetic_kidney_disease_p204_001",
+        "diabetic_kidney_disease_p210_005"
+      ],
+      "eval_tags": [
+        "threshold",
+        "blood_pressure",
+        "target",
+        "medical_tool",
+        "parser"
+      ],
+      "eval_notes": "Cần parse được cả systolic và diastolic từ dạng 128/78."
     },
     {
       "id": "threshold_008",
@@ -122,9 +332,36 @@
         "require_threshold_match_min": 1,
         "require_classification_min": 1,
         "min_answer_chars": 40,
-        "must_include_any": ["hb", "thiếu máu"],
-        "must_not_include_any": ["tool_name"]
-      }
+        "must_include_any": [
+          "hb",
+          "thiếu máu"
+        ],
+        "must_not_include_any": [
+          "tool_name"
+        ]
+      },
+      "reference_answer": "Nam có Hb 12 g/dL tương đương 120 g/L. Theo ngưỡng WHO trong dữ liệu, nam thiếu máu khi Hb <13 g/dL (tức <130 g/L), vì vậy kết quả này được xem là thiếu máu theo ngưỡng nam.",
+      "required_facts": [
+        "Hb 12 g/dL tương đương 120 g/L.",
+        "Nam thiếu máu khi Hb <13 g/dL hoặc <130 g/L theo nguồn WHO.",
+        "Hb 12 g/dL ở nam thấp hơn ngưỡng 13 g/dL."
+      ],
+      "relevant_document_ids": [
+        "threshold::extra_benh_than_man_hemoglobin_lt_130_0_p155_012",
+        "chunk::benh_than_man_p155_002"
+      ],
+      "relevant_source_ids": [
+        "extra_benh_than_man_hemoglobin_lt_130_0_p155_012",
+        "benh_than_man_p155_002"
+      ],
+      "eval_tags": [
+        "threshold",
+        "hemoglobin",
+        "anemia",
+        "sex_specific",
+        "unit_conversion"
+      ],
+      "eval_notes": "Cần tôn trọng sex=male và chuyển/hiểu g/dL sang g/L."
     },
     {
       "id": "threshold_009",
@@ -137,9 +374,42 @@
         "require_tool_success": true,
         "require_threshold_match_min": 1,
         "min_answer_chars": 40,
-        "must_include_any": ["albumin"],
-        "must_not_include_any": ["tool_name"]
-      }
+        "must_include_any": [
+          "albumin"
+        ],
+        "must_not_include_any": [
+          "tool_name"
+        ]
+      },
+      "reference_answer": "Albumin máu 2.8 g/dL tương đương 28 g/L, thấp hơn ngưỡng 30 g/L trong hội chứng thận hư/bệnh lý cầu thận, vì vậy là giảm albumin máu theo ngưỡng dữ liệu.",
+      "required_facts": [
+        "Albumin máu 2.8 g/dL tương đương 28 g/L.",
+        "Albumin máu <30 g/L là giảm theo nguồn hội chứng thận hư/bệnh lý cầu thận.",
+        "28 g/L thấp hơn 30 g/L."
+      ],
+      "relevant_document_ids": [
+        "threshold::hoi_chung_than_hu_albumin_mau_lt_30_p1_903",
+        "threshold::benh_ly_cau_than_albumin_mau_lt_30_p19_2002",
+        "threshold::hoi_chung_than_hu_albumin_mau_lt_30_p20_602",
+        "chunk::benh_ly_cau_than_p1_006",
+        "chunk::benh_ly_cau_than_p19_007",
+        "chunk::hoi_chung_than_hu_p20_006"
+      ],
+      "relevant_source_ids": [
+        "hoi_chung_than_hu_albumin_mau_lt_30_p1_903",
+        "benh_ly_cau_than_albumin_mau_lt_30_p19_2002",
+        "hoi_chung_than_hu_albumin_mau_lt_30_p20_602",
+        "benh_ly_cau_than_p1_006",
+        "benh_ly_cau_than_p19_007",
+        "hoi_chung_than_hu_p20_006"
+      ],
+      "eval_tags": [
+        "threshold",
+        "albumin",
+        "unit_conversion",
+        "medical_tool"
+      ],
+      "eval_notes": "Đây là case chuyển đơn vị g/dL -> g/L."
     }
   ]
 }

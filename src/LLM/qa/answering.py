@@ -77,6 +77,7 @@ class RetrievalAugmentedAnswerer:
         if include_debug:
             response["debug"] = {
                 "filters": state.get("filters"),
+                "retrieval_plan": state.get("retrieval_plan"),
                 "query_understanding": state.get("query_understanding"),
                 "results": state.get("debug_results", []),
                 "router_plan": state.get("router_plan"),
@@ -146,6 +147,7 @@ class RetrievalAugmentedAnswerer:
         if include_debug:
             response["debug"] = {
                 "filters": (final_state or {}).get("filters"),
+                "retrieval_plan": (final_state or {}).get("retrieval_plan"),
                 "query_understanding": (final_state or {}).get("query_understanding"),
                 "results": (final_state or {}).get("debug_results", []),
                 "router_plan": (final_state or {}).get("router_plan"),

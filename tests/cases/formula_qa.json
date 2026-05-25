@@ -14,11 +14,45 @@
         "require_no_null_tool_parameters": true,
         "require_extracted_measurements_min": 3,
         "require_formula_result_min": 1,
-        "require_formula_ids_any": ["ckd_epi_2021_creatinine"],
+        "require_formula_ids_any": [
+          "ckd_epi_2021_creatinine"
+        ],
         "min_answer_chars": 30,
-        "must_include_any": ["gfr", "egfr", "creatinin", "creatinine"],
-        "must_not_include_any": ["tool_name"]
-      }
+        "must_include_any": [
+          "gfr",
+          "egfr",
+          "creatinin",
+          "creatinine"
+        ],
+        "must_not_include_any": [
+          "tool_name"
+        ]
+      },
+      "reference_answer": "Với nữ 60 tuổi, creatinine 1.4 mg/dL, CKD-EPI 2021 creatinine ước tính eGFR khoảng 43.07 ml/ph/1.73m2. Giá trị này rơi vào G3b vì nằm trong khoảng 30 đến dưới 45 ml/ph/1.73m2.",
+      "required_facts": [
+        "CKD-EPI 2021 creatinine dùng tuổi, giới và creatinine huyết thanh.",
+        "Kết quả eGFR xấp xỉ 43.07 ml/ph/1.73m2.",
+        "eGFR 43.07 nằm trong khoảng 30 đến dưới 45.",
+        "30 <= GFR < 45 thuộc nhóm G3b."
+      ],
+      "relevant_document_ids": [
+        "formula::ckd_epi_2021_creatinine",
+        "threshold::benh_than_man_gfr_between_30_0_p150_002",
+        "chunk::benh_than_man_p141_003"
+      ],
+      "relevant_source_ids": [
+        "ckd_epi_2021_creatinine",
+        "benh_than_man_gfr_between_30_0_p150_002",
+        "benh_than_man_p141_003"
+      ],
+      "eval_tags": [
+        "formula",
+        "ckd_epi_2021",
+        "gfr",
+        "g3b",
+        "medical_tool"
+      ],
+      "eval_notes": "CKD-EPI có trong formulas.json nhưng chưa chắc nằm trong embedding_documents cũ; evaluator cần tính cả tool context."
     },
     {
       "id": "formula_006",
@@ -32,11 +66,44 @@
         "require_no_null_tool_parameters": true,
         "require_extracted_measurements_min": 3,
         "require_formula_result_min": 1,
-        "require_formula_ids_any": ["mdrd_gfr"],
+        "require_formula_ids_any": [
+          "mdrd_gfr"
+        ],
         "min_answer_chars": 30,
-        "must_include_any": ["mdrd", "gfr", "egfr"],
-        "must_not_include_any": ["tool_name"]
-      }
+        "must_include_any": [
+          "mdrd",
+          "gfr",
+          "egfr"
+        ],
+        "must_not_include_any": [
+          "tool_name"
+        ]
+      },
+      "reference_answer": "Với nữ 60 tuổi, creatinine 1.4 mg/dL, MDRD eGFR khoảng 40.77 ml/ph/1.73m2 nếu giả định race=other. Kết quả nằm trong khoảng 30 đến dưới 45 nên thuộc G3b.",
+      "required_facts": [
+        "MDRD dùng creatinine huyết thanh, tuổi, giới và chủng tộc.",
+        "Khi không cung cấp race, tool giả định race=other.",
+        "Kết quả MDRD xấp xỉ 40.77 ml/ph/1.73m2.",
+        "30 <= GFR < 45 thuộc nhóm G3b."
+      ],
+      "relevant_document_ids": [
+        "formula::mdrd_gfr",
+        "chunk::benh_than_man_p133_003",
+        "threshold::benh_than_man_gfr_between_30_0_p150_002"
+      ],
+      "relevant_source_ids": [
+        "mdrd_gfr",
+        "benh_than_man_p133_003",
+        "benh_than_man_gfr_between_30_0_p150_002"
+      ],
+      "eval_tags": [
+        "formula",
+        "mdrd",
+        "gfr",
+        "default_race",
+        "medical_tool"
+      ],
+      "eval_notes": "Answer nên nêu giả định race=other nếu dùng MDRD."
     },
     {
       "id": "formula_002",
@@ -50,11 +117,43 @@
         "require_no_null_tool_parameters": true,
         "require_extracted_measurements_min": 4,
         "require_formula_result_min": 1,
-        "require_formula_ids_any": ["cockcroft_gault"],
+        "require_formula_ids_any": [
+          "cockcroft_gault"
+        ],
         "min_answer_chars": 30,
-        "must_include_any": ["cockcroft", "gault", "creatinine clearance", "thanh thải"],
-        "must_not_include_any": ["tool_name"]
-      }
+        "must_include_any": [
+          "cockcroft",
+          "gault",
+          "creatinine clearance",
+          "thanh thải"
+        ],
+        "must_not_include_any": [
+          "tool_name"
+        ]
+      },
+      "reference_answer": "Theo Cockcroft-Gault, nam 65 tuổi, 70 kg, creatinine 1.6 mg/dL có độ thanh thải creatinin khoảng 45.57 ml/ph. Công thức này dựa trên tuổi, cân nặng, creatinine huyết thanh và giới.",
+      "required_facts": [
+        "Cockcroft-Gault dùng tuổi, cân nặng, creatinine huyết thanh và giới.",
+        "Nam dùng hệ số giới 1.0 trong công thức.",
+        "Kết quả creatinine clearance xấp xỉ 45.57 ml/ph."
+      ],
+      "relevant_document_ids": [
+        "formula::cockcroft_gault",
+        "chunk::benh_than_man_p134_002",
+        "chunk::benh_than_man_p141_003"
+      ],
+      "relevant_source_ids": [
+        "cockcroft_gault",
+        "benh_than_man_p134_002",
+        "benh_than_man_p141_003"
+      ],
+      "eval_tags": [
+        "formula",
+        "cockcroft_gault",
+        "creatinine_clearance",
+        "medical_tool"
+      ],
+      "eval_notes": "Không nên gọi kết quả này là eGFR chuẩn hóa 1.73m2."
     },
     {
       "id": "formula_003",
@@ -67,11 +166,42 @@
         "require_tool_success": true,
         "require_no_null_tool_parameters": true,
         "require_formula_result_min": 1,
-        "require_formula_ids_any": ["fena_formula"],
+        "require_formula_ids_any": [
+          "fena_formula"
+        ],
         "min_answer_chars": 40,
-        "must_include_any": ["fena", "suy thận"],
-        "must_not_include_any": ["tool_name"]
-      }
+        "must_include_any": [
+          "fena",
+          "suy thận"
+        ],
+        "must_not_include_any": [
+          "tool_name"
+        ]
+      },
+      "reference_answer": "FENa = (natri niệu x creatinine máu) / (natri máu x creatinine niệu) x 100. Với UNa 20, PNa 140, UCr 100, PCr 1, FENa khoảng 0.1429%, nhỏ hơn 1%, gợi ý suy thận cấp trước thận trong bối cảnh phù hợp.",
+      "required_facts": [
+        "Công thức FENa là (urine Na x plasma creatinine)/(plasma Na x urine creatinine) x 100.",
+        "Kết quả FENa xấp xỉ 0.1429%.",
+        "FENa <1% gợi ý suy thận trước thận."
+      ],
+      "relevant_document_ids": [
+        "formula::fena_formula",
+        "threshold::extra_acute_kidney_injury_fena_lt_1_0_p186_025",
+        "chunk::acute_kidney_injury_p186_003"
+      ],
+      "relevant_source_ids": [
+        "fena_formula",
+        "extra_acute_kidney_injury_fena_lt_1_0_p186_025",
+        "acute_kidney_injury_p186_003"
+      ],
+      "eval_tags": [
+        "formula",
+        "fena",
+        "vietnamese_aliases",
+        "aki",
+        "medical_tool"
+      ],
+      "eval_notes": "Cần parse alias tiếng Việt: natri niệu/máu, creatinine niệu/máu."
     },
     {
       "id": "formula_004",
@@ -84,11 +214,37 @@
         "require_tool_success": true,
         "require_no_null_tool_parameters": true,
         "require_formula_result_min": 1,
-        "require_formula_ids_any": ["body_surface_area"],
+        "require_formula_ids_any": [
+          "body_surface_area"
+        ],
         "min_answer_chars": 30,
-        "must_include_any": ["bsa", "diện tích da"],
-        "must_not_include_any": ["tool_name"]
-      }
+        "must_include_any": [
+          "bsa",
+          "diện tích da"
+        ],
+        "must_not_include_any": [
+          "tool_name"
+        ]
+      },
+      "reference_answer": "Diện tích da cơ thể theo công thức sqrt(cân nặng x chiều cao / 3600). Với 55 kg và 160 cm, BSA khoảng 1.5635 m2.",
+      "required_facts": [
+        "BSA = sqrt(weight_kg x height_cm / 3600).",
+        "Với 55 kg và 160 cm, BSA xấp xỉ 1.5635 m2."
+      ],
+      "relevant_document_ids": [
+        "formula::body_surface_area",
+        "chunk::benh_than_man_p129_003"
+      ],
+      "relevant_source_ids": [
+        "body_surface_area",
+        "benh_than_man_p129_003"
+      ],
+      "eval_tags": [
+        "formula",
+        "bsa",
+        "medical_tool"
+      ],
+      "eval_notes": "Cần trả về đơn vị m2."
     },
     {
       "id": "formula_005",
@@ -101,11 +257,44 @@
         "require_tool_success": true,
         "require_no_null_tool_parameters": true,
         "require_formula_result_min": 1,
-        "require_formula_ids_any": ["fena_formula"],
+        "require_formula_ids_any": [
+          "fena_formula"
+        ],
         "min_answer_chars": 40,
-        "must_include_any": ["fena", "suy thận"],
-        "must_not_include_any": ["tool_name"]
-      }
+        "must_include_any": [
+          "fena",
+          "suy thận"
+        ],
+        "must_not_include_any": [
+          "tool_name"
+        ]
+      },
+      "reference_answer": "Với cách viết tiếng Anh, Urine Na 20, plasma Na 140, urine creatinine 100 và plasma creatinine 1 cho FENa khoảng 0.1429%. Vì nhỏ hơn 1%, kết quả gợi ý suy thận trước thận trong bối cảnh phù hợp.",
+      "required_facts": [
+        "Urine Na tương ứng urine_na.",
+        "Plasma Na tương ứng plasma_na.",
+        "Urine creatinine tương ứng urine_creatinine.",
+        "Plasma creatinine tương ứng plasma_creatinine.",
+        "Kết quả FENa xấp xỉ 0.1429% và <1%."
+      ],
+      "relevant_document_ids": [
+        "formula::fena_formula",
+        "threshold::extra_acute_kidney_injury_fena_lt_1_0_p186_025",
+        "chunk::acute_kidney_injury_p186_003"
+      ],
+      "relevant_source_ids": [
+        "fena_formula",
+        "extra_acute_kidney_injury_fena_lt_1_0_p186_025",
+        "acute_kidney_injury_p186_003"
+      ],
+      "eval_tags": [
+        "formula",
+        "fena",
+        "english_aliases",
+        "aki",
+        "medical_tool"
+      ],
+      "eval_notes": "Regression quan trọng: không được tạo false sodium threshold match từ Urine Na/plasma Na."
     }
   ]
 }

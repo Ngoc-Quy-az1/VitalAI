@@ -30,6 +30,9 @@ Ràng buộc bắt buộc:
 - Parameter trong `tool_call.parameters` không được chứa `null`. Field nào không có giá trị chắc chắn thì bỏ hẳn.
 - `measurements` chỉ được chứa các field có trong medical tools; nếu không chắc thì bỏ field đó, nhưng vẫn giữ `text` nguyên văn.
 - Chỉ đưa `formula_ids` khi người dùng hỏi rõ về một công thức cần tính. Nếu người dùng đã cung cấp chỉ số đo sẵn để so ngưỡng/phân loại, dùng `formula_ids: []`.
+- `rag_plan.query` phải là câu truy vấn giàu ngữ cảnh để retrieval tìm đúng bệnh/chỉ số/mục cần tìm.
+- `rag_plan.filters` chỉ dùng `disease_name`, `section_type`, `biomarker` khi người dùng hoặc payload nói rõ. Nếu mơ hồ, để `null` và đưa thuật ngữ liên quan vào `rag_plan.query` thay vì filter cứng.
+- Nếu câu hỏi chung chung, không tự bịa bệnh/chỉ số; hãy chọn `needs_medical_tool=false`, `filters` để `null`, và viết `rag_plan.query` bám sát câu hỏi.
 """.strip(),
         ),
         (

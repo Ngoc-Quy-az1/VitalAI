@@ -1,0 +1,2858 @@
+{
+  "category": "rag_qa",
+  "description": "50 QA cases derived from the original renal disease source document, enriched for LangSmith RAG evaluation.",
+  "source_dataset": "data/evaluate_data/qa_dataset_50_questions.json",
+  "source_artifacts": [
+    "data/processed_data/chunks.jsonl",
+    "data/processed_data/thresholds.jsonl",
+    "data/processed_data/thresholds_extra.jsonl",
+    "data/processed_data/formulas.json"
+  ],
+  "cases": [
+    {
+      "id": "rag_001",
+      "title": "Hội chứng viêm cầu thận cấp có những biểu hiện gì?",
+      "query": "Hội chứng viêm cầu thận cấp có những biểu hiện gì?",
+      "top_k": 5,
+      "reference_answer": "Hội chứng viêm cầu thận cấp biểu hiện bằng đột ngột xuất hiện phù, đái máu đại thể hoặc vi thể, protein niệu, tăng huyết áp và có thể suy giảm chức năng thận.",
+      "reference_context": "Đột ngột xuất hiện phù, đái máu đại thể hoặc vi thể, protein niệu, tăng huyết áp và có thể suy giảm chức năng thận.",
+      "required_facts": [
+        "Hội chứng viêm cầu thận cấp biểu hiện bằng đột ngột xuất hiện phù, đái máu đại thể hoặc vi thể, protein niệu, tăng huyết áp và có thể suy giảm chức năng thận."
+      ],
+      "relevant_document_ids": [
+        "chunk::benh_ly_cau_than_p1_002"
+      ],
+      "relevant_source_ids": [
+        "benh_ly_cau_than_p1_002"
+      ],
+      "source_evidence": [
+        {
+          "document_id": "chunk::benh_ly_cau_than_p1_002",
+          "source_id": "benh_ly_cau_than_p1_002",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "general",
+          "biomarker": "protein_niệu_24h",
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 1,
+          "content_preview": "2.1. Hội chứng viêm cầu thận cấp Đột ngột xuất hiện phù, đái máu đại thể hoặc vi thể, protein niệu, tăng huyết áp và có thể suy giảm chức năng thận."
+        }
+      ],
+      "eval_tags": [
+        "benh_ly_cau_than",
+        "ground_truth",
+        "rag_qa"
+      ],
+      "eval_notes": "Generated from data/evaluate_data/qa_dataset_50_questions.json and matched against data/processed_data source artifacts. Review low match_score items before using as hard gold IDs."
+    },
+    {
+      "id": "rag_002",
+      "title": "Hội chứng thận hư được chẩn đoán xác định dựa vào những tiêu chuẩn nào?",
+      "query": "Hội chứng thận hư được chẩn đoán xác định dựa vào những tiêu chuẩn nào?",
+      "top_k": 5,
+      "reference_answer": "Hội chứng thận hư được chẩn đoán khi có: phù, protein niệu > 3,5g/24 giờ/1,73m² diện tích bề mặt cơ thể, protein máu giảm dưới 60g/lít và albumin máu giảm dưới 30g/lít, tăng cholesterol máu ≥ 6,5 mmol/l, có hạt mỡ lưỡng chiết và trụ mỡ trong nước tiểu. Trong đó tiêu chuẩn 2 và 3 là bắt buộc.",
+      "reference_context": "Tiêu chuẩn chẩn đoán hội chứng thận hư bao gồm: 1. Phù. 2. Protein niệu > 3,5g/24 giờ/1,73m diện tích bề mặt cơ thể. 3. Protein máu giảm dưới 60g/lít, albumin máu giảm dưới 30g/lít. 4. Tăng cholesterol máu ≥ 6,5 mmol/l. 5. Có hạt mỡ lưỡng chiết, trụ mỡ trong nước tiểu. Trong đó tiêu chuẩn 2 và 3 là bắt buộc, các tiêu chuẩn khác có thể không đầy đủ.",
+      "required_facts": [
+        "Hội chứng thận hư được chẩn đoán khi có: phù, protein niệu > 3,5g/24 giờ/1,73m² diện tích bề mặt cơ thể, protein máu giảm dưới 60g/lít và albumin máu giảm dưới 30g/lít, tăng cholesterol máu ≥ 6,5 mmol/l, có hạt mỡ lưỡng chiết và trụ mỡ trong nước tiểu.",
+        "Trong đó tiêu chuẩn 2 và 3 là bắt buộc."
+      ],
+      "relevant_document_ids": [
+        "chunk::benh_ly_cau_than_p1_006"
+      ],
+      "relevant_source_ids": [
+        "benh_ly_cau_than_p1_006"
+      ],
+      "source_evidence": [
+        {
+          "document_id": "chunk::benh_ly_cau_than_p1_006",
+          "source_id": "benh_ly_cau_than_p1_006",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "general",
+          "biomarker": "cholesterol",
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 1,
+          "content_preview": "2.5. hội chứng thận hư Biểu hiện có phù, protein niệu cao trên 3,5 g/24 giờ, protein máu giảm dưới 60 g/l và albumin máu giảm dưới 30 g/l, cholesterol máu tăng trên 6,5 mmol/l."
+        },
+        {
+          "document_id": "chunk::benh_ly_cau_than_p19_007",
+          "source_id": "benh_ly_cau_than_p19_007",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "general",
+          "biomarker": "protein_mau",
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 19,
+          "content_preview": "4.5. Xét nghiệm máu có protein máu giảm dưới 60g/lít, albumin máu giảm dưới 30g/l. Albumin máu thường giảm nặng ở những bệnh nhân có phù to tăng nhanh. Điện di protein máu thường thấy tăng tỷ lệ alpha2-globulin."
+        },
+        {
+          "document_id": "chunk::hoi_chung_than_hu_p20_004",
+          "source_id": "hoi_chung_than_hu_p20_004",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "hoi_chung_than_hu",
+          "section_type": "diagnosis_criteria",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 20,
+          "content_preview": "5. CHẨN ĐOÁN XÁC ĐỊNH Tiêu chuẩn chẩn đoán hội chứng thận hư bao gồm:"
+        },
+        {
+          "document_id": "chunk::hoi_chung_than_hu_p20_005",
+          "source_id": "hoi_chung_than_hu_p20_005",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "hoi_chung_than_hu",
+          "section_type": "general",
+          "biomarker": "protein_niệu_24h",
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 20,
+          "content_preview": "2. Protein niệu > 3,5g/24 giờ/1,73m diện tích bề mặt cơ thể."
+        }
+      ],
+      "eval_tags": [
+        "benh_ly_cau_than",
+        "diagnosis",
+        "ground_truth",
+        "hoi_chung_than_hu",
+        "numeric",
+        "rag_qa"
+      ],
+      "eval_notes": "Generated from data/evaluate_data/qa_dataset_50_questions.json and matched against data/processed_data source artifacts. Review low match_score items before using as hard gold IDs."
+    },
+    {
+      "id": "rag_003",
+      "title": "Bệnh cầu thận thay đổi tối thiểu thường gặp ở đối tượng nào và có những đặc điểm lâm sàng gì?",
+      "query": "Bệnh cầu thận thay đổi tối thiểu thường gặp ở đối tượng nào và có những đặc điểm lâm sàng gì?",
+      "top_k": 5,
+      "reference_answer": "Bệnh cầu thận thay đổi tối thiểu thường gặp ở trẻ nhỏ tuổi đi học, biểu hiện phù nhiều, có đầy đủ triệu chứng của hội chứng thận hư, protein niệu chọn lọc (> 80% là albumin), tăng IgE huyết thanh, bổ thể máu bình thường. Tiên lượng lành tính nhưng có thể xấu nếu hay tái phát.",
+      "reference_context": "Thường gặp ở trẻ nhỏ tuổi đi học. Phù nhiều. Có đầy đủ triệu chứng của hội chứng thận hư. Protein niệu chọn lọc: > 80% protein niệu là albumin. Tăng IgE huyết thanh. Bổ thể máu bình thường. Tiên lượng lành tính. Tuy nhiên tiên lượng có thể xấu nếu hay tái phát.",
+      "required_facts": [
+        "Bệnh cầu thận thay đổi tối thiểu thường gặp ở trẻ nhỏ tuổi đi học, biểu hiện phù nhiều, có đầy đủ triệu chứng của hội chứng thận hư, protein niệu chọn lọc (> 80% là albumin), tăng IgE huyết thanh, bổ thể máu bình thường.",
+        "Tiên lượng lành tính nhưng có thể xấu nếu hay tái phát."
+      ],
+      "relevant_document_ids": [
+        "chunk::benh_ly_cau_than_p3_005"
+      ],
+      "relevant_source_ids": [
+        "benh_ly_cau_than_p3_005"
+      ],
+      "source_evidence": [
+        {
+          "document_id": "chunk::benh_ly_cau_than_p3_005",
+          "source_id": "benh_ly_cau_than_p3_005",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "clinical_features",
+          "biomarker": "protein_niệu_24h",
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 3,
+          "content_preview": "4.1.1. Lâm sàng và cận lâm sàng • Thường gặp ở trẻ nhỏ tuổi đi học. • Phù nhiều. • Có đầy đủ triệu chứng của hội chứng thận hư. • Protein niệu chọn lọc: > 80% protein niệu là albumin. • Đái máu vi thể thoáng qua gặp ở 13-14% bệnh nhân. • Tăng huyết áp gặp ở 6-9% bệnh nhân. • Suy thận gặp ở 10-19% bệnh nhân. • Tăng IgE huyết thanh. • Tăng tỷ lệ CD4/CD8. • Bổ thể máu bình thường. • Tiên lượng lành tính. Tuy nhiên tiên lượng có thể xấu nếu hay tái phát."
+        },
+        {
+          "document_id": "chunk::benh_ly_cau_than_p4_003",
+          "source_id": "benh_ly_cau_than_p4_003",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "clinical_features",
+          "biomarker": "protein_niệu_24h",
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 4,
+          "content_preview": "4.3.1. Lâm sàng và cận lâm sàng • Phù. • hội chứng thận hư gặp ở 66-92% bệnh nhân. • Protein niệu dai dẳng nhưng dưới mức thận hư gặp ở 8-34% bệnh nhân. • Suy thận và tăng huyết áp gặp ở 10-50% bệnh nhân. • Đái máu vi thể. • Bổ thể máu bình thường. • Tiên lượng: tốt hơn ở trẻ em, chỉ có 10-20% bệnh nhân trẻ em tiến triển thành suy thận mạn tính."
+        },
+        {
+          "document_id": "chunk::benh_ly_cau_than_p5_001",
+          "source_id": "benh_ly_cau_than_p5_001",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "progression",
+          "biomarker": "protein_niệu_24h",
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 5,
+          "content_preview": "• Protein niệu thường có tính chọn lọc. • Bổ thể máu bình thường. • Tiên lượng thường lành tính."
+        },
+        {
+          "document_id": "chunk::benh_ly_cau_than_p5_004",
+          "source_id": "benh_ly_cau_than_p5_004",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "clinical_features",
+          "biomarker": "protein_niệu_24h",
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 5,
+          "content_preview": "4.4.2.1. Lâm sàng và cận lâm sàng • Tiền sử nhiễm liên cầu trước đó 1-3 tuần, trung bình là 2 tuần. • Đái máu: có 30% đái máu đại thể. • Phù. • Tăng huyết áp. • Protein niệu trung bình: 1g/24 giờ - 3g/24 giờ. • Kháng thể kháng liên cầu tăng, đặc biệt là hiệu giá kháng thể tăng. • Có thể có suy thận. • Tiên lượng: thường lành tính: 80-90% khởi phát ở trẻ em. Người lớn tiên lượng nặng hơn, 40-50% trở thành mạn tính."
+        }
+      ],
+      "eval_tags": [
+        "benh_ly_cau_than",
+        "ground_truth",
+        "numeric",
+        "prognosis",
+        "rag_qa"
+      ],
+      "eval_notes": "Generated from data/evaluate_data/qa_dataset_50_questions.json and matched against data/processed_data source artifacts. Review low match_score items before using as hard gold IDs."
+    },
+    {
+      "id": "rag_004",
+      "title": "Viêm cầu thận IgA có đặc điểm tiên lượng như thế nào?",
+      "query": "Viêm cầu thận IgA có đặc điểm tiên lượng như thế nào?",
+      "top_k": 5,
+      "reference_answer": "Tiên lượng viêm cầu thận IgA không tốt, khoảng 30-40% bệnh nhân người trưởng thành tiến triển tới suy thận giai đoạn cuối (10-20% sau 10 năm, 40% sau 20 năm). Có thể tái phát viêm cầu thận IgA ở thận ghép.",
+      "reference_context": "Tiên lượng: không tốt, khoảng 30-40% bệnh nhân người trưởng thành tiến triển tới suy thận giai đoạn cuối (10-20% sau 10 năm, 40% sau 20 năm). Có thể tái phát viêm cầu thận IgA ở thận ghép.",
+      "required_facts": [
+        "Tiên lượng viêm cầu thận IgA không tốt, khoảng 30-40% bệnh nhân người trưởng thành tiến triển tới suy thận giai đoạn cuối (10-20% sau 10 năm, 40% sau 20 năm).",
+        "Có thể tái phát viêm cầu thận IgA ở thận ghép."
+      ],
+      "relevant_document_ids": [
+        "chunk::benh_ly_cau_than_p7_003"
+      ],
+      "relevant_source_ids": [
+        "benh_ly_cau_than_p7_003"
+      ],
+      "source_evidence": [
+        {
+          "document_id": "chunk::benh_ly_cau_than_p7_003",
+          "source_id": "benh_ly_cau_than_p7_003",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "clinical_features",
+          "biomarker": "protein_niệu_24h",
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 7,
+          "content_preview": "4.4.5.1. Lâm sàng và cận lâm sàng • Khởi phát: ở trẻ em thường bắt đầu bởi đái máu đại thể, ở người lớn thường đái máu vi thể. Protein niệu thường ở mức độ nhẹ (dưới 1g/24 giờ). • Đái máu đại thể thường tái phát sau mỗi đợt viêm đường hô hấp trên do vi khuẩn hoặc do virus. • Ít gặp hội chứng thận hư (6-8%). • Chức năng thận và huyết áp bình thường lúc khởi phát. • Tăng IgA huyết thanh ở khoảng 50% bệnh nhân. • Bổ thể CH50, C3, C4: bình thường. • Tiên lượng: không tốt, khoảng 30-40% bệnh nhân ngư"
+        }
+      ],
+      "eval_tags": [
+        "benh_ly_cau_than",
+        "classification",
+        "ground_truth",
+        "numeric",
+        "prognosis",
+        "rag_qa"
+      ],
+      "eval_notes": "Generated from data/evaluate_data/qa_dataset_50_questions.json and matched against data/processed_data source artifacts. Review low match_score items before using as hard gold IDs."
+    },
+    {
+      "id": "rag_005",
+      "title": "Viêm cầu thận lupus được chẩn đoán khi nào theo tiêu chuẩn ARA 1997?",
+      "query": "Viêm cầu thận lupus được chẩn đoán khi nào theo tiêu chuẩn ARA 1997?",
+      "top_k": 5,
+      "reference_answer": "Theo tiêu chuẩn ARA 1997, viêm cầu thận lupus được chẩn đoán khi có 4/11 tiêu chuẩn trong đó có protein niệu dương tính.",
+      "reference_context": "Chẩn đoán lupus dựa vào 11 tiêu chuẩn của Hội Khớp học Mỹ (ARA) 1997. Khi có 4/11 tiêu chuẩn trong đó có protein niệu dương tính thì được chẩn đoán là viêm cầu thận lupus.",
+      "required_facts": [
+        "Theo tiêu chuẩn ARA 1997, viêm cầu thận lupus được chẩn đoán khi có 4/11 tiêu chuẩn trong đó có protein niệu dương tính."
+      ],
+      "relevant_document_ids": [
+        "chunk::benh_ly_cau_than_p8_002"
+      ],
+      "relevant_source_ids": [
+        "benh_ly_cau_than_p8_002"
+      ],
+      "source_evidence": [
+        {
+          "document_id": "chunk::benh_ly_cau_than_p8_002",
+          "source_id": "benh_ly_cau_than_p8_002",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "clinical_features",
+          "biomarker": "protein_niệu_24h",
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 8,
+          "content_preview": "4.4.6.1. Lâm sàng và cận lâm sàng • Chẩn đoán lupus dựa vào 11 tiêu chuẩn của Hội Khớp học Mỹ (ARA) 1997. Khi có 4/11 tiêu chuẩn trong đó có protein niệu dương tính thì được chẩn đoán là viêm cầu thận lupus. • Về các biểu hiện thận: o Tỷ lệ biểu hiện thận gặp ở 60-75% bệnh nhân lupus ban đỏ hệ thống. o Protein niệu kéo dài nhưng dưới mức thận hư gặp ở 46-64% bệnh nhân. o hội chứng thận hư gặp ở 17-36%. o Đái máu vi thể: 30%. o Tăng huyết áp: 20-25%. o Suy thận gặp ở khoảng 40% sau 30 tháng xuất "
+        },
+        {
+          "document_id": "chunk::lupus_nephritis_p28_002",
+          "source_id": "lupus_nephritis_p28_002",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "lupus_nephritis",
+          "section_type": "diagnosis_criteria",
+          "biomarker": "protein_niệu_24h",
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 28,
+          "content_preview": "3.2.1. Chẩn đoán Lupus ban đỏ hệ thống Được dựa vào tiêu chuẩn của hội Khớp học Mỹ (ARA) đưa ra vào năm 1997, 11 tiêu chuẩn chẩn đoán của ARA 1997: • Ban đỏ cánh bướm ở mặt • Ban đỏ dạng đĩa ở mặt và thân • Tăng cảm thụ với ánh nắng • Loét niêm mạc miệng họng • Viêm đa khớp không có hình bào mòn • Viêm màng: tràn dịch màng phổi và/hoặc tràn dịch màng ngoài tim • Biểu hiện thận: có protein niệu thường xuyên và/hoặc có trụ niệu (trụ hạt, trụ hồng cầu) • Biểu hiện thần kinh tâm thần: co giật không "
+        }
+      ],
+      "eval_tags": [
+        "benh_ly_cau_than",
+        "diagnosis",
+        "ground_truth",
+        "lupus_nephritis",
+        "numeric",
+        "rag_qa"
+      ],
+      "eval_notes": "Generated from data/evaluate_data/qa_dataset_50_questions.json and matched against data/processed_data source artifacts. Review low match_score items before using as hard gold IDs."
+    },
+    {
+      "id": "rag_006",
+      "title": "Viêm cầu thận lupus class IV có tiên lượng như thế nào?",
+      "query": "Viêm cầu thận lupus class IV có tiên lượng như thế nào?",
+      "top_k": 5,
+      "reference_answer": "Viêm cầu thận lupus class IV (viêm cầu thận tăng sinh lan tỏa) có tiên lượng xấu, khoảng 50% bệnh nhân suy thận mạn sau 10 năm tiến triển của bệnh.",
+      "reference_context": "Tiên lượng: xấu, phụ thuộc vào loại tổn thương mô bệnh học cầu thận: viêm cầu thận lupus class IV (viêm cầu thận tăng sinh lan tỏa) thì khoảng 50% bệnh nhân suy thận mạn sau 10 năm tiến triển của bệnh.",
+      "required_facts": [
+        "Viêm cầu thận lupus class IV (viêm cầu thận tăng sinh lan tỏa) có tiên lượng xấu, khoảng 50% bệnh nhân suy thận mạn sau 10 năm tiến triển của bệnh."
+      ],
+      "relevant_document_ids": [
+        "chunk::benh_ly_cau_than_p8_002"
+      ],
+      "relevant_source_ids": [
+        "benh_ly_cau_than_p8_002"
+      ],
+      "source_evidence": [
+        {
+          "document_id": "chunk::benh_ly_cau_than_p8_002",
+          "source_id": "benh_ly_cau_than_p8_002",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "clinical_features",
+          "biomarker": "protein_niệu_24h",
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 8,
+          "content_preview": "4.4.6.1. Lâm sàng và cận lâm sàng • Chẩn đoán lupus dựa vào 11 tiêu chuẩn của Hội Khớp học Mỹ (ARA) 1997. Khi có 4/11 tiêu chuẩn trong đó có protein niệu dương tính thì được chẩn đoán là viêm cầu thận lupus. • Về các biểu hiện thận: o Tỷ lệ biểu hiện thận gặp ở 60-75% bệnh nhân lupus ban đỏ hệ thống. o Protein niệu kéo dài nhưng dưới mức thận hư gặp ở 46-64% bệnh nhân. o hội chứng thận hư gặp ở 17-36%. o Đái máu vi thể: 30%. o Tăng huyết áp: 20-25%. o Suy thận gặp ở khoảng 40% sau 30 tháng xuất "
+        }
+      ],
+      "eval_tags": [
+        "benh_ly_cau_than",
+        "classification",
+        "ground_truth",
+        "numeric",
+        "prognosis",
+        "rag_qa"
+      ],
+      "eval_notes": "Generated from data/evaluate_data/qa_dataset_50_questions.json and matched against data/processed_data source artifacts. Review low match_score items before using as hard gold IDs."
+    },
+    {
+      "id": "rag_007",
+      "title": "Viêm cầu thận cấp sau nhiễm liên cầu thường gặp ở độ tuổi nào và tỷ lệ nam/nữ như thế nào?",
+      "query": "Viêm cầu thận cấp sau nhiễm liên cầu thường gặp ở độ tuổi nào và tỷ lệ nam/nữ như thế nào?",
+      "top_k": 5,
+      "reference_answer": "Viêm cầu thận cấp sau nhiễm liên cầu thường gặp ở nam giới hơn nữ giới (tỷ lệ nam/nữ là 2/1), hầu hết bệnh nhân ở độ tuổi 6-10 tuổi, chỉ có khoảng 10% bệnh nhân mắc bệnh ở độ tuổi trên 40.",
+      "reference_context": "Viêm cầu thận cấp sau nhiễm liên cầu (viêm cầu thận cấp sau nhiễm liên cầu) là thể bệnh được hiểu biết rõ nhất, thường gặp ở nam giới hơn so với nữ giới (một số tác giả thông báo tỷ lệ nam/nữ là 2/1) và mặc dù có thể gặp ở mọi lứa tuổi, kể cả trẻ nhỏ, nhưng hầu hết các bệnh nhân ở độ tuổi 6-10 tuổi, chỉ có khoảng 10% bệnh nhân bị mắc bệnh ở độ tuổi trên 40.",
+      "required_facts": [
+        "Viêm cầu thận cấp sau nhiễm liên cầu thường gặp ở nam giới hơn nữ giới (tỷ lệ nam/nữ là 2/1), hầu hết bệnh nhân ở độ tuổi 6-10 tuổi, chỉ có khoảng 10% bệnh nhân mắc bệnh ở độ tuổi trên 40."
+      ],
+      "relevant_document_ids": [
+        "chunk::viem_cau_than_cap_p11_003"
+      ],
+      "relevant_source_ids": [
+        "viem_cau_than_cap_p11_003"
+      ],
+      "source_evidence": [
+        {
+          "document_id": "chunk::viem_cau_than_cap_p11_003",
+          "source_id": "viem_cau_than_cap_p11_003",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "viem_cau_than_cap",
+          "section_type": "definition",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 11,
+          "content_preview": "1. KHÁI NIỆM • Viêm cầu thận cấp sau nhiễm liên cầu (viêm cầu thận cấp sau nhiễm liên cầu) là thể bệnh được hiểu biết rõ nhất, thường gặp ở nam giới hơn so với nữ giới (một số tác giả thông báo tỷ lệ nam/nữ là 2/1) và mặc dù có thể gặp ở mọi lứa tuổi, kể cả trẻ nhỏ, nhưng hầu hết các bệnh nhân ở độ tuổi 6-10 tuổi, chỉ có khoảng 10% bệnh nhân bị mắc bệnh ở độ tuổi trên 40. Hiện nay, viêm cầu thận cấp sau nhiễm liên cầu chủ yếu gặp ở những vùng đông dân cư, nhà ở chật chội và điều kiện vệ sinh kém"
+        }
+      ],
+      "eval_tags": [
+        "ground_truth",
+        "numeric",
+        "rag_qa",
+        "viem_cau_than_cap"
+      ],
+      "eval_notes": "Generated from data/evaluate_data/qa_dataset_50_questions.json and matched against data/processed_data source artifacts. Review low match_score items before using as hard gold IDs."
+    },
+    {
+      "id": "rag_008",
+      "title": "Hiệu giá kháng thể ASLO trong viêm cầu thận cấp sau nhiễm liên cầu có diễn biến như thế nào?",
+      "query": "Hiệu giá kháng thể ASLO trong viêm cầu thận cấp sau nhiễm liên cầu có diễn biến như thế nào?",
+      "top_k": 5,
+      "reference_answer": "Antistreptolysin O (ASLO) có hiệu giá tăng ở khoảng 60-80% bệnh nhân, bắt đầu tăng trong vòng 1-3 tuần đầu, đạt tối đa sau 3-5 tuần và giảm dần về trị số bình thường sau 6 tháng.",
+      "reference_context": "Antistreptolysin O (ASLO) có hiệu giá tăng ở khoảng 60-80% bệnh nhân, bắt đầu tăng trong vòng 1-3 tuần đầu, đạt tối đa sau 3-5 tuần và giảm dần về trị số bình thường sau 6 tháng.",
+      "required_facts": [
+        "Antistreptolysin O (ASLO) có hiệu giá tăng ở khoảng 60-80% bệnh nhân, bắt đầu tăng trong vòng 1-3 tuần đầu, đạt tối đa sau 3-5 tuần và giảm dần về trị số bình thường sau 6 tháng."
+      ],
+      "relevant_document_ids": [
+        "chunk::viem_cau_than_cap_p13_003"
+      ],
+      "relevant_source_ids": [
+        "viem_cau_than_cap_p13_003"
+      ],
+      "source_evidence": [
+        {
+          "document_id": "chunk::viem_cau_than_cap_p13_003",
+          "source_id": "viem_cau_than_cap_p13_003",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "viem_cau_than_cap",
+          "section_type": "clinical_features",
+          "biomarker": "GFR",
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 13,
+          "content_preview": "3.2. Triệu chứng cận lâm sàng • Xét nghiệm máu: o Thường gặp thiếu máu mức độ nhẹ (có thể liên quan đến tình trạng hoà loãng); nitơ phi protein (urê, creatinin) máu bình thường hoặc tăng tuỳ theo tình trạng suy thận. o Kháng thể kháng liên cầu tăng ở hầu hết các bệnh nhân viêm cầu thận cấp sau nhiễm liên cầu khuẩn. o Antistreptolysin O (ASLO) có hiệu giá tăng ở khoảng 60-80% bệnh nhân, bắt đầu tăng trong vòng 1-3 tuần đầu, đạt tối đa sau 3-5 tuần và giảm dần về trị số bình thường sau 6 tháng. o "
+        }
+      ],
+      "eval_tags": [
+        "ground_truth",
+        "numeric",
+        "rag_qa",
+        "viem_cau_than_cap"
+      ],
+      "eval_notes": "Generated from data/evaluate_data/qa_dataset_50_questions.json and matched against data/processed_data source artifacts. Review low match_score items before using as hard gold IDs."
+    },
+    {
+      "id": "rag_009",
+      "title": "Tiên lượng lâu dài của viêm cầu thận cấp sau nhiễm liên cầu như thế nào?",
+      "query": "Tiên lượng lâu dài của viêm cầu thận cấp sau nhiễm liên cầu như thế nào?",
+      "top_k": 5,
+      "reference_answer": "Tiên lượng lâu dài của viêm cầu thận cấp sau nhiễm liên cầu nói chung là tốt; có tới trên 98% số bệnh nhân không còn triệu chứng sau 5 năm, chỉ khoảng 1-3% số bệnh nhân chuyển thành suy thận mạn tính.",
+      "reference_context": "Đối với viêm cầu thận cấp sau nhiễm liên cầu, tiên lượng lâu dài nói chung là tốt; có tới trên 98% số bệnh nhân không còn triệu chứng sau 5 năm, chỉ khoảng 1-3% số bệnh nhân chuyển thành suy thận mạn tính.",
+      "required_facts": [
+        "Tiên lượng lâu dài của viêm cầu thận cấp sau nhiễm liên cầu nói chung là tốt",
+        "có tới trên 98% số bệnh nhân không còn triệu chứng sau 5 năm, chỉ khoảng 1-3% số bệnh nhân chuyển thành suy thận mạn tính."
+      ],
+      "relevant_document_ids": [
+        "chunk::viem_cau_than_cap_p16_001"
+      ],
+      "relevant_source_ids": [
+        "viem_cau_than_cap_p16_001"
+      ],
+      "source_evidence": [
+        {
+          "document_id": "chunk::viem_cau_than_cap_p16_001",
+          "source_id": "viem_cau_than_cap_p16_001",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "viem_cau_than_cap",
+          "section_type": "progression",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 16,
+          "content_preview": "5.4. Tiên lượng • Đối với viêm cầu thận cấp sau nhiễm liên cầu, tiên lượng lâu dài nói chung là tốt; có tới trên 98% số bệnh nhân không còn triệu chứng sau 5 năm, chỉ khoảng 1-3% số bệnh nhân chuyển thành suy thận mạn tính. • Trẻ em có tiên lượng tốt hơn người trưởng thành và thường hồi phục hoàn toàn, hiếm khi có biến chứng hoặc tiến triển đến viêm cầu thận mạn tính. • Người trưởng thành, đặc biệt là người cao tuổi, hồi phục thường chậm hơn và không hoàn toàn. Mặc dù tái phát rất hiếm gặp, có t"
+        }
+      ],
+      "eval_tags": [
+        "ground_truth",
+        "numeric",
+        "prognosis",
+        "rag_qa",
+        "viem_cau_than_cap"
+      ],
+      "eval_notes": "Generated from data/evaluate_data/qa_dataset_50_questions.json and matched against data/processed_data source artifacts. Review low match_score items before using as hard gold IDs."
+    },
+    {
+      "id": "rag_010",
+      "title": "Viêm cầu thận màng tăng sinh có tiên lượng như thế nào?",
+      "query": "Viêm cầu thận màng tăng sinh có tiên lượng như thế nào?",
+      "top_k": 5,
+      "reference_answer": "Viêm cầu thận màng tăng sinh có tiên lượng xấu, khoảng 50% bệnh nhân tiến triển thành suy thận mạn sau 8-10 năm.",
+      "reference_context": "Tiên lượng: xấu, khoảng 50% bệnh nhân tiến triển thành suy thận mạn sau 8-10 năm.",
+      "required_facts": [
+        "Viêm cầu thận màng tăng sinh có tiên lượng xấu, khoảng 50% bệnh nhân tiến triển thành suy thận mạn sau 8-10 năm."
+      ],
+      "relevant_document_ids": [
+        "chunk::benh_ly_cau_than_p6_003"
+      ],
+      "relevant_source_ids": [
+        "benh_ly_cau_than_p6_003"
+      ],
+      "source_evidence": [
+        {
+          "document_id": "chunk::benh_ly_cau_than_p6_003",
+          "source_id": "benh_ly_cau_than_p6_003",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "clinical_features",
+          "biomarker": "protein_niệu_24h",
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 6,
+          "content_preview": "4.4.3.1. Lâm sàng và cận lâm sàng • hội chứng thận hư: 36-54%. • Protein niệu và đái máu vi thể không kèm các triệu chứng lâm sàng: 20-30%. • Đái máu đại thể: khoảng 20%. • Giảm bổ thể C3: 60-70%. • Tăng huyết áp: 30-70%. • Suy thận: 20-70%. • Tiên lượng: xấu, khoảng 50% bệnh nhân tiến triển thành suy thận mạn sau 8-10 năm."
+        },
+        {
+          "document_id": "chunk::benh_ly_cau_than_p8_002",
+          "source_id": "benh_ly_cau_than_p8_002",
+          "source_type": "chunk",
+          "match_score": 0.9333,
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "clinical_features",
+          "biomarker": "protein_niệu_24h",
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 8,
+          "content_preview": "4.4.6.1. Lâm sàng và cận lâm sàng • Chẩn đoán lupus dựa vào 11 tiêu chuẩn của Hội Khớp học Mỹ (ARA) 1997. Khi có 4/11 tiêu chuẩn trong đó có protein niệu dương tính thì được chẩn đoán là viêm cầu thận lupus. • Về các biểu hiện thận: o Tỷ lệ biểu hiện thận gặp ở 60-75% bệnh nhân lupus ban đỏ hệ thống. o Protein niệu kéo dài nhưng dưới mức thận hư gặp ở 46-64% bệnh nhân. o hội chứng thận hư gặp ở 17-36%. o Đái máu vi thể: 30%. o Tăng huyết áp: 20-25%. o Suy thận gặp ở khoảng 40% sau 30 tháng xuất "
+        }
+      ],
+      "eval_tags": [
+        "benh_ly_cau_than",
+        "ground_truth",
+        "numeric",
+        "prognosis",
+        "rag_qa"
+      ],
+      "eval_notes": "Generated from data/evaluate_data/qa_dataset_50_questions.json and matched against data/processed_data source artifacts. Review low match_score items before using as hard gold IDs."
+    },
+    {
+      "id": "rag_011",
+      "title": "Hội chứng Schönlein Henoch có những biểu hiện thận như thế nào?",
+      "query": "Hội chứng Schönlein Henoch có những biểu hiện thận như thế nào?",
+      "top_k": 5,
+      "reference_answer": "Trong hội chứng Schönlein Henoch, biểu hiện thận bao gồm: đái máu vi thể gặp 100% bệnh nhân khi có biểu hiện thận, đái máu đại thể gặp 30%, protein niệu thường ít < 1g/24 giờ, protein niệu cao đến mức thận hư gặp ở 15-38% bệnh nhân có biểu hiện thận. Có thể gặp tăng huyết áp, phù, suy thận.",
+      "reference_context": "Về các biểu hiện thận: Đái máu vi thể: 100% bệnh nhân khi có biểu hiện thận. Đái máu đại thể: 30%. Protein niệu thường ít < 1g/24 giờ. Protein niệu cao đến mức thận hư gặp ở 15-38% bệnh nhân có biểu hiện thận. Có thể gặp tăng huyết áp, phù, suy thận.",
+      "required_facts": [
+        "Trong hội chứng Schönlein Henoch, biểu hiện thận bao gồm: đái máu vi thể gặp 100% bệnh nhân khi có biểu hiện thận, đái máu đại thể gặp 30%, protein niệu thường ít < 1g/24 giờ, protein niệu cao đến mức thận hư gặp ở 15-38% bệnh nhân có biểu hiện thận.",
+        "Có thể gặp tăng huyết áp, phù, suy thận."
+      ],
+      "relevant_document_ids": [
+        "chunk::benh_ly_cau_than_p3_005"
+      ],
+      "relevant_source_ids": [
+        "benh_ly_cau_than_p3_005"
+      ],
+      "source_evidence": [
+        {
+          "document_id": "chunk::benh_ly_cau_than_p3_005",
+          "source_id": "benh_ly_cau_than_p3_005",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "clinical_features",
+          "biomarker": "protein_niệu_24h",
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 3,
+          "content_preview": "4.1.1. Lâm sàng và cận lâm sàng • Thường gặp ở trẻ nhỏ tuổi đi học. • Phù nhiều. • Có đầy đủ triệu chứng của hội chứng thận hư. • Protein niệu chọn lọc: > 80% protein niệu là albumin. • Đái máu vi thể thoáng qua gặp ở 13-14% bệnh nhân. • Tăng huyết áp gặp ở 6-9% bệnh nhân. • Suy thận gặp ở 10-19% bệnh nhân. • Tăng IgE huyết thanh. • Tăng tỷ lệ CD4/CD8. • Bổ thể máu bình thường. • Tiên lượng lành tính. Tuy nhiên tiên lượng có thể xấu nếu hay tái phát."
+        },
+        {
+          "document_id": "chunk::benh_ly_cau_than_p4_003",
+          "source_id": "benh_ly_cau_than_p4_003",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "clinical_features",
+          "biomarker": "protein_niệu_24h",
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 4,
+          "content_preview": "4.3.1. Lâm sàng và cận lâm sàng • Phù. • hội chứng thận hư gặp ở 66-92% bệnh nhân. • Protein niệu dai dẳng nhưng dưới mức thận hư gặp ở 8-34% bệnh nhân. • Suy thận và tăng huyết áp gặp ở 10-50% bệnh nhân. • Đái máu vi thể. • Bổ thể máu bình thường. • Tiên lượng: tốt hơn ở trẻ em, chỉ có 10-20% bệnh nhân trẻ em tiến triển thành suy thận mạn tính."
+        },
+        {
+          "document_id": "chunk::benh_ly_cau_than_p4_004",
+          "source_id": "benh_ly_cau_than_p4_004",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "pathology",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 4,
+          "content_preview": "4.3.2. Tổn thương mô bệnh học • Kính hiển vi quang học: o Dày lan tỏa của màng đáy. o Có thể có các gai mọc lên từ màng đáy được phát hiện dưới tiêu chuẩn nhuộm bạc. o Xơ hóa cầu thận, teo ống thận, xơ hóa tổ chức kẽ thận gặp ở những bệnh nhân bệnh đã diễn biến lâu. • Kính hiển vi huỳnh quang: o Lắng đọng IgG và C3 là chủ yếu dọc màng đáy. o Có thể gặp lắng đọng IgM hoặc IgA. o Không có lắng đọng IgE. • Hiển vi điện tử: o Lắng đọng đặc điện tử dưới biểu mô. o Dày không đều màng đáy cầu thận."
+        },
+        {
+          "document_id": "chunk::benh_ly_cau_than_p6_004",
+          "source_id": "benh_ly_cau_than_p6_004",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "pathology",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 6,
+          "content_preview": "4.4.3.2. Tổn thương mô bệnh học • Kính hiển vi quang học: o Tăng sinh tế bào gian mạch rõ. o Tăng sinh nhẹ tế bào nội mạc. o Có xâm nhập bạch cầu đa nhân trong lòng mao mạch cầu thận. o Dày màng đáy cầu thận. o Đôi khi thấy có hình ảnh đường viền kép ở màng đáy cầu thận dưới tiêu bản nhuộm PAS. o Tăng sinh chất mầm gian mạch. o Đôi khi có xuất hiện liềm tế bào với số lượng ít. o Có thể xơ hóa cầu thận. o Có tổn thương teo ống thận, xâm nhập viêm kẽ và xơ hóa kẽ đi kèm. o Không có các tổn thương "
+        }
+      ],
+      "eval_tags": [
+        "benh_ly_cau_than",
+        "ground_truth",
+        "numeric",
+        "rag_qa"
+      ],
+      "eval_notes": "Generated from data/evaluate_data/qa_dataset_50_questions.json and matched against data/processed_data source artifacts. Review low match_score items before using as hard gold IDs."
+    },
+    {
+      "id": "rag_012",
+      "title": "Lupus ban đỏ hệ thống ảnh hưởng đến thận với tỷ lệ như thế nào?",
+      "query": "Lupus ban đỏ hệ thống ảnh hưởng đến thận với tỷ lệ như thế nào?",
+      "top_k": 5,
+      "reference_answer": "Tỷ lệ biểu hiện thận gặp ở 60-75% bệnh nhân lupus ban đỏ hệ thống. Tại Mỹ có tới 35% số bệnh nhân có bằng chứng viêm thận Lupus tại thời điểm chẩn đoán và tăng lên với tỷ lệ chung khoảng 50-60% có viêm thận Lupus sau 10 năm.",
+      "reference_context": "Tỷ lệ biểu hiện thận gặp ở 60-75% bệnh nhân lupus ban đỏ hệ thống. Tại Mỹ có tới 35% số bệnh nhân có bằng chứng viêm thận Lupus tại thời điểm chẩn đoán và tăng lên với tỷ lệ chung khoảng 50-60% có viêm thận Lupus sau 10 năm.",
+      "required_facts": [
+        "Tỷ lệ biểu hiện thận gặp ở 60-75% bệnh nhân lupus ban đỏ hệ thống.",
+        "Tại Mỹ có tới 35% số bệnh nhân có bằng chứng viêm thận Lupus tại thời điểm chẩn đoán và tăng lên với tỷ lệ chung khoảng 50-60% có viêm thận Lupus sau 10 năm."
+      ],
+      "relevant_document_ids": [
+        "chunk::benh_ly_cau_than_p8_002"
+      ],
+      "relevant_source_ids": [
+        "benh_ly_cau_than_p8_002"
+      ],
+      "source_evidence": [
+        {
+          "document_id": "chunk::benh_ly_cau_than_p8_002",
+          "source_id": "benh_ly_cau_than_p8_002",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "clinical_features",
+          "biomarker": "protein_niệu_24h",
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 8,
+          "content_preview": "4.4.6.1. Lâm sàng và cận lâm sàng • Chẩn đoán lupus dựa vào 11 tiêu chuẩn của Hội Khớp học Mỹ (ARA) 1997. Khi có 4/11 tiêu chuẩn trong đó có protein niệu dương tính thì được chẩn đoán là viêm cầu thận lupus. • Về các biểu hiện thận: o Tỷ lệ biểu hiện thận gặp ở 60-75% bệnh nhân lupus ban đỏ hệ thống. o Protein niệu kéo dài nhưng dưới mức thận hư gặp ở 46-64% bệnh nhân. o hội chứng thận hư gặp ở 17-36%. o Đái máu vi thể: 30%. o Tăng huyết áp: 20-25%. o Suy thận gặp ở khoảng 40% sau 30 tháng xuất "
+        },
+        {
+          "document_id": "chunk::lupus_nephritis_p25_004",
+          "source_id": "lupus_nephritis_p25_004",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "lupus_nephritis",
+          "section_type": "definition",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 25,
+          "content_preview": "1. KHÁI NIỆM – Bệnh thận Lupus hay viêm thận Lupus là một tổn thương phổ biến và quan trọng của bệnh lupus ban đỏ hệ thống. Tại Mỹ có tới 35% số bệnh nhân có bằng chứng viêm thận Lupus tại thời điểm chẩn đoán và tăng lên với tỷ lệ chung khoảng 50-60% có viêm thận Lupus sau 10 năm. Tỷ lệ viêm thận cao hơn đáng kể ở nhóm người Mỹ gốc phi và gốc Tây Ban Nha, tuy nhiên nó còn thấp hơn người gốc châu Á và đặc biệt nam giới bị Lupus ban đỏ hệ thống có tổn thương thận cao và tổn thương nặng. Viêm thận "
+        }
+      ],
+      "eval_tags": [
+        "benh_ly_cau_than",
+        "diagnosis",
+        "ground_truth",
+        "lupus_nephritis",
+        "numeric",
+        "rag_qa"
+      ],
+      "eval_notes": "Generated from data/evaluate_data/qa_dataset_50_questions.json and matched against data/processed_data source artifacts. Review low match_score items before using as hard gold IDs."
+    },
+    {
+      "id": "rag_013",
+      "title": "Phân loại quốc tế 2003 của bệnh thận Lupus có bao nhiêu hình thái và hình thái nào nặng nhất?",
+      "query": "Phân loại quốc tế 2003 của bệnh thận Lupus có bao nhiêu hình thái và hình thái nào nặng nhất?",
+      "top_k": 5,
+      "reference_answer": "Phân loại quốc tế 2003 (ISN/RPS) của bệnh thận Lupus có 6 hình thái (Class I đến VI). Hình thái Class IV là viêm cầu thận tăng sinh lan tỏa, được xem là thể nặng nhất, với tổn thương > 50% số cầu thận.",
+      "reference_context": "Có 6 hình thái: Hình thái (Class) IV – Viêm cầu thận tăng sinh lan toả: Là thể nặng của tổn thương thận trong Lupus ban đỏ hệ thống, đó là tổn thương ổ > 50% số cầu thận.",
+      "required_facts": [
+        "Phân loại quốc tế 2003 (ISN/RPS) của bệnh thận Lupus có 6 hình thái (Class I đến VI).",
+        "Hình thái Class IV là viêm cầu thận tăng sinh lan tỏa, được xem là thể nặng nhất, với tổn thương > 50% số cầu thận."
+      ],
+      "relevant_document_ids": [
+        "chunk::lupus_nephritis_p30_005"
+      ],
+      "relevant_source_ids": [
+        "lupus_nephritis_p30_005"
+      ],
+      "source_evidence": [
+        {
+          "document_id": "chunk::lupus_nephritis_p30_005",
+          "source_id": "lupus_nephritis_p30_005",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "lupus_nephritis",
+          "section_type": "general",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 30,
+          "content_preview": "4.4.4. Hình thái (Class) IV – Viêm cầu thận tăng sinh lan toả: Là thể nặng của tổn thương thận trong Lupus ban đỏ hệ thống, đó là tổn thương ổ > 50% số cầu thận. Những thay đổi mô học nổi bật là tăng sinh tế bào nội mô, gian mạch lan toả đôi khi tạo nên hình ảnh móc thép. Trong hình thái này cũng có thể chia nhỏ thêm dựa vào tổn thương hoạt động hay mạn tính."
+        },
+        {
+          "document_id": "chunk::benh_ly_cau_than_p8_003",
+          "source_id": "benh_ly_cau_than_p8_003",
+          "source_type": "chunk",
+          "match_score": 0.9091,
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "pathology",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 8,
+          "content_preview": "4.4.6.2. Tổn thương mô bệnh học • Kính hiển vi thường: o Có 6 loại tổn thương mô học: ▪ Loại I (class I): tổn thương tối thiểu. ▪ Loại II (class II): viêm cầu thận gian mạch. ▪ Loại III (class III): viêm cầu thận ổ, mảnh. ▪ Loại IV (class IV): viêm cầu thận tăng sinh lan tỏa. ▪ Loại V (class V): viêm cầu thận màng. ▪ Loại VI (class VI): xơ hóa cầu thận lan tỏa. o Ngoài ra, thường có xâm nhập viêm kẽ, xơ hóa kẽ, có tổn thương ống thận phối hợp. • Hiển vi huỳnh quang: o Lắng đọng nhiều thành phần "
+        },
+        {
+          "document_id": "chunk::lupus_nephritis_p30_003",
+          "source_id": "lupus_nephritis_p30_003",
+          "source_type": "chunk",
+          "match_score": 0.9091,
+          "disease_name": "lupus_nephritis",
+          "section_type": "general",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 30,
+          "content_preview": "4.4.2. Hình thái (Class) II – Viêm cầu thận tăng sinh gian mạch lan toả: đặc điểm tổn thương là giãn rộng các khoang gian mạch, tăng sinh tế bào và chất mầm gian mạch ở mức độ nhẹ hay vừa và lắng động các thành phần miễn dịch ở gian mạch."
+        }
+      ],
+      "eval_tags": [
+        "benh_ly_cau_than",
+        "classification",
+        "ground_truth",
+        "lupus_nephritis",
+        "numeric",
+        "rag_qa"
+      ],
+      "eval_notes": "Generated from data/evaluate_data/qa_dataset_50_questions.json and matched against data/processed_data source artifacts. Review low match_score items before using as hard gold IDs."
+    },
+    {
+      "id": "rag_014",
+      "title": "Bệnh thận IgA được phát hiện lần đầu bởi ai và vào năm nào?",
+      "query": "Bệnh thận IgA được phát hiện lần đầu bởi ai và vào năm nào?",
+      "top_k": 5,
+      "reference_answer": "Bệnh thận IgA được phát hiện đầu tiên bởi hai nhà giải phẫu bệnh là Berger và Hinglais vào năm 1968.",
+      "reference_context": "Bệnh thận IgA được phát hiện đầu tiên bởi hai nhà giải phẫu bệnh là Berger và Hinglais vào năm 1968.",
+      "required_facts": [
+        "Bệnh thận IgA được phát hiện đầu tiên bởi hai nhà giải phẫu bệnh là Berger và Hinglais vào năm 1968."
+      ],
+      "relevant_document_ids": [
+        "chunk::benh_than_iga_p45_001"
+      ],
+      "relevant_source_ids": [
+        "benh_than_iga_p45_001"
+      ],
+      "source_evidence": [
+        {
+          "document_id": "chunk::benh_than_iga_p45_001",
+          "source_id": "benh_than_iga_p45_001",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_than_iga",
+          "section_type": "definition",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 45,
+          "content_preview": "1. KHÁI NIỆM • Bệnh thận IgA được phát hiện đầu tiên bởi hai nhà giải phẫu bệnh là Berger và Hinglais vào năm 1968. Cho đến nay nhiều nghiên cứu cho thấy sự đa dạng về địa lý trong tỉ lệ mắc bệnh IgA trên thế giới. Tuy nhiên sự khác nhau về chỉ định sinh thiết ở các nước cũng tham gia vào sự khác biệt về tỉ lệ này. Số bệnh nhân bệnh thận IgA được chẩn đoán chỉ đại diện cho một số lượng nhỏ trong tổng số thật sự có bệnh. • Khởi phát bệnh thận IgA thường ở độ tuổi 20 - 30 nhưng cũng có thể xảy ra "
+        }
+      ],
+      "eval_tags": [
+        "benh_than_iga",
+        "ground_truth",
+        "numeric",
+        "rag_qa"
+      ],
+      "eval_notes": "Generated from data/evaluate_data/qa_dataset_50_questions.json and matched against data/processed_data source artifacts. Review low match_score items before using as hard gold IDs."
+    },
+    {
+      "id": "rag_015",
+      "title": "Triệu chứng khởi phát điển hình của bệnh thận IgA là gì?",
+      "query": "Triệu chứng khởi phát điển hình của bệnh thận IgA là gì?",
+      "top_k": 5,
+      "reference_answer": "Triệu chứng khởi phát điển hình trong bệnh thận IgA là đái máu đại thể có liên quan với nhiễm trùng hô hấp hoặc tiêu hóa. Đái máu đại thể tái phát thường xảy ra trong vòng 48 giờ sau một nhiễm trùng đường hô hấp trên.",
+      "reference_context": "Triệu chứng khởi phát điển hình trong bệnh thận IgA là đái máu đại thể có liên quan với nhiễm trùng hô hấp hoặc tiêu hóa, có thể gặp ở khoảng 20% trường hợp. Đái máu đại thể tái phát, thường đi kèm với triệu chứng toàn thân như sốt, đau mỏi cơ, đau bụng, nôn, tiêu chảy… Trong vòng 48 giờ sau một nhiễm trùng đường hô hấp trên, hoặc nhiễm trùng khác, là một triệu chứng kinh điển của bệnh thận IgA.",
+      "required_facts": [
+        "Triệu chứng khởi phát điển hình trong bệnh thận IgA là đái máu đại thể có liên quan với nhiễm trùng hô hấp hoặc tiêu hóa.",
+        "Đái máu đại thể tái phát thường xảy ra trong vòng 48 giờ sau một nhiễm trùng đường hô hấp trên."
+      ],
+      "relevant_document_ids": [
+        "chunk::benh_than_iga_p46_004"
+      ],
+      "relevant_source_ids": [
+        "benh_than_iga_p46_004"
+      ],
+      "source_evidence": [
+        {
+          "document_id": "chunk::benh_than_iga_p46_004",
+          "source_id": "benh_than_iga_p46_004",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_than_iga",
+          "section_type": "clinical_features",
+          "biomarker": "protein_niệu_24h",
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 46,
+          "content_preview": "3 của cuộc đời. Tỉ lệ bệnh nhân nam so với bệnh nhân nữ khác nhau ở các nghiên cứu, tuy nhiên nam thường cao hơn nữ, với tỉ lệ nam : nữ dao động từ 1,16:1 tới 6:1. Thông thường triệu chứng xuất hiện ở nam nhiều hơn nữ khoảng hai lần. • Triệu chứng khởi phát điển hình trong bệnh thận IgA là đái máu đại thể có liên quan với nhiễm trùng hô hấp hoặc tiêu hóa, có thể gặp ở khoảng 20% trường hợp. Đái máu đại thể tái phát, thường đi kèm với triệu chứng toàn thân như sốt, đau mỏi cơ, đau bụng, nôn, tiêu"
+        }
+      ],
+      "eval_tags": [
+        "benh_than_iga",
+        "ground_truth",
+        "numeric",
+        "rag_qa"
+      ],
+      "eval_notes": "Generated from data/evaluate_data/qa_dataset_50_questions.json and matched against data/processed_data source artifacts. Review low match_score items before using as hard gold IDs."
+    },
+    {
+      "id": "rag_016",
+      "title": "Phân loại Oxford cho bệnh thận IgA gồm những tiêu chí nào?",
+      "query": "Phân loại Oxford cho bệnh thận IgA gồm những tiêu chí nào?",
+      "top_k": 5,
+      "reference_answer": "Phân loại Oxford cho bệnh thận IgA bao gồm 4 tiêu chí: M (tăng sinh tế bào gian mạch), S (xơ hóa cầu thận từng phần), E (tăng sinh tế bào nội mạch gây hẹp lòng mạch) và T (teo ống thận / xơ hóa kẽ, phân thành T0: 0-25%, T1: 26-50%, T2: >50%).",
+      "reference_context": "Tăng sinh tế bào gian mạch: < 4 tế bào gian mạch/vùng gian mạch = 0 4-5 tế bào gian mạch/vùng gian mạch = 1 6-7 tế bào gian mạch/vùng gian mạch M0 = 0,5 M1 = 2 ≥ 8 tế bào gian mạch/vùng gian mạch = 3 Xơ hóa cầu thận: Bất kỳ số lượng xơ hóa của bất thường thành đám nhỏ, nhưng không xơ hóa toàn bộ hoặc hủy hoại cầu thận S0: không có S1: có Tăng sinh tế bào nội mạch: Tăng sinh tế bào nội mạc đến số lượng các tế bào trong lòng mạch sao cho cầu thận gây ra hẹp lòng mạch E0: không có E1: có Teo ống thận / xơ hóa kẽ: Tỷ lệ phần trăm vùng có thể do ảnh hưởng bởi tế bào ống thận xơ hóa kẽ 0 - 25%: T0 26 - 50%: T1 > 50%: T2",
+      "required_facts": [
+        "Phân loại Oxford cho bệnh thận IgA bao gồm 4 tiêu chí: M (tăng sinh tế bào gian mạch), S (xơ hóa cầu thận từng phần), E (tăng sinh tế bào nội mạch gây hẹp lòng mạch) và T (teo ống thận / xơ hóa kẽ, phân thành T0: 0-25%, T1: 26-50%, T2: >50%)."
+      ],
+      "relevant_document_ids": [
+        "chunk::viem_cau_than_man_p2_001"
+      ],
+      "relevant_source_ids": [
+        "viem_cau_than_man_p2_001"
+      ],
+      "source_evidence": [
+        {
+          "document_id": "chunk::viem_cau_than_man_p2_001",
+          "source_id": "viem_cau_than_man_p2_001",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "viem_cau_than_man",
+          "section_type": "general",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 2,
+          "content_preview": "• Tăng sinh tế bào nội mạc và gian mạch. • Tăng sinh tế bào ngoại mạch hình liềm, tế bào biểu mô Bowman. • Viêm cầu thận màng tăng sinh: vừa có dày màng đáy, vừa có tăng sinh tế bào, thường là tế bào gian mạch và nội mạc. • Xơ hóa cầu thận lan tỏa."
+        },
+        {
+          "document_id": "chunk::benh_ly_cau_than_p4_004",
+          "source_id": "benh_ly_cau_than_p4_004",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "pathology",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 4,
+          "content_preview": "4.3.2. Tổn thương mô bệnh học • Kính hiển vi quang học: o Dày lan tỏa của màng đáy. o Có thể có các gai mọc lên từ màng đáy được phát hiện dưới tiêu chuẩn nhuộm bạc. o Xơ hóa cầu thận, teo ống thận, xơ hóa tổ chức kẽ thận gặp ở những bệnh nhân bệnh đã diễn biến lâu. • Kính hiển vi huỳnh quang: o Lắng đọng IgG và C3 là chủ yếu dọc màng đáy. o Có thể gặp lắng đọng IgM hoặc IgA. o Không có lắng đọng IgE. • Hiển vi điện tử: o Lắng đọng đặc điện tử dưới biểu mô. o Dày không đều màng đáy cầu thận."
+        },
+        {
+          "document_id": "chunk::benh_ly_cau_than_p5_002",
+          "source_id": "benh_ly_cau_than_p5_002",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "pathology",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 5,
+          "content_preview": "4.4.1.2. Tổn thương mô bệnh học • Kính hiển vi quang học: o Tăng sinh lan tỏa tế bào gian mạch. o Tăng sinh chất mầm gian mạch. o Đôi khi sưng phồng tế bào biểu mô có chân (podocytes). o Tổn thương nhẹ tổ chức kẽ thận và mạch thận. • Hiển vi huỳnh quang: o Lắng đọng IgM, IgA, C3, C4 và fibrin ở khoang gian mạch. Tuy nhiên có một số trường hợp không thấy có lắng đọng các thành phần miễn dịch. • Hiển vi điện tử: o Tăng sinh tế bào và chất mầm gian mạch. o Lắng đọng đặc điện tử ở gian mạch."
+        },
+        {
+          "document_id": "chunk::benh_ly_cau_than_p5_005",
+          "source_id": "benh_ly_cau_than_p5_005",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "pathology",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 5,
+          "content_preview": "4.4.2.2. Tổn thương mô bệnh học • Kính hiển vi thường: o Tổn thương lan tỏa ở các cầu thận. o Sưng phồng và tăng sinh tế bào nội mạch. o Xâm nhập bạch cầu trong lòng mao mạch cầu thận. o Tăng sinh tế bào và chất mầm gian mạch. o Không có thay đổi thành mao mạch (màng đáy) và các mạch máu quanh cầu thận. o Có thể có thoái hóa từng đoạn ống thận. • Hiển vi huỳnh quang: o Lắng đọng lan tỏa dạng hạt của IgG, C3, properdin ở màng đáy và khoảng gian mạch o Có thể có lắng đọng IgM và C4. o Không có lắn"
+        }
+      ],
+      "eval_tags": [
+        "benh_ly_cau_than",
+        "classification",
+        "ground_truth",
+        "numeric",
+        "rag_qa",
+        "viem_cau_than_man"
+      ],
+      "eval_notes": "Generated from data/evaluate_data/qa_dataset_50_questions.json and matched against data/processed_data source artifacts. Review low match_score items before using as hard gold IDs."
+    },
+    {
+      "id": "rag_017",
+      "title": "Nhiễm khuẩn tiết niệu không biến chứng là gì?",
+      "query": "Nhiễm khuẩn tiết niệu không biến chứng là gì?",
+      "top_k": 5,
+      "reference_answer": "Nhiễm khuẩn tiết niệu không biến chứng là loại nhiễm khuẩn tiết niệu đơn giản khi vi trùng gây bệnh chỉ xâm nhập vào bàng quang hoặc niệu đạo, không gây tổn thương niệu quản, niệu đạo, bàng quang, thận, bể thận.",
+      "reference_context": "Nhiễm khuẩn tiết niệu không biến chứng là loại nhiễm khuẩn tiết niệu đơn giản khi vi trùng gây bệnh chỉ xâm nhập vào bàng quang hoặc niệu đạo, không gây tổn thương niệu quản, niệu đạo, bàng quang, thận, bể thận.",
+      "required_facts": [
+        "Nhiễm khuẩn tiết niệu không biến chứng là loại nhiễm khuẩn tiết niệu đơn giản khi vi trùng gây bệnh chỉ xâm nhập vào bàng quang hoặc niệu đạo, không gây tổn thương niệu quản, niệu đạo, bàng quang, thận, bể thận."
+      ],
+      "relevant_document_ids": [
+        "chunk::diabetic_kidney_disease_p52_003"
+      ],
+      "relevant_source_ids": [
+        "diabetic_kidney_disease_p52_003"
+      ],
+      "source_evidence": [
+        {
+          "document_id": "chunk::diabetic_kidney_disease_p52_003",
+          "source_id": "diabetic_kidney_disease_p52_003",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "diabetic_kidney_disease",
+          "section_type": "clinical_features",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 52,
+          "content_preview": "1. ĐẠI CƯƠNG • Nhiễm khuẩn tiết niệu thấp (bàng quang, niệu đạo, tuyến tiền liệt), gồm viêm bàng quang, viêm niệu đạo, viêm tuyến tiền liệt. Tình trạng nhiễm trùng có thể là cấp tính hay mạn tính. Trên lâm sàng còn phân biệt nhiễm khuẩn tiết niệu không biến chứng và nhiễm khuẩn tiết niệu có biến chứng. Nhiễm khuẩn tiết niệu không biến chứng là loại nhiễm khuẩn tiết niệu đơn giản khi vi trùng gây bệnh chỉ xâm nhập vào bàng quang hoặc niệu đạo, không gây tổn thương niệu quản, niệu đạo, bàng quang,"
+        }
+      ],
+      "eval_tags": [
+        "diabetic_kidney_disease",
+        "ground_truth",
+        "rag_qa"
+      ],
+      "eval_notes": "Generated from data/evaluate_data/qa_dataset_50_questions.json and matched against data/processed_data source artifacts. Review low match_score items before using as hard gold IDs."
+    },
+    {
+      "id": "rag_018",
+      "title": "Viêm thận bể thận cấp không biến chứng chủ yếu do vi khuẩn nào gây ra?",
+      "query": "Viêm thận bể thận cấp không biến chứng chủ yếu do vi khuẩn nào gây ra?",
+      "top_k": 5,
+      "reference_answer": "Trên 80% các trường hợp viêm thận bể thận cấp là do E. coli gây ra.",
+      "reference_context": "Trên 80% các trường hợp viêm thận bể thận cấp là do E. coli gây ra.",
+      "required_facts": [
+        "Trên 80% các trường hợp viêm thận bể thận cấp là do E."
+      ],
+      "relevant_document_ids": [
+        "chunk::diabetic_kidney_disease_p53_001"
+      ],
+      "relevant_source_ids": [
+        "diabetic_kidney_disease_p53_001"
+      ],
+      "source_evidence": [
+        {
+          "document_id": "chunk::diabetic_kidney_disease_p53_001",
+          "source_id": "diabetic_kidney_disease_p53_001",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "diabetic_kidney_disease",
+          "section_type": "general",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 53,
+          "content_preview": "2.1. Nguyên nhân và cơ chế sinh bệnh Trên 80% các trường hợp viêm thận bể thận cấp là do E. coli gây ra. Hầu hết các trường hợp nhiễm trùng nhu mô thận xuất hiện khi vi khuẩn di chuyển từ niệu đạo, bàng quang lên. Nhất là ở nam giới có bệnh tiền liệt tuyến hoặc viêm tuyến tiền liệt, tình trạng tắc trở đường niệu tạo điều kiện thuận lợi cho vi khuẩn di chuyển lên niệu đạo, thận. Vi trùng có thể đến thận qua đường máu, thường là ở những bệnh nhân phải nằm bất động, bị nhiễm mạn tính hoặc do vi khu"
+        },
+        {
+          "document_id": "chunk::benh_than_man_p60_005",
+          "source_id": "benh_than_man_p60_005",
+          "source_type": "chunk",
+          "match_score": 0.9091,
+          "disease_name": "benh_than_man",
+          "section_type": "follow_up",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 60,
+          "content_preview": "4.1. Nguyên nhân và yếu tố thuận lợi Phụ nữ thường là nhóm người có nguy cơ bị viêm bàng quang cao nhất. Trên thực tế, có tới khoảng một nửa số phụ nữ bị viêm bàng quang cấp ít nhất là một lần trong đời, nhiều người còn bị diễn biến lặp lại. Mặc dù sử dụng phương pháp phòng ngừa hiệu quả đã được đề nghị đối với viêm bàng quang, nhưng thực tế cần thực hiện lâu dài làm giảm nguy cơ bị nhiễm trùng. Nhiễm trùng đường tiết niệu điển hình xuất hiện khi vi trùng xâm nhập vào đường tiết niệu qua niệu đạ"
+        }
+      ],
+      "eval_tags": [
+        "benh_than_man",
+        "diabetic_kidney_disease",
+        "ground_truth",
+        "numeric",
+        "rag_qa"
+      ],
+      "eval_notes": "Generated from data/evaluate_data/qa_dataset_50_questions.json and matched against data/processed_data source artifacts. Review low match_score items before using as hard gold IDs."
+    },
+    {
+      "id": "rag_019",
+      "title": "Theo tiêu chuẩn IDSA, chẩn đoán viêm thận bể thận cấp được xác định khi cấy nước tiểu có bao nhiêu v",
+      "query": "Theo tiêu chuẩn IDSA, chẩn đoán viêm thận bể thận cấp được xác định khi cấy nước tiểu có bao nhiêu vi khuẩn/ml?",
+      "top_k": 5,
+      "reference_answer": "Theo Hội các nhà nhiễm khuẩn Hoa Kỳ (IDSA), khi cấy nước tiểu có ≥ 10.000 vi khuẩn/ml và trên lâm sàng có các dấu hiệu phù hợp thì đủ để chẩn đoán viêm thận bể thận cấp.",
+      "reference_context": "Theo Hội các nhà nhiễm khuẩn Hoa Kỳ (IDSA), khi cấy nước tiểu có ≥ 10.000 vi khuẩn/ml và trên lâm sàng có các dấu hiệu phù hợp thì đủ để chẩn đoán viêm thận bể thận cấp.",
+      "required_facts": [
+        "Theo Hội các nhà nhiễm khuẩn Hoa Kỳ (IDSA), khi cấy nước tiểu có ≥ 10.000 vi khuẩn/ml và trên lâm sàng có các dấu hiệu phù hợp thì đủ để chẩn đoán viêm thận bể thận cấp."
+      ],
+      "relevant_document_ids": [
+        "chunk::diabetic_kidney_disease_p55_002"
+      ],
+      "relevant_source_ids": [
+        "diabetic_kidney_disease_p55_002"
+      ],
+      "source_evidence": [
+        {
+          "document_id": "chunk::diabetic_kidney_disease_p55_002",
+          "source_id": "diabetic_kidney_disease_p55_002",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "diabetic_kidney_disease",
+          "section_type": "diagnosis_criteria",
+          "biomarker": "protein_niệu_24h",
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 55,
+          "content_preview": "2.4.1.1. Chẩn đoán dựa vào triệu chứng lâm sàng Dựa vào các dấu hiệu lâm sàng hay sốt cao, rét run, đau hông lưng, đau góc sườn - cột sống, sốt cao kèm buồn nôn, nôn. Ngoài ra còn có thể có đái buốt, đái rát, đái mủ. Chẩn đoán xác định dựa vào kết quả xét nghiệm nước tiểu, trong đó có nhiều bạch cầu; cấy nước tiểu có nhiễm vi khuẩn; và có protein niệu. Đối với các trường hợp điển hình, việc chẩn đoán xác định viêm thận bể thận cấp dựa vào số lượng bạch cầu niệu trên 10.000/ml nước tiểu, kết quả "
+        }
+      ],
+      "eval_tags": [
+        "diabetic_kidney_disease",
+        "diagnosis",
+        "ground_truth",
+        "numeric",
+        "rag_qa"
+      ],
+      "eval_notes": "Generated from data/evaluate_data/qa_dataset_50_questions.json and matched against data/processed_data source artifacts. Review low match_score items before using as hard gold IDs."
+    },
+    {
+      "id": "rag_020",
+      "title": "Thời gian điều trị kháng sinh cho viêm thận bể thận cấp là bao lâu?",
+      "query": "Thời gian điều trị kháng sinh cho viêm thận bể thận cấp là bao lâu?",
+      "top_k": 5,
+      "reference_answer": "Thời gian điều trị kháng sinh viêm thận bể thận cấp có thể từ 7 đến 14 ngày (trung bình 10 ngày). Những người có suy giảm miễn dịch cần điều trị từ 14 đến 21 ngày.",
+      "reference_context": "Thời gian điều trị kháng sinh có thể từ 7 đến 14 ngày (trung bình 10 ngày) đối với những người có suy giảm miễn dịch và thường là không cần phải điều trị dài hơn. Những người có suy giảm miễn dịch bị viêm thận bể thận cấp cần điều trị từ 14 đến 21 ngày.",
+      "required_facts": [
+        "Thời gian điều trị kháng sinh viêm thận bể thận cấp có thể từ 7 đến 14 ngày (trung bình 10 ngày).",
+        "Những người có suy giảm miễn dịch cần điều trị từ 14 đến 21 ngày."
+      ],
+      "relevant_document_ids": [
+        "chunk::diabetic_kidney_disease_p57_003"
+      ],
+      "relevant_source_ids": [
+        "diabetic_kidney_disease_p57_003"
+      ],
+      "source_evidence": [
+        {
+          "document_id": "chunk::diabetic_kidney_disease_p57_003",
+          "source_id": "diabetic_kidney_disease_p57_003",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "diabetic_kidney_disease",
+          "section_type": "treatment",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 57,
+          "content_preview": "• Cephalosporin thế hệ 3 hoặc 4 kết hợp hoặc không kết hợp với aminoglycosid. Các bệnh nhân bị viêm thận bể thận có biến chứng (thể phức tạp) có thể phải đến các kháng sinh nhóm imipenem. Cần đánh giá lại kháng sinh nhóm mới hơn Meropenem và Vancomycin đã được FDA phê duyệt cho phép sử dụng ở nhóm bệnh nhân này. Khi bệnh nhân hết sốt, lâm sàng cải thiện và có thể uống thuốc và nước tiểu chuyển sang điều trị đường uống. Không nhất thiết phải sử dụng cùng một loại kháng sinh cho cả đường tiêm truy"
+        }
+      ],
+      "eval_tags": [
+        "diabetic_kidney_disease",
+        "ground_truth",
+        "numeric",
+        "rag_qa",
+        "treatment"
+      ],
+      "eval_notes": "Generated from data/evaluate_data/qa_dataset_50_questions.json and matched against data/processed_data source artifacts. Review low match_score items before using as hard gold IDs."
+    },
+    {
+      "id": "rag_021",
+      "title": "Đái máu đại thể được định nghĩa và phân loại như thế nào?",
+      "query": "Đái máu đại thể được định nghĩa và phân loại như thế nào?",
+      "top_k": 5,
+      "reference_answer": "Đái máu đại thể là tình trạng nước tiểu màu đỏ tươi hoặc đỏ sẫm, có thể có dây máu hay máu cục, xét nghiệm cặn Addis có trên 300.000 hồng cầu/ml/phút. Phân loại gồm: đái máu đầu bãi (tổn thương bàng quang), đái máu cuối bãi (tổn thương bàng quang), đái máu toàn bãi (tổn thương từ thận, niệu quản).",
+      "reference_context": "Nước tiểu màu đỏ tươi hoặc đỏ sẫm, có thể có dây máu hay máu cục. Để lâu có cặn hồng cầu. Xét nghiệm cặn Addis có trên 300.000 hồng cầu/ml/phút (Đếm số lượng hồng cầu trong một thể tích nước tiểu sau khi khuấy đều 1 lần). Đái máu đầu bãi: xuất hiện ngay khi bắt đầu đi tiểu, sau đó nước tiểu trong dần. Nguyên nhân thường do tổn thương bàng quang. Đái máu cuối bãi: nước tiểu ban đầu trong, cuối bãi xuất hiện đái máu. Nguyên nhân thường nghĩ tới là tổn thương bàng quang. Đái máu toàn bãi: thường nghĩ tới nguyên nhân tổn thương từ thận, niệu quản và cũng không loại trừ tổn thương bàng quang mức độ nặng.",
+      "required_facts": [
+        "Đái máu đại thể là tình trạng nước tiểu màu đỏ tươi hoặc đỏ sẫm, có thể có dây máu hay máu cục, xét nghiệm cặn Addis có trên 300.000 hồng cầu/ml/phút.",
+        "Phân loại gồm: đái máu đầu bãi (tổn thương bàng quang), đái máu cuối bãi (tổn thương bàng quang), đái máu toàn bãi (tổn thương từ thận, niệu quản)."
+      ],
+      "relevant_document_ids": [
+        "chunk::benh_than_man_p58_001"
+      ],
+      "relevant_source_ids": [
+        "benh_than_man_p58_001"
+      ],
+      "source_evidence": [
+        {
+          "document_id": "chunk::benh_than_man_p58_001",
+          "source_id": "benh_than_man_p58_001",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_than_man",
+          "section_type": "diagnosis_criteria",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 58,
+          "content_preview": "3. VIÊM THẬN BỂ THẬN MẠN Viêm thận bể thận mạn là tổn thương thận do tình trạng nhiễm khuẩn dài dằng hoặc tái phát nhiều lần. Tình trạng bệnh lý này thường có biểu hiện từ những nguyên nhân có các bất thường về giải phẫu và đường tiết niệu, bão sát hoặc nghẽn, sỏi san hô, loạn sản thận, và nhất là trào ngược bàng quang niệu quản. Đôi khi, chẩn đoán dựa vào các dấu hiệu X-quang hoặc có nhiễm khuẩn tiết niệu tái phát ở người trẻ tuổi. Viêm thận bể thận mạn tính đi kèm quá trình sẹo hoá thận từ từ,"
+        },
+        {
+          "document_id": "chunk::benh_than_man_p63_003",
+          "source_id": "benh_than_man_p63_003",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_than_man",
+          "section_type": "general",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 63,
+          "content_preview": "2.1. Đái máu đại thể • Nước tiểu màu đỏ tươi hoặc đỏ sẫm, có thể có dây máu hay máu cục. Để lâu có cặn hồng cầu. • Đôi khi gây bí tiểu cấp do máu cục làm tắc bàng quang. • Xét nghiệm cặn Addis có trên 300.000 hồng cầu/ml/phút (Đếm số lượng hồng cầu trong một thể tích nước tiểu sau khi khuấy đều 1 lần). • Đái máu đầu bãi: xuất hiện ngay khi bắt đầu đi tiểu, sau đó nước tiểu trong dần. Nguyên nhân thường do tổn thương bàng quang. • Đái máu cuối bãi: nước tiểu ban đầu trong, cuối bãi xuất hiện đái "
+        },
+        {
+          "document_id": "chunk::benh_than_man_p63_006",
+          "source_id": "benh_than_man_p63_006",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_than_man",
+          "section_type": "general",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 63,
+          "content_preview": "3.1.1. Đái ra huyết sắc tố • Nước tiểu màu đỏ, có khi đỏ sẫm, để lâu biến thành màu nâu đen. • Không có lắng cặn hồng cầu."
+        },
+        {
+          "document_id": "chunk::benh_than_man_p140_005",
+          "source_id": "benh_than_man_p140_005",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_than_man",
+          "section_type": "diagnosis_criteria",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 140,
+          "content_preview": "4.2. Chẩn đoán phân biệt suy thận mạn với tổn thương thận cấp hoặc • Nếu hai thận có kích thước chênh lệch nhau trên 1cm, cần tìm nguyên nhân hẹp hoặc tắc động mạch thận một bên hoặc bệnh thận do trào ngược bàng quang niệu quản một bên tuy nhiên tình trạng này không gặp nhiều trên lâm sàng."
+        }
+      ],
+      "eval_tags": [
+        "benh_than_man",
+        "classification",
+        "ground_truth",
+        "numeric",
+        "rag_qa"
+      ],
+      "eval_notes": "Generated from data/evaluate_data/qa_dataset_50_questions.json and matched against data/processed_data source artifacts. Review low match_score items before using as hard gold IDs."
+    },
+    {
+      "id": "rag_022",
+      "title": "Bệnh thận đa nang ảnh hưởng đến bao nhiêu người trên thế giới?",
+      "query": "Bệnh thận đa nang ảnh hưởng đến bao nhiêu người trên thế giới?",
+      "top_k": 5,
+      "reference_answer": "Các nghiên cứu dịch tễ học dựa vào dân số ước tính rằng bệnh thận đa nang ảnh hưởng đến 1 trong 400–1000 trong số tổng sau sinh, tương đương 12,5 triệu người trên toàn thế giới.",
+      "reference_context": "Các nghiên cứu dịch tễ học dựa vào dân số với việc khám nghiệm thì tỷ lệ ước tính rằng căn bệnh này ảnh hưởng đến 1 trong 400 – 1000 trong số tổng sau sinh, tương đương 12,5 triệu người trên toàn thế giới.",
+      "required_facts": [
+        "Các nghiên cứu dịch tễ học dựa vào dân số ước tính rằng bệnh thận đa nang ảnh hưởng đến 1 trong 400–1000 trong số tổng sau sinh, tương đương 12,5 triệu người trên toàn thế giới."
+      ],
+      "relevant_document_ids": [
+        "chunk::benh_than_man_p72_002"
+      ],
+      "relevant_source_ids": [
+        "benh_than_man_p72_002"
+      ],
+      "source_evidence": [
+        {
+          "document_id": "chunk::benh_than_man_p72_002",
+          "source_id": "benh_than_man_p72_002",
+          "source_type": "chunk",
+          "match_score": 0.7179,
+          "disease_name": "benh_than_man",
+          "section_type": "clinical_features",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 72,
+          "content_preview": "1 trong 400 – 1000 trong số tổng sau sinh, tương đương 12,5 triệu người trên toàn thế giới. Các nghiên cứu khác đưa ra tỷ lệ lâm sàng cho thấy tỷ lệ lưu hành thấp hơn, tỷ 1/543 đến 1/4000. Bệnh thận đa nang ảnh hưởng đến hai giới như nhau và xưa ra ở tất cả các chủng tộc. Bệnh chiếm 5% đến 10% các trường hợp ghép thận giai đoạn cuối (ESRD), trở thành nguyên nhân đứng thứ 4 trong bệnh thận cuối suy thận. Tại Hoa Kỳ, tỷ lệ mắc bệnh là 8,2 so với 6,8 trên một nam giới (tương đương cao hơn so với nữ"
+        }
+      ],
+      "eval_tags": [
+        "benh_than_man",
+        "ground_truth",
+        "numeric",
+        "rag_qa"
+      ],
+      "eval_notes": "Generated from data/evaluate_data/qa_dataset_50_questions.json and matched against data/processed_data source artifacts. Review low match_score items before using as hard gold IDs."
+    },
+    {
+      "id": "rag_023",
+      "title": "Bệnh thận đa nang do những gen nào gây ra?",
+      "query": "Bệnh thận đa nang do những gen nào gây ra?",
+      "top_k": 5,
+      "reference_answer": "Bệnh thận đa nang là bệnh di truyền trên nhiễm sắc thể thường với hai gen chính là PKD1 (protein, polycystine-1) và PKD2. Các gen này nằm trên hai nhiễm sắc thể số 16 và nhiễm sắc thể số 4.",
+      "reference_context": "Bệnh thận đa nang là bệnh di truyền trên nhiễm sắc thể thường. Có thể có nhiều gen gây bệnh cho bệnh đa nang nhưng nghiên cứu cho thấy có hai gen chính là PKD1 (protein, polycystine-1) và PKD2. Các gen này nằm trên hai nhiễm sắc thể số 16 và nhiễm sắc thể số 4.",
+      "required_facts": [
+        "Bệnh thận đa nang là bệnh di truyền trên nhiễm sắc thể thường với hai gen chính là PKD1 (protein, polycystine-1) và PKD2.",
+        "Các gen này nằm trên hai nhiễm sắc thể số 16 và nhiễm sắc thể số 4."
+      ],
+      "relevant_document_ids": [
+        "chunk::benh_than_man_p72_003"
+      ],
+      "relevant_source_ids": [
+        "benh_than_man_p72_003"
+      ],
+      "source_evidence": [
+        {
+          "document_id": "chunk::benh_than_man_p72_003",
+          "source_id": "benh_than_man_p72_003",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_than_man",
+          "section_type": "general",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 72,
+          "content_preview": "2. CƠ CHẾ BỆNH SINH Bệnh thận đa nang là bệnh di truyền trên nhiễm sắc thể thường. Có thể có nhiều gen gây bệnh cho bệnh đa nang nhưng nghiên cứu cho thấy có hai gen chính là PKD1 (protein, polycystine- 1) và PKD2. Các gen này nằm trên hai nhiễm sắc thể số 16 và nhiễm sắc thể số 4. Bệnh thận đa nang là hậu quả của sự rối loạn về cấu trúc dẫn đến phát triển nang thận lớn. Tuy nhiên, những nghiên cứu mới nhất về bệnh thận đa nang cho thấy có thể có sự liên quan giữa gen và môi trường. Tiếp theo sa"
+        }
+      ],
+      "eval_tags": [
+        "benh_than_man",
+        "ground_truth",
+        "numeric",
+        "rag_qa"
+      ],
+      "eval_notes": "Generated from data/evaluate_data/qa_dataset_50_questions.json and matched against data/processed_data source artifacts. Review low match_score items before using as hard gold IDs."
+    },
+    {
+      "id": "rag_024",
+      "title": "Tỷ lệ mắc sỏi tiết niệu tại Hoa Kỳ đã thay đổi như thế nào từ năm 1994 đến 2012?",
+      "query": "Tỷ lệ mắc sỏi tiết niệu tại Hoa Kỳ đã thay đổi như thế nào từ năm 1994 đến 2012?",
+      "top_k": 5,
+      "reference_answer": "Tỷ lệ mắc sỏi tiết niệu tại Hoa Kỳ đã tăng đáng kể: năm 1994, tỷ lệ là 5,2% (1 trong 20 người), nhưng năm 2012, tỷ lệ là gần 10% (1 trong 11 người).",
+      "reference_context": "Đáng chú ý hơn, tỷ lệ mắc sỏi tiết niệu đã tăng đáng kể: năm 1994, tỷ lệ này là 5,2% (1 trong 20 người), nhưng năm 2012, tỷ lệ này là gần 10% (1 trong 11 người).",
+      "required_facts": [
+        "Tỷ lệ mắc sỏi tiết niệu tại Hoa Kỳ đã tăng đáng kể: năm 1994, tỷ lệ là 5,2% (1 trong 20 người), nhưng năm 2012, tỷ lệ là gần 10% (1 trong 11 người)."
+      ],
+      "relevant_document_ids": [
+        "chunk::acute_kidney_injury_p76_001"
+      ],
+      "relevant_source_ids": [
+        "acute_kidney_injury_p76_001"
+      ],
+      "source_evidence": [
+        {
+          "document_id": "chunk::acute_kidney_injury_p76_001",
+          "source_id": "acute_kidney_injury_p76_001",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "acute_kidney_injury",
+          "section_type": "definition",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 76,
+          "content_preview": "1. KHÁI NIỆM • Sỏi thận tiết niệu là tình trạng bệnh lý đã được đề cập đến từ rất lâu trong y văn và là một bệnh thường gặp, dễ gây biến chứng như nhiễm trùng, tổn thương thận cấp hoặc mạn tính. Sỏi tiết niệu là một vấn đề phổ biến và đang gia tăng trên toàn thế giới. Trong vài năm qua, chúng ta ngày càng hiểu nhiều hơn về các yếu tố nguy cơ và tỷ lệ mắc sỏi thận từ các nghiên cứu dịch tễ học. • Tại Hoa Kỳ, có tới 16% nam giới và 8% nữ giới đến tuổi 70 có ít nhất một lần trong đời có triệu chứng"
+        }
+      ],
+      "eval_tags": [
+        "acute_kidney_injury",
+        "ground_truth",
+        "numeric",
+        "rag_qa"
+      ],
+      "eval_notes": "Generated from data/evaluate_data/qa_dataset_50_questions.json and matched against data/processed_data source artifacts. Review low match_score items before using as hard gold IDs."
+    },
+    {
+      "id": "rag_025",
+      "title": "Sỏi calci hình thành do những cơ chế nào?",
+      "query": "Sỏi calci hình thành do những cơ chế nào?",
+      "top_k": 5,
+      "reference_answer": "Sỏi calci hình thành do ba nguyên nhân chính: (1) nước tiểu bị quá bão hòa về muối calci do tăng hấp thu calci ở ruột hoặc tăng tái hấp thu calci ở ống thận; (2) giảm citrat niệu - citrat có tác dụng ức chế kết tinh các muối calci; (3) nước tiểu quá bão hòa về Oxalat do chế độ ăn hoặc rối loạn chuyển hóa.",
+      "reference_context": "Nguyên nhân chính là tình trạng nước tiểu bị quá bão hòa về muối calci do tăng hấp thu calci ở ruột hoặc tăng tái hấp thu calci ở ống thận. Nguyên nhân thứ 2 là giảm citrat niệu. Citrat niệu có tác dụng ức chế kết tinh các muối calci. Nguyên nhân thứ 3 là nước tiểu quá bão hòa về Oxalat.",
+      "required_facts": [
+        "Sỏi calci hình thành do ba nguyên nhân chính: (1) nước tiểu bị quá bão hòa về muối calci do tăng hấp thu calci ở ruột hoặc tăng tái hấp thu calci ở ống thận",
+        "(2) giảm citrat niệu - citrat có tác dụng ức chế kết tinh các muối calci",
+        "(3) nước tiểu quá bão hòa về Oxalat do chế độ ăn hoặc rối loạn chuyển hóa."
+      ],
+      "relevant_document_ids": [
+        "chunk::diabetic_kidney_disease_p77_006"
+      ],
+      "relevant_source_ids": [
+        "diabetic_kidney_disease_p77_006"
+      ],
+      "source_evidence": [
+        {
+          "document_id": "chunk::diabetic_kidney_disease_p77_006",
+          "source_id": "diabetic_kidney_disease_p77_006",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "diabetic_kidney_disease",
+          "section_type": "general",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 77,
+          "content_preview": "2.2.1. Sỏi calci • Nguyên nhân chính là tình trạng nước tiểu bị quá bão hòa về muối calci do tăng hấp thu calci ở ruột hoặc tăng tái hấp thu calci ở ống thận. Xét nghiệm nước tiểu sẽ thấy calci niệu tăng rất cao. Bình thường thận đào thải khoảng 300 mg calci qua nước tiểu trong 1 ngày, trong trường hợp nước tiểu bị quá bão hòa về muối calci lượng calci đào thải qua nước tiểu có thể tăng lên 800-1000mg/24h với chế độ ăn bình thường. • Nguyên nhân thứ 2 là giảm citrat niệu. Citrat niệu có tác dụng"
+        },
+        {
+          "document_id": "chunk::diabetic_kidney_disease_p77_007",
+          "source_id": "diabetic_kidney_disease_p77_007",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "diabetic_kidney_disease",
+          "section_type": "general",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 77,
+          "content_preview": "2.2.1. Sỏi calci • Nguyên nhân thứ 3 là nước tiểu quá bão hòa về Oxalat. Thức ăn chứa nhiều oxalat như rau chút chít, đại hoàng hoặc trong trường hợp ngộ độc vitamin C sẽ dẫn đến tình trạng này. Ở người bị viêm ruột, cắt một phần ruột non cũng thường thấy tăng oxalat niệu và có sỏi oxalat, những người có rối loạn hệ thống men chuyển hóa ở gan do di truyền gây tăng bài xuất acid oxalic để tạo thành oxalat cũng dễ có sỏi oxalat."
+        }
+      ],
+      "eval_tags": [
+        "diabetic_kidney_disease",
+        "ground_truth",
+        "numeric",
+        "rag_qa"
+      ],
+      "eval_notes": "Generated from data/evaluate_data/qa_dataset_50_questions.json and matched against data/processed_data source artifacts. Review low match_score items before using as hard gold IDs."
+    },
+    {
+      "id": "rag_026",
+      "title": "Sỏi struvit hình thành do cơ chế gì?",
+      "query": "Sỏi struvit hình thành do cơ chế gì?",
+      "top_k": 5,
+      "reference_answer": "Sỏi struvit là do nhiễm khuẩn lâu dài đường tiết niệu. Vi khuẩn giải phóng men urease, men này phân giải ure gây tổng hợp ammoniac trong nước tiểu, dẫn tới làm giảm hòa tan struvit tạo điều kiện hình thành sỏi.",
+      "reference_context": "Sỏi struvit là do nhiễm khuẩn lâu dài đường tiết niệu, vi khuẩn giải phóng men urease, men này phân giải ure gây tổng hợp ammoniac trong nước tiểu, dẫn tới làm giảm hòa tan struvit (MgNH44PO44·6H22O) tạo điều kiện hình thành sỏi.",
+      "required_facts": [
+        "Sỏi struvit là do nhiễm khuẩn lâu dài đường tiết niệu.",
+        "Vi khuẩn giải phóng men urease, men này phân giải ure gây tổng hợp ammoniac trong nước tiểu, dẫn tới làm giảm hòa tan struvit tạo điều kiện hình thành sỏi."
+      ],
+      "relevant_document_ids": [
+        "chunk::diabetic_kidney_disease_p78_001"
+      ],
+      "relevant_source_ids": [
+        "diabetic_kidney_disease_p78_001"
+      ],
+      "source_evidence": [
+        {
+          "document_id": "chunk::diabetic_kidney_disease_p78_001",
+          "source_id": "diabetic_kidney_disease_p78_001",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "diabetic_kidney_disease",
+          "section_type": "general",
+          "biomarker": "urea",
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 78,
+          "content_preview": "• Sỏi struvit là do nhiễm khuẩn lâu dài đường tiết niệu, vi khuẩn giải phóng men urease, men này phân giải ure gây tổng hợp ammoniac trong nước tiểu, dẫn tới làm giảm hòa tan struvit (MgNH44PO44·6H22O) tạo điều kiện hình thành sỏi."
+        }
+      ],
+      "eval_tags": [
+        "diabetic_kidney_disease",
+        "ground_truth",
+        "rag_qa"
+      ],
+      "eval_notes": "Generated from data/evaluate_data/qa_dataset_50_questions.json and matched against data/processed_data source artifacts. Review low match_score items before using as hard gold IDs."
+    },
+    {
+      "id": "rag_027",
+      "title": "Tổn thương thận cấp được chẩn đoán theo tiêu chuẩn KDIGO 2012 khi nào?",
+      "query": "Tổn thương thận cấp được chẩn đoán theo tiêu chuẩn KDIGO 2012 khi nào?",
+      "top_k": 5,
+      "reference_answer": "Tổn thương thận cấp được chẩn đoán khi có 1 trong 3 tiêu chuẩn: (1) tăng nồng độ creatinin huyết thanh thêm 0,3 mg/dL (26,5 mcmol/L) trong 48 giờ; (2) nồng độ creatinin huyết thanh tăng ≥ 1,5 lần so với creatinin nền trong vòng 7 ngày trước đó; hoặc (3) bệnh nhân có lượng nước tiểu < 0,5 ml/kg/h trong 6 giờ.",
+      "reference_context": "tổn thương thận cấp được chẩn đoán khi có 1 trong 3 tiêu chuẩn sau: 1. Tăng nồng độ creatinin huyết thanh thêm 0,3 mg/dL (26,5 mcmol/L) trong 48 giờ. 2. Hoặc nồng độ creatinin huyết thanh tăng lớn hơn hoặc bằng 1,5 lần so với nồng độ creatinin nền trong vòng 7 ngày trước đó. 3. Hoặc bệnh nhân có lượng nước tiểu < 0,5 ml/kg/h trong 6 giờ.",
+      "required_facts": [
+        "Tổn thương thận cấp được chẩn đoán khi có 1 trong 3 tiêu chuẩn: (1) tăng nồng độ creatinin huyết thanh thêm 0,3 mg/dL (26,5 mcmol/L) trong 48 giờ",
+        "(2) nồng độ creatinin huyết thanh tăng ≥ 1,5 lần so với creatinin nền trong vòng 7 ngày trước đó",
+        "hoặc (3) bệnh nhân có lượng nước tiểu < 0,5 ml/kg/h trong 6 giờ."
+      ],
+      "relevant_document_ids": [
+        "chunk::acute_kidney_injury_p106_004"
+      ],
+      "relevant_source_ids": [
+        "acute_kidney_injury_p106_004"
+      ],
+      "source_evidence": [
+        {
+          "document_id": "chunk::acute_kidney_injury_p106_004",
+          "source_id": "acute_kidney_injury_p106_004",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "acute_kidney_injury",
+          "section_type": "diagnosis_criteria",
+          "biomarker": "creatinine",
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 106,
+          "content_preview": "1.2.1. Tiêu chuẩn chẩn đoán tổn thương thận cấp • Tiêu chuẩn chẩn đoán tổn thương thận cấp có nhiều thay đổi, các tiêu chuẩn chẩn đoán mới đưa ra nhằm phát hiện tổn thương thận cấp sớm hơn ở giai đoạn biến đổi cận lâm sàng, các quan niệm trước đây vẫn dựa trên các triệu chứng đái ít, thiểu niệu và vô niệu xảy ra cấp tính, ure và creatinin máu tăng dần, tuy nhiên vẫn chưa thực sự chính xác. • Theo Kidney Disease Improving Global Outcomes (Đồng thuận về tăng cường hiệu quả điều trị bệnh thận toàn "
+        },
+        {
+          "document_id": "chunk::acute_kidney_injury_p106_005",
+          "source_id": "acute_kidney_injury_p106_005",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "acute_kidney_injury",
+          "section_type": "general",
+          "biomarker": "creatinine",
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 106,
+          "content_preview": "1. Tăng nồng độ creatinin huyết thanh thêm 0,3 mg/dL (26,5 mcmol/L) trong 48 giờ."
+        },
+        {
+          "document_id": "chunk::acute_kidney_injury_p106_006",
+          "source_id": "acute_kidney_injury_p106_006",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "acute_kidney_injury",
+          "section_type": "general",
+          "biomarker": "creatinine",
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 106,
+          "content_preview": "2. Hoặc nồng độ creatinin huyết thanh tăng lớn hơn hoặc bằng 1,5 lần so với nồng độ creatinin nền trong vòng 7 ngày trước đó (nếu không biết creatinin nền có thể lấy giá trị bình thường để so sánh)."
+        },
+        {
+          "document_id": "chunk::acute_kidney_injury_p106_007",
+          "source_id": "acute_kidney_injury_p106_007",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "acute_kidney_injury",
+          "section_type": "general",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 106,
+          "content_preview": "3. Hoặc bệnh nhân có lượng nước tiểu < 0,5 ml/kg/h trong 6 giờ."
+        }
+      ],
+      "eval_tags": [
+        "acute_kidney_injury",
+        "diagnosis",
+        "ground_truth",
+        "numeric",
+        "rag_qa"
+      ],
+      "eval_notes": "Generated from data/evaluate_data/qa_dataset_50_questions.json and matched against data/processed_data source artifacts. Review low match_score items before using as hard gold IDs."
+    },
+    {
+      "id": "rag_028",
+      "title": "Tổn thương thận cấp trước thận là gì và chiếm tỷ lệ bao nhiêu?",
+      "query": "Tổn thương thận cấp trước thận là gì và chiếm tỷ lệ bao nhiêu?",
+      "top_k": 5,
+      "reference_answer": "Tổn thương thận cấp trước thận là nguyên nhân thường gặp nhất, chiếm khoảng 50% các trường hợp. Đây là tình trạng giảm tưới máu thận dẫn đến giảm mức lọc cầu thận.",
+      "reference_context": "Là nguyên nhân thường gặp nhất, chiếm khoảng 50% các trường hợp. Do giảm tưới máu thận dẫn đến giảm mức lọc cầu thận.",
+      "required_facts": [
+        "Tổn thương thận cấp trước thận là nguyên nhân thường gặp nhất, chiếm khoảng 50% các trường hợp.",
+        "Đây là tình trạng giảm tưới máu thận dẫn đến giảm mức lọc cầu thận."
+      ],
+      "relevant_document_ids": [
+        "chunk::acute_kidney_injury_p120_001"
+      ],
+      "relevant_source_ids": [
+        "acute_kidney_injury_p120_001"
+      ],
+      "source_evidence": [
+        {
+          "document_id": "chunk::acute_kidney_injury_p120_001",
+          "source_id": "acute_kidney_injury_p120_001",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "acute_kidney_injury",
+          "section_type": "treatment",
+          "biomarker": "GFR",
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 120,
+          "content_preview": "5.3.1. Nguyên nhân trước thận (thiếu máu thận cấp) Là nguyên nhân thường gặp nhất, chiếm khoảng 50% các trường hợp. Do giảm tưới máu thận dẫn đến giảm mức lọc cầu thận. Các nguyên nhân bao gồm: • Giảm thể tích tuần hoàn: mất nước (nôn, ỉa chảy, bỏng, dùng thuốc lợi tiểu quá mức), chảy máu. • Giảm cung lượng tim: suy tim, sốc tim, loạn nhịp tim. • Giãn mạch ngoại vi: nhiễm trùng huyết, sốc phản vệ, dùng thuốc hạ áp. • Co thắt mạch thận: dùng thuốc chống viêm non-steroid (NSAIDs), ức chế men chuyể"
+        },
+        {
+          "document_id": "chunk::viem_cau_than_cap_p13_003",
+          "source_id": "viem_cau_than_cap_p13_003",
+          "source_type": "chunk",
+          "match_score": 0.9,
+          "disease_name": "viem_cau_than_cap",
+          "section_type": "clinical_features",
+          "biomarker": "GFR",
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 13,
+          "content_preview": "3.2. Triệu chứng cận lâm sàng • Xét nghiệm máu: o Thường gặp thiếu máu mức độ nhẹ (có thể liên quan đến tình trạng hoà loãng); nitơ phi protein (urê, creatinin) máu bình thường hoặc tăng tuỳ theo tình trạng suy thận. o Kháng thể kháng liên cầu tăng ở hầu hết các bệnh nhân viêm cầu thận cấp sau nhiễm liên cầu khuẩn. o Antistreptolysin O (ASLO) có hiệu giá tăng ở khoảng 60-80% bệnh nhân, bắt đầu tăng trong vòng 1-3 tuần đầu, đạt tối đa sau 3-5 tuần và giảm dần về trị số bình thường sau 6 tháng. o "
+        },
+        {
+          "document_id": "chunk::hoi_chung_than_hu_p18_001",
+          "source_id": "hoi_chung_than_hu_p18_001",
+          "source_type": "chunk",
+          "match_score": 0.9,
+          "disease_name": "hoi_chung_than_hu",
+          "section_type": "treatment",
+          "biomarker": "albumin_máu",
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 18,
+          "content_preview": "thấm chọn lọc với albumin này của mao mạch cầu thận. Giả thuyết thứ nhất là sự thay đổi về thành phần tạo điện tích âm của màng đáy cầu thận. Giả thuyết thứ hai là sự thay đổi kích thước các khe lọc, do hiện tượng co kéo, mất các chân của tế bào biểu mô tạng. Ngoài ra có thể còn có vai trò trung gian của màng đáy cầu thận. • Khi mất nhiều albumin qua nước tiểu, hậu quả là gây giảm albumin máu dẫn đến tình trạng giảm áp lực keo huyết tương. Nước thoát ra khỏi lòng mạch gây phù và làm giảm thể tíc"
+        },
+        {
+          "document_id": "chunk::acute_kidney_injury_p106_001",
+          "source_id": "acute_kidney_injury_p106_001",
+          "source_type": "chunk",
+          "match_score": 0.9,
+          "disease_name": "acute_kidney_injury",
+          "section_type": "definition",
+          "biomarker": "creatinine",
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 106,
+          "content_preview": "1.1. Một số thuật ngữ và định nghĩa • Thuật ngữ tổn thương thận cấp được dùng từ lâu là tình trạng giảm chức năng thận đột ngột và kéo dài trong vài giờ hoặc vài ngày, dẫn đến giảm mức lọc cầu thận, ứ đọng các sản phẩm chuyển hoá nitơ (ure, creatinin) và các sản phẩm của quá trình chuyển hoá không nitơ (điện giải, kiềm toan...). Các rối loạn này phụ thuộc vào mức độ và thời gian kéo dài của tình trạng suy thận mà có các biểu hiện như toan chuyển hoá, tăng kali máu, thừa dịch trong cơ thể. tổn th"
+        }
+      ],
+      "eval_tags": [
+        "acute_kidney_injury",
+        "ground_truth",
+        "hoi_chung_than_hu",
+        "numeric",
+        "rag_qa",
+        "viem_cau_than_cap"
+      ],
+      "eval_notes": "Generated from data/evaluate_data/qa_dataset_50_questions.json and matched against data/processed_data source artifacts. Review low match_score items before using as hard gold IDs."
+    },
+    {
+      "id": "rag_029",
+      "title": "Các giai đoạn lâm sàng của tổn thương thận cấp điển hình là gì?",
+      "query": "Các giai đoạn lâm sàng của tổn thương thận cấp điển hình là gì?",
+      "top_k": 5,
+      "reference_answer": "Tổn thương thận cấp thể điển hình tiến triển qua 4 giai đoạn: giai đoạn khởi phát (trong vòng 24 giờ, tác nhân gây bệnh tấn công), giai đoạn đái ít - vô niệu (trung bình 7-14 ngày), giai đoạn đái trở lại (kéo dài trung bình 5-7 ngày) và giai đoạn hồi phục (trung bình khoảng 4 tuần).",
+      "reference_context": "Tổn thương thận cấp thể điển hình và có hồi phục thường tiến triển qua 4 giai đoạn. 4.3.1. Giai đoạn khởi phát: Khởi phát, trong vòng 24 giờ, là giai đoạn tấn công của tác nhân gây bệnh. 4.3.2. Giai đoạn đái ít - vô niệu: Vô niệu có thể diễn biến từ từ... trung bình 7-14 ngày bệnh nhân sẽ đái trở lại. 4.3.3. Giai đoạn đái trở lại: Kéo dài trung bình khoảng 5-7 ngày. 4.3.4. Giai đoạn hồi phục: Tùy theo nguyên nhân... trung bình khoảng 4 tuần.",
+      "required_facts": [
+        "Tổn thương thận cấp thể điển hình tiến triển qua 4 giai đoạn: giai đoạn khởi phát (trong vòng 24 giờ, tác nhân gây bệnh tấn công), giai đoạn đái ít - vô niệu (trung bình 7-14 ngày), giai đoạn đái trở lại (kéo dài trung bình 5-7 ngày) và giai đoạn hồi phục (trung bình khoảng 4 tuần)."
+      ],
+      "relevant_document_ids": [
+        "chunk::benh_ly_cau_than_p1_001"
+      ],
+      "relevant_source_ids": [
+        "benh_ly_cau_than_p1_001"
+      ],
+      "source_evidence": [
+        {
+          "document_id": "chunk::benh_ly_cau_than_p1_001",
+          "source_id": "benh_ly_cau_than_p1_001",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "definition",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 1,
+          "content_preview": "1. KHÁI NIỆM Bệnh lý cầu thận là một trong những nguyên nhân thường gặp nhất của suy thận giai đoạn cuối, bao gồm bệnh cầu thận nguyên phát và bệnh cầu thận thứ phát. Bệnh lý của cầu thận có thể xếp loại theo nhiều cách, tuy nhiên cách xếp loại trên lâm sàng bao gồm các hội chứng chính như: hội chứng viêm cầu thận cấp, hội chứng viêm cầu thận tiến triển nhanh, hội chứng viêm cầu thận mạn, hội chứng thận hư, đái máu kéo dài hay tái phát và phân loại bệnh cầu thận dựa vào tổn thương mô bệnh học củ"
+        },
+        {
+          "document_id": "chunk::benh_ly_cau_than_p7_003",
+          "source_id": "benh_ly_cau_than_p7_003",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "clinical_features",
+          "biomarker": "protein_niệu_24h",
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 7,
+          "content_preview": "4.4.5.1. Lâm sàng và cận lâm sàng • Khởi phát: ở trẻ em thường bắt đầu bởi đái máu đại thể, ở người lớn thường đái máu vi thể. Protein niệu thường ở mức độ nhẹ (dưới 1g/24 giờ). • Đái máu đại thể thường tái phát sau mỗi đợt viêm đường hô hấp trên do vi khuẩn hoặc do virus. • Ít gặp hội chứng thận hư (6-8%). • Chức năng thận và huyết áp bình thường lúc khởi phát. • Tăng IgA huyết thanh ở khoảng 50% bệnh nhân. • Bổ thể CH50, C3, C4: bình thường. • Tiên lượng: không tốt, khoảng 30-40% bệnh nhân ngư"
+        },
+        {
+          "document_id": "chunk::viem_cau_than_cap_p12_005",
+          "source_id": "viem_cau_than_cap_p12_005",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "viem_cau_than_cap",
+          "section_type": "clinical_features",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 12,
+          "content_preview": "3.1. Triệu chứng lâm sàng • Đối với viêm cầu thận cấp sau nhiễm liên cầu khuẩn, thời gian bị bệnh tiềm tàng có thể kéo dài tới 3 tuần trước khi có dấu hiệu khởi phát. Thời gian này thường là 1-3 tuần sau nhiễm khuẩn hầu họng (trung bình 10 ngày), 3-6 tuần sau nhiễm khuẩn ngoài da (trung bình 2 tuần). Nếu các dấu hiệu lâm sàng của viêm cầu thận cấp xuất hiện trong vòng 1-4 ngày sau khi nhiễm liên cầu thì thường là bệnh nhân đã có bệnh thận từ trước. • Các biểu hiện lâm sàng thường xuất hiện đột n"
+        },
+        {
+          "document_id": "chunk::viem_cau_than_cap_p13_003",
+          "source_id": "viem_cau_than_cap_p13_003",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "viem_cau_than_cap",
+          "section_type": "clinical_features",
+          "biomarker": "GFR",
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 13,
+          "content_preview": "3.2. Triệu chứng cận lâm sàng • Xét nghiệm máu: o Thường gặp thiếu máu mức độ nhẹ (có thể liên quan đến tình trạng hoà loãng); nitơ phi protein (urê, creatinin) máu bình thường hoặc tăng tuỳ theo tình trạng suy thận. o Kháng thể kháng liên cầu tăng ở hầu hết các bệnh nhân viêm cầu thận cấp sau nhiễm liên cầu khuẩn. o Antistreptolysin O (ASLO) có hiệu giá tăng ở khoảng 60-80% bệnh nhân, bắt đầu tăng trong vòng 1-3 tuần đầu, đạt tối đa sau 3-5 tuần và giảm dần về trị số bình thường sau 6 tháng. o "
+        }
+      ],
+      "eval_tags": [
+        "benh_ly_cau_than",
+        "classification",
+        "ground_truth",
+        "numeric",
+        "prognosis",
+        "rag_qa",
+        "viem_cau_than_cap"
+      ],
+      "eval_notes": "Generated from data/evaluate_data/qa_dataset_50_questions.json and matched against data/processed_data source artifacts. Review low match_score items before using as hard gold IDs."
+    },
+    {
+      "id": "rag_030",
+      "title": "Chỉ định lọc máu sớm trong tổn thương thận cấp gồm những trường hợp nào?",
+      "query": "Chỉ định lọc máu sớm trong tổn thương thận cấp gồm những trường hợp nào?",
+      "top_k": 5,
+      "reference_answer": "Chỉ định lọc máu sớm trong tổn thương thận cấp khi có 1 trong các dấu hiệu: quá tải tuần hoàn đe dọa phù phổi cấp; tăng kali máu với biến đổi điện tim (kali máu ≥ 6,5mmol/l); toan chuyển hóa pH < 7,2; giảm Na⁺ máu trầm trọng (Na⁺ < 120mmol/l); viêm màng ngoài tim; biểu hiện thần kinh như lú lẫn, co giật, hôn mê; xuất huyết do ure máu cao; hội chứng ure máu cao có biểu hiện lâm sàng; thiểu niệu không đáp ứng lợi tiểu.",
+      "reference_context": "Chỉ định lọc máu sớm trong tổn thương thận cấp khi có 1 trong các dấu hiệu sau: Quá tải tuần hoàn, đe dọa phù phổi cấp. Tăng kali máu, biến đổi điện tim (kali máu ≥ 6,5mmol/l). Toan chuyển hóa, pH < 7,2. Giảm Na⁺ máu trầm trọng Na⁺ < 120mmol/l. Viêm màng ngoài tim. Biểu hiện thần kinh: lú lẫn, co giật, hôn mê... Xuất huyết trầm trọng do ure máu cao. Hội chứng ure máu cao có biểu hiện lâm sàng. Thiểu niệu không đáp ứng lợi tiểu.",
+      "required_facts": [
+        "Chỉ định lọc máu sớm trong tổn thương thận cấp khi có 1 trong các dấu hiệu: quá tải tuần hoàn đe dọa phù phổi cấp",
+        "tăng kali máu với biến đổi điện tim (kali máu ≥ 6,5mmol/l)",
+        "toan chuyển hóa pH < 7,2",
+        "giảm Na⁺ máu trầm trọng (Na⁺ < 120mmol/l)",
+        "viêm màng ngoài tim",
+        "biểu hiện thần kinh như lú lẫn, co giật, hôn mê",
+        "xuất huyết do ure máu cao",
+        "hội chứng ure máu cao có biểu hiện lâm sàng"
+      ],
+      "relevant_document_ids": [
+        "chunk::benh_ly_cau_than_p3_006"
+      ],
+      "relevant_source_ids": [
+        "benh_ly_cau_than_p3_006"
+      ],
+      "source_evidence": [
+        {
+          "document_id": "chunk::benh_ly_cau_than_p3_006",
+          "source_id": "benh_ly_cau_than_p3_006",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "pathology",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 3,
+          "content_preview": "4.1.2. Tổn thương mô bệnh học • Hiển vi quang học: o Cầu thận bình thường dưới kính hiển vi quang học. o Tổ chức kẽ thận và mạch thận bình thường. o Có thể tăng nhẹ tế bào và chất mầm gian mạch. • Hiển vi huỳnh quang: o Không thấy có lắng đọng các thành phần miễn dịch. • Hiển vi điện tử: o Mất chân lồi của tế bào biểu mô màng đáy. o Có thể tăng nhẹ tế bào và chất mầm gian mạch phối hợp với dày nhẹ màng đáy. o Mất hàng rào điện tích âm của màng đáy cầu thận được phát hiện bởi polyethyleneimine."
+        },
+        {
+          "document_id": "chunk::benh_ly_cau_than_p4_004",
+          "source_id": "benh_ly_cau_than_p4_004",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "pathology",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 4,
+          "content_preview": "4.3.2. Tổn thương mô bệnh học • Kính hiển vi quang học: o Dày lan tỏa của màng đáy. o Có thể có các gai mọc lên từ màng đáy được phát hiện dưới tiêu chuẩn nhuộm bạc. o Xơ hóa cầu thận, teo ống thận, xơ hóa tổ chức kẽ thận gặp ở những bệnh nhân bệnh đã diễn biến lâu. • Kính hiển vi huỳnh quang: o Lắng đọng IgG và C3 là chủ yếu dọc màng đáy. o Có thể gặp lắng đọng IgM hoặc IgA. o Không có lắng đọng IgE. • Hiển vi điện tử: o Lắng đọng đặc điện tử dưới biểu mô. o Dày không đều màng đáy cầu thận."
+        },
+        {
+          "document_id": "chunk::benh_ly_cau_than_p5_002",
+          "source_id": "benh_ly_cau_than_p5_002",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "pathology",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 5,
+          "content_preview": "4.4.1.2. Tổn thương mô bệnh học • Kính hiển vi quang học: o Tăng sinh lan tỏa tế bào gian mạch. o Tăng sinh chất mầm gian mạch. o Đôi khi sưng phồng tế bào biểu mô có chân (podocytes). o Tổn thương nhẹ tổ chức kẽ thận và mạch thận. • Hiển vi huỳnh quang: o Lắng đọng IgM, IgA, C3, C4 và fibrin ở khoang gian mạch. Tuy nhiên có một số trường hợp không thấy có lắng đọng các thành phần miễn dịch. • Hiển vi điện tử: o Tăng sinh tế bào và chất mầm gian mạch. o Lắng đọng đặc điện tử ở gian mạch."
+        },
+        {
+          "document_id": "chunk::benh_ly_cau_than_p6_004",
+          "source_id": "benh_ly_cau_than_p6_004",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "pathology",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 6,
+          "content_preview": "4.4.3.2. Tổn thương mô bệnh học • Kính hiển vi quang học: o Tăng sinh tế bào gian mạch rõ. o Tăng sinh nhẹ tế bào nội mạc. o Có xâm nhập bạch cầu đa nhân trong lòng mao mạch cầu thận. o Dày màng đáy cầu thận. o Đôi khi thấy có hình ảnh đường viền kép ở màng đáy cầu thận dưới tiêu bản nhuộm PAS. o Tăng sinh chất mầm gian mạch. o Đôi khi có xuất hiện liềm tế bào với số lượng ít. o Có thể xơ hóa cầu thận. o Có tổn thương teo ống thận, xâm nhập viêm kẽ và xơ hóa kẽ đi kèm. o Không có các tổn thương "
+        }
+      ],
+      "eval_tags": [
+        "benh_ly_cau_than",
+        "ground_truth",
+        "numeric",
+        "rag_qa"
+      ],
+      "eval_notes": "Generated from data/evaluate_data/qa_dataset_50_questions.json and matched against data/processed_data source artifacts. Review low match_score items before using as hard gold IDs."
+    },
+    {
+      "id": "rag_031",
+      "title": "Bệnh thận mạn tính được chẩn đoán dựa vào tiêu chuẩn nào theo KDOQI 2002?",
+      "query": "Bệnh thận mạn tính được chẩn đoán dựa vào tiêu chuẩn nào theo KDOQI 2002?",
+      "top_k": 5,
+      "reference_answer": "Bệnh thận mạn tính được chẩn đoán khi thỏa mãn một trong hai tiêu chuẩn: (A) biểu hiện tổn thương thận tồn tại kéo dài ≥ 3 tháng (albumin niệu, bất thường cặn lắng nước tiểu, bất thường điện giải, bất thường mô bệnh học thận, hoặc hình ảnh học bất thường); hoặc (B) giảm mức lọc cầu thận < 60ml/ph/1,73m² tồn tại kéo dài trên 3 tháng.",
+      "reference_context": "Bệnh nhân được chẩn đoán bệnh thận mạn tính khi thỏa mãn một trong hai tiêu chuẩn (A hoặc B) sau đây: A. Biểu hiện tổn thương thận tồn tại kéo dài ≥ 3 tháng (có 1 hoặc nhiều hơn những triệu chứng dưới đây) Có Albumin niệu (tỷ lệ albumin/creatinine nước tiểu > 30mg/g hoặc albumin niệu ≥ 24 giờ > 30mg/24giờ). Bất thường cặn lắng nước tiểu. Bất thường điện giải hoặc các bất thường khác do rối loạn chức năng của ống thận. Bất thường về mô bệnh học thận. Xét nghiệm hình ảnh học phát hiện thận bất thường. B. Giảm mức lọc cầu thận (Glomerular filtration rate: GFR) < 60ml/ph/1,73 m²) tồn tại kéo dài trên 3 tháng.",
+      "required_facts": [
+        "Bệnh thận mạn tính được chẩn đoán khi thỏa mãn một trong hai tiêu chuẩn: (A) biểu hiện tổn thương thận tồn tại kéo dài ≥ 3 tháng (albumin niệu, bất thường cặn lắng nước tiểu, bất thường điện giải, bất thường mô bệnh học thận, hoặc hình ảnh học bất thường)",
+        "hoặc (B) giảm mức lọc cầu thận < 60ml/ph/1,73m² tồn tại kéo dài trên 3 tháng."
+      ],
+      "relevant_document_ids": [
+        "chunk::hoi_chung_than_hu_p21_001"
+      ],
+      "relevant_source_ids": [
+        "hoi_chung_than_hu_p21_001"
+      ],
+      "source_evidence": [
+        {
+          "document_id": "chunk::hoi_chung_than_hu_p21_001",
+          "source_id": "hoi_chung_than_hu_p21_001",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "hoi_chung_than_hu",
+          "section_type": "progression",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 21,
+          "content_preview": "• Trên hiển vi quang học có thể thấy tổn thương ở một phần cầu thận, khu trú ở một số cầu thận hoặc lan toả ở tất cả hoặc gần như tất cả các cầu thận. Các tổn thương chính bắt đầu ở vùng ranh giới tuỷ và vỏ thận rồi lan dần về phía vỏ thận. Các mảnh xơ hoá thường nằm sát vùng rốn của bó mao mạch cầu thận. Khi bệnh tiến triển, số tiểu thuỳ bị tổn thương trong một cầu thận và số cầu thận bị tổn thương tăng lên. Dấu hiệu đặc trưng trên hiển vi miễn dịch huỳnh quang là lắng động C3 và IgM ở mảnh cầu"
+        },
+        {
+          "document_id": "chunk::benh_than_man_p128_004",
+          "source_id": "benh_than_man_p128_004",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_than_man",
+          "section_type": "diagnosis_criteria",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 128,
+          "content_preview": "1.1. Bệnh thận mạn tính (Chronic Kidney Disease - CKD) Bệnh nhân được chẩn đoán bệnh thận mạn tính khi thỏa mãn một trong hai tiêu chuẩn (A hoặc B) sau đây:"
+        },
+        {
+          "document_id": "chunk::benh_than_man_p129_001",
+          "source_id": "benh_than_man_p129_001",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_than_man",
+          "section_type": "clinical_features",
+          "biomarker": "ACR",
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 129,
+          "content_preview": "A. Biểu hiện tổn thương thận tồn tại kéo dài ≥ 3 tháng (có 1 hoặc nhiều hơn những triệu chứng dưới đây) • Có Albumin niệu (tỷ lệ albumin/creatinine nước tiểu > 30mg/g hoặc albumin niệu ≥"
+        },
+        {
+          "document_id": "chunk::benh_than_man_p129_002",
+          "source_id": "benh_than_man_p129_002",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_than_man",
+          "section_type": "general",
+          "biomarker": "creatinine",
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 129,
+          "content_preview": "24 giờ > 30mg/24giờ). • Bất thường cặn lắng nước tiểu. • Bất thường điện giải hoặc các bất thường khác do rối loạn chức năng của ống thận. • Bất thường về mô bệnh học thận. • Xét nghiệm hình ảnh học phát hiện thận bất thường. • Những bệnh nhân sau khi được ghép thận cũng được xếp loại là mắc bệnh thận mạn tính, và được thêm ký hiệu T (Transplantation) trong khi tiến hành phân loại. B. Giảm mức lọc cầu thận (Glomerular filtration rate: GFR) < 60ml/ph/1,73 m²) tồn tại kéo dài trên 3 tháng. Với mức"
+        }
+      ],
+      "eval_tags": [
+        "benh_than_man",
+        "diagnosis",
+        "ground_truth",
+        "hoi_chung_than_hu",
+        "numeric",
+        "rag_qa"
+      ],
+      "eval_notes": "Generated from data/evaluate_data/qa_dataset_50_questions.json and matched against data/processed_data source artifacts. Review low match_score items before using as hard gold IDs."
+    },
+    {
+      "id": "rag_032",
+      "title": "Xơ hóa cầu thận ổ có tiên lượng như thế nào?",
+      "query": "Xơ hóa cầu thận ổ có tiên lượng như thế nào?",
+      "top_k": 5,
+      "reference_answer": "Xơ hóa cầu thận ổ có tiên lượng xấu. Hội chứng thận hư gặp ở 60-80%, có thể tiến triển đến suy thận mạn, thường kháng lại liệu pháp corticoid và các thuốc giảm miễn dịch khác.",
+      "reference_context": "hội chứng thận hư gặp ở: 60-80%. Đái máu vi thể thường gặp. Có thể tiến triển đến suy thận mạn. Tăng huyết áp. Ở bệnh nhân hội chứng thận hư: thường kháng lại liệu pháp corticoid và các thuốc giảm miễn dịch khác. Tiên lượng xấu.",
+      "required_facts": [
+        "Xơ hóa cầu thận ổ có tiên lượng xấu.",
+        "Hội chứng thận hư gặp ở 60-80%, có thể tiến triển đến suy thận mạn, thường kháng lại liệu pháp corticoid và các thuốc giảm miễn dịch khác."
+      ],
+      "relevant_document_ids": [
+        "chunk::benh_ly_cau_than_p1_001"
+      ],
+      "relevant_source_ids": [
+        "benh_ly_cau_than_p1_001"
+      ],
+      "source_evidence": [
+        {
+          "document_id": "chunk::benh_ly_cau_than_p1_001",
+          "source_id": "benh_ly_cau_than_p1_001",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "definition",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 1,
+          "content_preview": "1. KHÁI NIỆM Bệnh lý cầu thận là một trong những nguyên nhân thường gặp nhất của suy thận giai đoạn cuối, bao gồm bệnh cầu thận nguyên phát và bệnh cầu thận thứ phát. Bệnh lý của cầu thận có thể xếp loại theo nhiều cách, tuy nhiên cách xếp loại trên lâm sàng bao gồm các hội chứng chính như: hội chứng viêm cầu thận cấp, hội chứng viêm cầu thận tiến triển nhanh, hội chứng viêm cầu thận mạn, hội chứng thận hư, đái máu kéo dài hay tái phát và phân loại bệnh cầu thận dựa vào tổn thương mô bệnh học củ"
+        },
+        {
+          "document_id": "chunk::benh_ly_cau_than_p3_005",
+          "source_id": "benh_ly_cau_than_p3_005",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "clinical_features",
+          "biomarker": "protein_niệu_24h",
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 3,
+          "content_preview": "4.1.1. Lâm sàng và cận lâm sàng • Thường gặp ở trẻ nhỏ tuổi đi học. • Phù nhiều. • Có đầy đủ triệu chứng của hội chứng thận hư. • Protein niệu chọn lọc: > 80% protein niệu là albumin. • Đái máu vi thể thoáng qua gặp ở 13-14% bệnh nhân. • Tăng huyết áp gặp ở 6-9% bệnh nhân. • Suy thận gặp ở 10-19% bệnh nhân. • Tăng IgE huyết thanh. • Tăng tỷ lệ CD4/CD8. • Bổ thể máu bình thường. • Tiên lượng lành tính. Tuy nhiên tiên lượng có thể xấu nếu hay tái phát."
+        },
+        {
+          "document_id": "chunk::benh_ly_cau_than_p3_007",
+          "source_id": "benh_ly_cau_than_p3_007",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "clinical_features",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 3,
+          "content_preview": "4.2.1. Lâm sàng và cận lâm sàng • hội chứng thận hư gặp ở: 60-80%. • Đái máu vi thể thường gặp. • Có thể tiến triển đến suy thận mạn. • Tăng huyết áp. • Ở bệnh nhân hội chứng thận hư: thường kháng lại liệu pháp corticoid và các thuốc giảm miễn dịch khác. • Tiên lượng xấu."
+        },
+        {
+          "document_id": "chunk::benh_ly_cau_than_p4_003",
+          "source_id": "benh_ly_cau_than_p4_003",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "clinical_features",
+          "biomarker": "protein_niệu_24h",
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 4,
+          "content_preview": "4.3.1. Lâm sàng và cận lâm sàng • Phù. • hội chứng thận hư gặp ở 66-92% bệnh nhân. • Protein niệu dai dẳng nhưng dưới mức thận hư gặp ở 8-34% bệnh nhân. • Suy thận và tăng huyết áp gặp ở 10-50% bệnh nhân. • Đái máu vi thể. • Bổ thể máu bình thường. • Tiên lượng: tốt hơn ở trẻ em, chỉ có 10-20% bệnh nhân trẻ em tiến triển thành suy thận mạn tính."
+        }
+      ],
+      "eval_tags": [
+        "benh_ly_cau_than",
+        "ground_truth",
+        "numeric",
+        "prognosis",
+        "rag_qa"
+      ],
+      "eval_notes": "Generated from data/evaluate_data/qa_dataset_50_questions.json and matched against data/processed_data source artifacts. Review low match_score items before using as hard gold IDs."
+    },
+    {
+      "id": "rag_033",
+      "title": "Viêm cầu thận màng lan tỏa có đặc điểm mô bệnh học huỳnh quang như thế nào?",
+      "query": "Viêm cầu thận màng lan tỏa có đặc điểm mô bệnh học huỳnh quang như thế nào?",
+      "top_k": 5,
+      "reference_answer": "Trên kính hiển vi huỳnh quang của viêm cầu thận màng lan tỏa, thấy lắng đọng IgG và C3 là chủ yếu dọc màng đáy, có thể gặp lắng đọng IgM hoặc IgA, không có lắng đọng IgE.",
+      "reference_context": "Kính hiển vi huỳnh quang: Lắng đọng IgG và C3 là chủ yếu dọc màng đáy. Có thể gặp lắng đọng IgM hoặc IgA. Không có lắng đọng IgE.",
+      "required_facts": [
+        "Trên kính hiển vi huỳnh quang của viêm cầu thận màng lan tỏa, thấy lắng đọng IgG và C3 là chủ yếu dọc màng đáy, có thể gặp lắng đọng IgM hoặc IgA, không có lắng đọng IgE."
+      ],
+      "relevant_document_ids": [
+        "chunk::benh_ly_cau_than_p3_006"
+      ],
+      "relevant_source_ids": [
+        "benh_ly_cau_than_p3_006"
+      ],
+      "source_evidence": [
+        {
+          "document_id": "chunk::benh_ly_cau_than_p3_006",
+          "source_id": "benh_ly_cau_than_p3_006",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "pathology",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 3,
+          "content_preview": "4.1.2. Tổn thương mô bệnh học • Hiển vi quang học: o Cầu thận bình thường dưới kính hiển vi quang học. o Tổ chức kẽ thận và mạch thận bình thường. o Có thể tăng nhẹ tế bào và chất mầm gian mạch. • Hiển vi huỳnh quang: o Không thấy có lắng đọng các thành phần miễn dịch. • Hiển vi điện tử: o Mất chân lồi của tế bào biểu mô màng đáy. o Có thể tăng nhẹ tế bào và chất mầm gian mạch phối hợp với dày nhẹ màng đáy. o Mất hàng rào điện tích âm của màng đáy cầu thận được phát hiện bởi polyethyleneimine."
+        },
+        {
+          "document_id": "chunk::benh_ly_cau_than_p4_004",
+          "source_id": "benh_ly_cau_than_p4_004",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "pathology",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 4,
+          "content_preview": "4.3.2. Tổn thương mô bệnh học • Kính hiển vi quang học: o Dày lan tỏa của màng đáy. o Có thể có các gai mọc lên từ màng đáy được phát hiện dưới tiêu chuẩn nhuộm bạc. o Xơ hóa cầu thận, teo ống thận, xơ hóa tổ chức kẽ thận gặp ở những bệnh nhân bệnh đã diễn biến lâu. • Kính hiển vi huỳnh quang: o Lắng đọng IgG và C3 là chủ yếu dọc màng đáy. o Có thể gặp lắng đọng IgM hoặc IgA. o Không có lắng đọng IgE. • Hiển vi điện tử: o Lắng đọng đặc điện tử dưới biểu mô. o Dày không đều màng đáy cầu thận."
+        },
+        {
+          "document_id": "chunk::benh_ly_cau_than_p5_002",
+          "source_id": "benh_ly_cau_than_p5_002",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "pathology",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 5,
+          "content_preview": "4.4.1.2. Tổn thương mô bệnh học • Kính hiển vi quang học: o Tăng sinh lan tỏa tế bào gian mạch. o Tăng sinh chất mầm gian mạch. o Đôi khi sưng phồng tế bào biểu mô có chân (podocytes). o Tổn thương nhẹ tổ chức kẽ thận và mạch thận. • Hiển vi huỳnh quang: o Lắng đọng IgM, IgA, C3, C4 và fibrin ở khoang gian mạch. Tuy nhiên có một số trường hợp không thấy có lắng đọng các thành phần miễn dịch. • Hiển vi điện tử: o Tăng sinh tế bào và chất mầm gian mạch. o Lắng đọng đặc điện tử ở gian mạch."
+        },
+        {
+          "document_id": "chunk::benh_ly_cau_than_p5_005",
+          "source_id": "benh_ly_cau_than_p5_005",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "pathology",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 5,
+          "content_preview": "4.4.2.2. Tổn thương mô bệnh học • Kính hiển vi thường: o Tổn thương lan tỏa ở các cầu thận. o Sưng phồng và tăng sinh tế bào nội mạch. o Xâm nhập bạch cầu trong lòng mao mạch cầu thận. o Tăng sinh tế bào và chất mầm gian mạch. o Không có thay đổi thành mao mạch (màng đáy) và các mạch máu quanh cầu thận. o Có thể có thoái hóa từng đoạn ống thận. • Hiển vi huỳnh quang: o Lắng đọng lan tỏa dạng hạt của IgG, C3, properdin ở màng đáy và khoảng gian mạch o Có thể có lắng đọng IgM và C4. o Không có lắn"
+        }
+      ],
+      "eval_tags": [
+        "benh_ly_cau_than",
+        "ground_truth",
+        "numeric",
+        "rag_qa"
+      ],
+      "eval_notes": "Generated from data/evaluate_data/qa_dataset_50_questions.json and matched against data/processed_data source artifacts. Review low match_score items before using as hard gold IDs."
+    },
+    {
+      "id": "rag_034",
+      "title": "Viêm cầu thận tăng sinh ngoại mạch hình liềm (viêm cầu thận tiến triển nhanh) có những biểu hiện lâm",
+      "query": "Viêm cầu thận tăng sinh ngoại mạch hình liềm (viêm cầu thận tiến triển nhanh) có những biểu hiện lâm sàng gì?",
+      "top_k": 5,
+      "reference_answer": "Viêm cầu thận tiến triển nhanh có biểu hiện thiểu niệu rõ, phù, tăng huyết áp (đặc biệt huyết áp tâm trương), protein niệu ít gặp hội chứng thận hư, đái máu vi thể có trụ hồng cầu, thiếu máu xuất hiện sớm, suy thận xuất hiện sớm và tiến triển nặng dần đến giai đoạn cuối sau 6-18 tháng.",
+      "reference_context": "Thiểu niệu rõ, phù. Tăng huyết áp: đặc biệt là huyết áp tâm trương. Protein niệu: rất ít gặp hội chứng thận hư. Đái máu vi thể, thường có trụ hồng cầu. Thiếu máu xuất hiện sớm. Suy thận xuất hiện sớm và ngày càng nặng dần. Suy thận giai đoạn cuối sau 6-18 tháng.",
+      "required_facts": [
+        "Viêm cầu thận tiến triển nhanh có biểu hiện thiểu niệu rõ, phù, tăng huyết áp (đặc biệt huyết áp tâm trương), protein niệu ít gặp hội chứng thận hư, đái máu vi thể có trụ hồng cầu, thiếu máu xuất hiện sớm, suy thận xuất hiện sớm và tiến triển nặng dần đến giai đoạn cuối sau 6-18 tháng."
+      ],
+      "relevant_document_ids": [
+        "chunk::benh_ly_cau_than_p6_006"
+      ],
+      "relevant_source_ids": [
+        "benh_ly_cau_than_p6_006"
+      ],
+      "source_evidence": [
+        {
+          "document_id": "chunk::benh_ly_cau_than_p6_006",
+          "source_id": "benh_ly_cau_than_p6_006",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "clinical_features",
+          "biomarker": "protein_niệu_24h",
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 6,
+          "content_preview": "4.4.4.1. Lâm sàng và cận lâm sàng • Thiểu niệu rõ, phù. • Tăng huyết áp: đặc biệt là huyết áp tâm trương. • Protein niệu: rất ít gặp hội chứng thận hư. • Đái máu vi thể, thường có trụ hồng cầu. • Thiếu máu xuất hiện sớm."
+        },
+        {
+          "document_id": "chunk::benh_ly_cau_than_p7_001",
+          "source_id": "benh_ly_cau_than_p7_001",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "classification",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 7,
+          "content_preview": "• Suy thận xuất hiện sớm và ngày càng nặng dần. Suy thận giai đoạn cuối sau 6-18 tháng. • Nếu có hội chứng Goodpasture có thêm các triệu chứng: o Triệu chứng ở phổi: ho, ho máu, rối loạn chức năng hô hấp. o Có kháng thể kháng màng đáy cầu thận ở máu ngoại vi. o Có kháng thể kháng bào tương bạch cầu đa nhân trung tính. o Có hình mờ bất thường ở X-quang tim phổi. • Tiên lượng xấu."
+        },
+        {
+          "document_id": "chunk::hoi_chung_than_hu_p22_001",
+          "source_id": "hoi_chung_than_hu_p22_001",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "hoi_chung_than_hu",
+          "section_type": "treatment",
+          "biomarker": "protein_niệu_24h",
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 22,
+          "content_preview": "– Một số bệnh nhân thận hư nguyên phát có thể tự ổn định không cần điều trị, hay gặp nhất là ở nhóm thay đổi tối thiểu cầu thận và viêm cầu thận màng. Những bệnh nhân có protein niệu ở mức thận hư dai dẳng có thể tiến triển đến suy thận mạn tính sau 5 đến 10 năm. Một số bệnh nhân thận hư do viêm cầu thận hay tái phát và có thể tiến triển đến suy thận mạn tính. Những trường hợp nặng có thể từ vong trong đợt bệnh cấp do các biến chứng như nhiễm trùng, huyết khối tắc mạch. Tiến triển của các trường"
+        },
+        {
+          "document_id": "chunk::benh_than_man_p67_005",
+          "source_id": "benh_than_man_p67_005",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_than_man",
+          "section_type": "general",
+          "biomarker": "protein_niệu_24h",
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 67,
+          "content_preview": "6.2.1. Viêm thận cấp và mạn • Viêm cầu thận sau sau nhiễm trùng. • Bệnh cầu thận do lắng đọng IgA (bệnh Berger). • Viêm cầu thận màng tăng sinh. • Viêm cầu thận màng, ổ. • Viêm cầu thận tiến triển nhanh. • Hội chứng Alport. • Bệnh do màng đáy cầu thận mỏng. • Hội chứng urê máu tan máu. • Gây đái máu vi thể kéo dài. Soi nước tiểu có thể phát hiện hồng cầu biến dạng, méo mó. • Kết hợp với có protein niệu, trụ hồng cầu. • Theo dõi số lượng hồng cầu, bạch cầu trong nước tiểu giúp cho tiên lượng bệnh"
+        }
+      ],
+      "eval_tags": [
+        "benh_ly_cau_than",
+        "benh_than_man",
+        "classification",
+        "ground_truth",
+        "hoi_chung_than_hu",
+        "numeric",
+        "prognosis",
+        "rag_qa"
+      ],
+      "eval_notes": "Generated from data/evaluate_data/qa_dataset_50_questions.json and matched against data/processed_data source artifacts. Review low match_score items before using as hard gold IDs."
+    },
+    {
+      "id": "rag_035",
+      "title": "Hội chứng Goodpasture trong viêm cầu thận tiến triển nhanh có những triệu chứng phổi nào?",
+      "query": "Hội chứng Goodpasture trong viêm cầu thận tiến triển nhanh có những triệu chứng phổi nào?",
+      "top_k": 5,
+      "reference_answer": "Trong hội chứng Goodpasture, triệu chứng ở phổi bao gồm ho, ho máu, rối loạn chức năng hô hấp. Ngoài ra có kháng thể kháng màng đáy cầu thận ở máu ngoại vi, kháng thể kháng bào tương bạch cầu đa nhân trung tính, và hình mờ bất thường ở X-quang tim phổi.",
+      "reference_context": "Nếu có hội chứng Goodpasture có thêm các triệu chứng: Triệu chứng ở phổi: ho, ho máu, rối loạn chức năng hô hấp. Có kháng thể kháng màng đáy cầu thận ở máu ngoại vi. Có kháng thể kháng bào tương bạch cầu đa nhân trung tính. Có hình mờ bất thường ở X-quang tim phổi.",
+      "required_facts": [
+        "Trong hội chứng Goodpasture, triệu chứng ở phổi bao gồm ho, ho máu, rối loạn chức năng hô hấp.",
+        "Ngoài ra có kháng thể kháng màng đáy cầu thận ở máu ngoại vi, kháng thể kháng bào tương bạch cầu đa nhân trung tính, và hình mờ bất thường ở X-quang tim phổi."
+      ],
+      "relevant_document_ids": [
+        "chunk::benh_ly_cau_than_p7_001"
+      ],
+      "relevant_source_ids": [
+        "benh_ly_cau_than_p7_001"
+      ],
+      "source_evidence": [
+        {
+          "document_id": "chunk::benh_ly_cau_than_p7_001",
+          "source_id": "benh_ly_cau_than_p7_001",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "classification",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 7,
+          "content_preview": "• Suy thận xuất hiện sớm và ngày càng nặng dần. Suy thận giai đoạn cuối sau 6-18 tháng. • Nếu có hội chứng Goodpasture có thêm các triệu chứng: o Triệu chứng ở phổi: ho, ho máu, rối loạn chức năng hô hấp. o Có kháng thể kháng màng đáy cầu thận ở máu ngoại vi. o Có kháng thể kháng bào tương bạch cầu đa nhân trung tính. o Có hình mờ bất thường ở X-quang tim phổi. • Tiên lượng xấu."
+        },
+        {
+          "document_id": "chunk::viem_cau_than_cap_p12_006",
+          "source_id": "viem_cau_than_cap_p12_006",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "viem_cau_than_cap",
+          "section_type": "clinical_features",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 12,
+          "content_preview": "3.1. Triệu chứng lâm sàng • Các biểu hiện ở giai đoạn muộn có thể gặp là: o Co giật, lú lẫn, ngủ gà. o Buồn nôn, nôn, dễ chảy máu, ho, khó thở. o Đau lưng, tăng huyết áp. • Khám lâm sàng thường phát hiện thấy: o Phù: là triệu chứng thường gặp nhất, thường nhìn thấy rõ ở mặt, mi mắt, tay, chân, một số trường hợp có phù to toàn thân và có thể có dịch ở các màng. o Nghe phổi có thể có ran ẩm. o Tăng huyết áp, gặp ở khoảng 80% các bệnh nhân."
+        },
+        {
+          "document_id": "chunk::viem_cau_than_cap_p13_004",
+          "source_id": "viem_cau_than_cap_p13_004",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "viem_cau_than_cap",
+          "section_type": "clinical_features",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 13,
+          "content_preview": "3.2. Triệu chứng cận lâm sàng • Chẩn đoán hình ảnh: X-quang phổi, CT ổ bụng, siêu âm... không cho hình ảnh đặc hiệu. Có thể thấy hình ảnh thừa dịch trên phim X-quang. Siêu âm có thể thấy kích thước thận tăng nhẹ và tăng âm nhẹ nhu mô thận. • Sinh thiết thận là tiêu chuẩn vàng giúp chẩn đoán, tuy nhiên thường được chỉ định trong trường hợp có biểu hiện bất thường cần chẩn đoán phân biệt, chẳng hạn khi có"
+        },
+        {
+          "document_id": "chunk::lupus_nephritis_p39_005",
+          "source_id": "lupus_nephritis_p39_005",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "lupus_nephritis",
+          "section_type": "treatment",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 39,
+          "content_preview": "5.4. Một số phương pháp điều trị kết hợp • Lọc huyết tương hoặc thay huyết tương (plasmapheresis-plasma exchange): Thay 3-4 lít huyết tương mỗi buổi trong khoảng 5-7 buổi trong tuần hay hơn. Phương pháp được chỉ định đặc biệt cho những bệnh nhân có biểu hiện của đợt cấp như: Bổ thể giảm, tiểu Sledai hoặc có tổn thương nặng xuất huyết phổi do lupus, có suy thận cấp. Đồng thời vẫn phải kết hợp điều trị tấn công bằng corticoids và các thuốc ức chế miễn dịch. • Rituximab: kháng thể đơn dòng kháng lạ"
+        }
+      ],
+      "eval_tags": [
+        "benh_ly_cau_than",
+        "ground_truth",
+        "lupus_nephritis",
+        "prognosis",
+        "rag_qa",
+        "viem_cau_than_cap"
+      ],
+      "eval_notes": "Generated from data/evaluate_data/qa_dataset_50_questions.json and matched against data/processed_data source artifacts. Review low match_score items before using as hard gold IDs."
+    },
+    {
+      "id": "rag_036",
+      "title": "Điều trị hội chứng thận hư bằng corticosteroid theo phác đồ như thế nào?",
+      "query": "Điều trị hội chứng thận hư bằng corticosteroid theo phác đồ như thế nào?",
+      "top_k": 5,
+      "reference_answer": "Điều trị corticosteroid gồm 3 giai đoạn: giai đoạn tấn công khởi đầu với 1-2mg/kg/ngày trong 4-8 tuần; giai đoạn củng cố kéo dài khoảng 4 tháng với giảm dần liều; và giai đoạn duy trì 5-10 mg/ngày có thể kéo dài hàng năm.",
+      "reference_context": "Giai đoạn tấn công khởi đầu: 1-2mg/kg/ngày hoặc 60mg/m²/ngày ở trẻ em (không quá 80mg/ngày) uống 1 lần buổi sáng hoặc có thể chia làm 2 lần/ngày trong vòng 4-8 tuần. Giai đoạn củng cố: kéo dài khoảng 4 tháng, liều corticoid được giảm dần. Giai đoạn duy trì: 5-10 mg/ngày có thể kéo dài hàng năm.",
+      "required_facts": [
+        "Điều trị corticosteroid gồm 3 giai đoạn: giai đoạn tấn công khởi đầu với 1-2mg/kg/ngày trong 4-8 tuần",
+        "giai đoạn củng cố kéo dài khoảng 4 tháng với giảm dần liều",
+        "và giai đoạn duy trì 5-10 mg/ngày có thể kéo dài hàng năm."
+      ],
+      "relevant_document_ids": [
+        "chunk::viem_cau_than_cap_p12_002"
+      ],
+      "relevant_source_ids": [
+        "viem_cau_than_cap_p12_002"
+      ],
+      "source_evidence": [
+        {
+          "document_id": "chunk::viem_cau_than_cap_p12_002",
+          "source_id": "viem_cau_than_cap_p12_002",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "viem_cau_than_cap",
+          "section_type": "general",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 12,
+          "content_preview": "• Các kháng thể của cầu thận đã gắn với kháng nguyên liên cầu cũng trở thành các kháng nguyên cố định và gắn với các kháng thể kháng liên cầu trong dòng máu để tạo thành phức hợp miễn dịch. Quá trình cố định bổ thể theo con đường kinh điển tạo ra thêm các chất trung gian gây viêm và các tế bào viêm. • Bên cạnh việc gây tổn thương viêm tại chỗ trên màng đáy cầu thận, các phức hợp miễn dịch còn có thể đi qua màng đáy bị thương tổn ra khoang dưới biểu mô. Trong thành phần của các phức hợp miễn dịch"
+        },
+        {
+          "document_id": "chunk::viem_cau_than_cap_p15_006",
+          "source_id": "viem_cau_than_cap_p15_006",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "viem_cau_than_cap",
+          "section_type": "complications",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 15,
+          "content_preview": "5.3. Biến chứng • Tiến triển đến xơ cầu thận. Mặc dù điều này hiếm khi xảy ra đối với các trường hợp bệnh điển hình nhưng có thể có tới 2% số bệnh nhân bị tiến triển đến suy thận mạn tính do xơ cầu thận và suy thận giai đoạn cuối sau một thời gian tương đối ngắn. • Suy thận cấp nặng, cũng hiếm gặp. • Suy thận mạn tính. • hội chứng thận hư. • Các biến chứng khác chủ yếu liên quan đến tổn thương các cơ quan đích ở hệ thần kinh trung ương, hệ thống tim mạch và hô hấp như: o Tổn thương võng mạc do t"
+        },
+        {
+          "document_id": "chunk::hoi_chung_than_hu_p18_002",
+          "source_id": "hoi_chung_than_hu_p18_002",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "hoi_chung_than_hu",
+          "section_type": "general",
+          "biomarker": "albumin_máu",
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 18,
+          "content_preview": "• Tuy nhiên, nhiều dữ liệu thực nghiệm lại không ủng hộ hoàn toàn quan điểm truyền thống này. Người ta thấy rằng không phải lúc nào cũng có hiện tượng giảm thể tích huyết tương, ngược lại rất nhiều bệnh nhân thận hư có tăng thể tích huyết tương, nhất là ở người trưởng thành. Thường chỉ các bệnh nhi bị bệnh cầu thận thay đổi tối thiểu mới có tình trạng giảm thể tích huyết tương. Nhiều nghiên cứu khác không thấy hiện tượng tăng nồng độ renin, angiotensin hay aldosteron ngay cả trong giai đoạn giữ "
+        },
+        {
+          "document_id": "chunk::hoi_chung_than_hu_p23_006",
+          "source_id": "hoi_chung_than_hu_p23_006",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "hoi_chung_than_hu",
+          "section_type": "treatment",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 23,
+          "content_preview": "9.2.1. Corticosteroid Prednison, prednisolon hoặc các thuốc corticoid khác với liều tương đương. Thường dùng cho các bệnh nhân thận hư có thay đổi tối thiểu cầu thận, viêm cầu thận tăng sinh gian mạch và xơ cầu thận ổ - cục bộ. – Giai đoạn tấn công khởi đầu: 1-2mg/kg/ngày hoặc 60mg/m²/ngày ở trẻ em (không quá 80mg/ngày) uống 1 lần buổi sáng hoặc có thể chia làm 2 lần/ngày trong vòng 4-8 tuần. Có tới"
+        }
+      ],
+      "eval_tags": [
+        "classification",
+        "ground_truth",
+        "hoi_chung_than_hu",
+        "numeric",
+        "rag_qa",
+        "treatment",
+        "viem_cau_than_cap"
+      ],
+      "eval_notes": "Generated from data/evaluate_data/qa_dataset_50_questions.json and matched against data/processed_data source artifacts. Review low match_score items before using as hard gold IDs."
+    },
+    {
+      "id": "rag_037",
+      "title": "Đáp ứng hoàn toàn với điều trị hội chứng thận hư được định nghĩa như thế nào?",
+      "query": "Đáp ứng hoàn toàn với điều trị hội chứng thận hư được định nghĩa như thế nào?",
+      "top_k": 5,
+      "reference_answer": "Bệnh nhân đáp ứng hoàn toàn khi protein niệu giảm xuống dưới 0,2g/24 giờ.",
+      "reference_context": "Bệnh nhân đáp ứng hoàn toàn khi protein niệu giảm xuống dưới 0,2g/24 giờ.",
+      "required_facts": [
+        "Bệnh nhân đáp ứng hoàn toàn khi protein niệu giảm xuống dưới 0,2g/24 giờ."
+      ],
+      "relevant_document_ids": [
+        "chunk::hoi_chung_than_hu_p24_004"
+      ],
+      "relevant_source_ids": [
+        "hoi_chung_than_hu_p24_004"
+      ],
+      "source_evidence": [
+        {
+          "document_id": "chunk::hoi_chung_than_hu_p24_004",
+          "source_id": "hoi_chung_than_hu_p24_004",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "hoi_chung_than_hu",
+          "section_type": "treatment",
+          "biomarker": "protein_niệu_24h",
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 24,
+          "content_preview": "10. THEO DÕI VÀ ĐÁNH GIÁ ĐÁP ỨNG VỚI ĐIỀU TRỊ – Trên lâm sàng cần theo dõi sát số lượng nước tiểu 24 giờ, cân nặng, huyết áp, nhiệt độ, tình trạng tinh thần của bệnh nhân. – Đối với các bệnh nhân có diễn biến ổn định và thuận lợi: • Xét nghiệm protein niệu, công thức máu, điện giải, đường máu hàng tuần. • Xét nghiệm kiểm tra chức năng thận (urê, creatinin máu) 2 tuần 1 lần. – Đánh giá đáp ứng với điều trị: • Bệnh nhân đáp ứng hoàn toàn khi protein niệu giảm xuống dưới 0,2g/24 giờ. • Bệnh nhân đá"
+        },
+        {
+          "document_id": "threshold::hoi_chung_than_hu_protein_nieu_24h_lt_0_2_p24_1901",
+          "source_id": "hoi_chung_than_hu_protein_nieu_24h_lt_0_2_p24_1901",
+          "source_type": "threshold",
+          "match_score": 1.0,
+          "disease_name": "hoi_chung_than_hu",
+          "section_type": "treatment",
+          "biomarker": "protein_niệu_24h",
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 24,
+          "content_preview": "Biomarker: protein_niệu_24h. Rule: < 0.2. Unit: g/24h. – Đánh giá đáp ứng với điều trị: • Bệnh nhân đáp ứng hoàn toàn khi protein niệu giảm xuống dưới 0,2g/24 giờ."
+        }
+      ],
+      "eval_tags": [
+        "ground_truth",
+        "hoi_chung_than_hu",
+        "numeric",
+        "rag_qa",
+        "threshold_evidence",
+        "treatment"
+      ],
+      "eval_notes": "Generated from data/evaluate_data/qa_dataset_50_questions.json and matched against data/processed_data source artifacts. Review low match_score items before using as hard gold IDs."
+    },
+    {
+      "id": "rag_038",
+      "title": "Bệnh cầu thận di truyền bao gồm những bệnh nào?",
+      "query": "Bệnh cầu thận di truyền bao gồm những bệnh nào?",
+      "top_k": 5,
+      "reference_answer": "Bệnh cầu thận di truyền bao gồm: hội chứng Alport (bệnh cầu thận có kèm theo điếc), đái máu lành tính tái phát, bệnh cầu thận màng đáy mỏng Nail-patella syndrome, hội chứng thận hư trước sinh, và hội chứng thận hư trẻ em (có xơ hóa gian mạch lan tỏa).",
+      "reference_context": "Bệnh cầu thận di truyền: Hội chứng Alport (Bệnh cầu thận có kèm theo điếc). Đái máu lành tính tái phát. Bệnh cầu thận màng đáy mỏng Nail-patella syndrome. hội chứng thận hư trước sinh. hội chứng thận hư trẻ em (có xơ hóa gian mạch lan tỏa).",
+      "required_facts": [
+        "Bệnh cầu thận di truyền bao gồm: hội chứng Alport (bệnh cầu thận có kèm theo điếc), đái máu lành tính tái phát, bệnh cầu thận màng đáy mỏng Nail-patella syndrome, hội chứng thận hư trước sinh, và hội chứng thận hư trẻ em (có xơ hóa gian mạch lan tỏa)."
+      ],
+      "relevant_document_ids": [
+        "chunk::hoi_chung_than_hu_p2_006"
+      ],
+      "relevant_source_ids": [
+        "hoi_chung_than_hu_p2_006"
+      ],
+      "source_evidence": [
+        {
+          "document_id": "chunk::hoi_chung_than_hu_p2_006",
+          "source_id": "hoi_chung_than_hu_p2_006",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "hoi_chung_than_hu",
+          "section_type": "general",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 2,
+          "content_preview": "3.3. Bệnh cầu thận di truyền • Hội chứng Alport (Bệnh cầu thận có kèm theo điếc). • Đái máu lành tính tái phát. • Bệnh cầu thận màng đáy mỏng Nail-patella syndrome. • hội chứng thận hư trước sinh. • hội chứng thận hư trẻ em (có xơ hóa gian mạch lan tỏa)."
+        },
+        {
+          "document_id": "chunk::benh_ly_cau_than_p3_005",
+          "source_id": "benh_ly_cau_than_p3_005",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "clinical_features",
+          "biomarker": "protein_niệu_24h",
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 3,
+          "content_preview": "4.1.1. Lâm sàng và cận lâm sàng • Thường gặp ở trẻ nhỏ tuổi đi học. • Phù nhiều. • Có đầy đủ triệu chứng của hội chứng thận hư. • Protein niệu chọn lọc: > 80% protein niệu là albumin. • Đái máu vi thể thoáng qua gặp ở 13-14% bệnh nhân. • Tăng huyết áp gặp ở 6-9% bệnh nhân. • Suy thận gặp ở 10-19% bệnh nhân. • Tăng IgE huyết thanh. • Tăng tỷ lệ CD4/CD8. • Bổ thể máu bình thường. • Tiên lượng lành tính. Tuy nhiên tiên lượng có thể xấu nếu hay tái phát."
+        },
+        {
+          "document_id": "chunk::hoi_chung_than_hu_p17_005",
+          "source_id": "hoi_chung_than_hu_p17_005",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "hoi_chung_than_hu",
+          "section_type": "general",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 17,
+          "content_preview": "2. CƠ CHẾ BỆNH SINH • Nhiều tác giả nghiên cứu còn nhận thấy tốc độ chết của tế bào lympho T trong máu theo chương trình bị tăng lên, và khả năng tự bảo vệ của cơ thể chống lại quá trình oxy hóa bị giảm. Rất hay gặp tình trạng tăng IgE trong máu và phản ứng dị ứng ở những bệnh nhân có đáp ứng với corticosteroid. Ngoài ra một số nghiên cứu còn thấy có vai trò của yếu tố di truyền trong cơ chế sinh bệnh học hội chứng thận hư nguyên phát. • Trong điều kiện bình thường, thành mao mạch cầu thận làm n"
+        },
+        {
+          "document_id": "chunk::benh_ly_cau_than_p19_001",
+          "source_id": "benh_ly_cau_than_p19_001",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "general",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 19,
+          "content_preview": "- Nhóm nguyên nhân gây hội chứng thận hư thứ phát thường gặp là: • Các bệnh lý di truyền, như hội chứng Alport, hội chứng thận hư bẩm sinh, bệnh hồng cầu hình liềm, sốt Địa Trung Hải có tính chất gia đình. • Các bệnh lý chuyển hoá, như đái tháo đường, bệnh thận thoái hoá bột. • Các bệnh lý tự miễn, như lupus ban đỏ hệ thống, ban Schonlein-Henoch, viêm mạch. • Các bệnh ác tính, như đa u tuỷ xương; ung thư phổi, đại tràng, vú và dạ dày, leucemia, u lympho. • Các bệnh nhiễm trùng, nhiều nhất vi khu"
+        }
+      ],
+      "eval_tags": [
+        "benh_ly_cau_than",
+        "ground_truth",
+        "hoi_chung_than_hu",
+        "rag_qa"
+      ],
+      "eval_notes": "Generated from data/evaluate_data/qa_dataset_50_questions.json and matched against data/processed_data source artifacts. Review low match_score items before using as hard gold IDs."
+    },
+    {
+      "id": "rag_039",
+      "title": "Xơ hóa cầu thận do đái tháo đường giai đoạn sớm có biểu hiện gì trong nước tiểu?",
+      "query": "Xơ hóa cầu thận do đái tháo đường giai đoạn sớm có biểu hiện gì trong nước tiểu?",
+      "top_k": 5,
+      "reference_answer": "Ở giai đoạn sớm của xơ hóa cầu thận do đái tháo đường, chỉ có microalbumin niệu (0,03 - 0,3 g/24 giờ).",
+      "reference_context": "Protein niệu: từ mức độ nhẹ đến mức độ thận hư. Ở giai đoạn sớm của bệnh chỉ có microalbumin niệu (0,03 - 0,3 g/24 giờ).",
+      "required_facts": [
+        "Ở giai đoạn sớm của xơ hóa cầu thận do đái tháo đường, chỉ có microalbumin niệu (0,03 - 0,3 g/24 giờ)."
+      ],
+      "relevant_document_ids": [
+        "chunk::benh_ly_cau_than_p9_005"
+      ],
+      "relevant_source_ids": [
+        "benh_ly_cau_than_p9_005"
+      ],
+      "source_evidence": [
+        {
+          "document_id": "chunk::benh_ly_cau_than_p9_005",
+          "source_id": "benh_ly_cau_than_p9_005",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "clinical_features",
+          "biomarker": "protein_niệu_24h",
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 9,
+          "content_preview": "4.4.8.1. Lâm sàng và cận lâm sàng • Protein niệu: từ mức độ nhẹ đến mức độ thận hư. Ở giai đoạn sớm của bệnh chỉ có microalbumin niệu (0,03 - 0,3 g/24 giờ). • Phù. • Tăng huyết áp. • Suy thận: sau nhiều năm xuất hiện suy thận từ mức độ nhẹ và nặng dẫn đến suy thận giai đoạn cuối. Tỷ lệ bệnh nhân suy thận giai đoạn cuối phải lọc máu chu kỳ ở các nước phát triển xấp xỉ 20-30% bệnh nhân. • Tiên lượng xấu."
+        }
+      ],
+      "eval_tags": [
+        "benh_ly_cau_than",
+        "classification",
+        "ground_truth",
+        "numeric",
+        "rag_qa"
+      ],
+      "eval_notes": "Generated from data/evaluate_data/qa_dataset_50_questions.json and matched against data/processed_data source artifacts. Review low match_score items before using as hard gold IDs."
+    },
+    {
+      "id": "rag_040",
+      "title": "Viêm cầu thận lupus trên kính hiển vi huỳnh quang có hình ảnh đặc trưng gì?",
+      "query": "Viêm cầu thận lupus trên kính hiển vi huỳnh quang có hình ảnh đặc trưng gì?",
+      "top_k": 5,
+      "reference_answer": "Trên kính hiển vi huỳnh quang của viêm cầu thận lupus, thấy lắng đọng nhiều thành phần miễn dịch tạo nên hình ảnh 'nhà kho đầy' (full house) của IgG, IgA, IgM, C1q, C3, C4, C5 ở màng đáy cầu thận, khoang gian mạch và ở thành mạch quanh cầu thận.",
+      "reference_context": "Hiển vi huỳnh quang: Lắng đọng nhiều thành phần miễn dịch tạo nên hình ảnh \"nhà kho đầy\" (full house) của IgG, IgA, IgM, C1q, C3, C4, C5 ở màng đáy cầu thận, khoang gian mạch và ở thành mạch quanh cầu thận.",
+      "required_facts": [
+        "Trên kính hiển vi huỳnh quang của viêm cầu thận lupus, thấy lắng đọng nhiều thành phần miễn dịch tạo nên hình ảnh 'nhà kho đầy' (full house) của IgG, IgA, IgM, C1q, C3, C4, C5 ở màng đáy cầu thận, khoang gian mạch và ở thành mạch quanh cầu thận."
+      ],
+      "relevant_document_ids": [
+        "chunk::benh_ly_cau_than_p3_006"
+      ],
+      "relevant_source_ids": [
+        "benh_ly_cau_than_p3_006"
+      ],
+      "source_evidence": [
+        {
+          "document_id": "chunk::benh_ly_cau_than_p3_006",
+          "source_id": "benh_ly_cau_than_p3_006",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "pathology",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 3,
+          "content_preview": "4.1.2. Tổn thương mô bệnh học • Hiển vi quang học: o Cầu thận bình thường dưới kính hiển vi quang học. o Tổ chức kẽ thận và mạch thận bình thường. o Có thể tăng nhẹ tế bào và chất mầm gian mạch. • Hiển vi huỳnh quang: o Không thấy có lắng đọng các thành phần miễn dịch. • Hiển vi điện tử: o Mất chân lồi của tế bào biểu mô màng đáy. o Có thể tăng nhẹ tế bào và chất mầm gian mạch phối hợp với dày nhẹ màng đáy. o Mất hàng rào điện tích âm của màng đáy cầu thận được phát hiện bởi polyethyleneimine."
+        },
+        {
+          "document_id": "chunk::benh_ly_cau_than_p4_001",
+          "source_id": "benh_ly_cau_than_p4_001",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "pathology",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 4,
+          "content_preview": "4.2.2. Tổn thương mô bệnh học • Hiển vi quang học: o Xơ hóa cầu thận chỉ ở một phần của cầu thận. o Dưới 50% số cầu thận có tổn thương xơ hóa hoặc hyaline hóa. o Có thoái hóa từng đoạn ống thận phối hợp. o Có tổn thương tổ chức kẽ thận phối hợp. • Hiển vi huỳnh quang: o Lắng đọng IgM, C3, C4 ở vùng cầu thận xơ hóa. o Đôi khi có thể lắng đọng IgG. • Hiển vi điện tử: o Lắng đọng đặc điện tử ở vùng cầu thận bị xơ hóa. o Ngoài các cầu thận bị xơ hóa, các cầu thận khác có cấu trúc bình thường."
+        },
+        {
+          "document_id": "chunk::benh_ly_cau_than_p4_004",
+          "source_id": "benh_ly_cau_than_p4_004",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "pathology",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 4,
+          "content_preview": "4.3.2. Tổn thương mô bệnh học • Kính hiển vi quang học: o Dày lan tỏa của màng đáy. o Có thể có các gai mọc lên từ màng đáy được phát hiện dưới tiêu chuẩn nhuộm bạc. o Xơ hóa cầu thận, teo ống thận, xơ hóa tổ chức kẽ thận gặp ở những bệnh nhân bệnh đã diễn biến lâu. • Kính hiển vi huỳnh quang: o Lắng đọng IgG và C3 là chủ yếu dọc màng đáy. o Có thể gặp lắng đọng IgM hoặc IgA. o Không có lắng đọng IgE. • Hiển vi điện tử: o Lắng đọng đặc điện tử dưới biểu mô. o Dày không đều màng đáy cầu thận."
+        },
+        {
+          "document_id": "chunk::benh_ly_cau_than_p5_002",
+          "source_id": "benh_ly_cau_than_p5_002",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "pathology",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 5,
+          "content_preview": "4.4.1.2. Tổn thương mô bệnh học • Kính hiển vi quang học: o Tăng sinh lan tỏa tế bào gian mạch. o Tăng sinh chất mầm gian mạch. o Đôi khi sưng phồng tế bào biểu mô có chân (podocytes). o Tổn thương nhẹ tổ chức kẽ thận và mạch thận. • Hiển vi huỳnh quang: o Lắng đọng IgM, IgA, C3, C4 và fibrin ở khoang gian mạch. Tuy nhiên có một số trường hợp không thấy có lắng đọng các thành phần miễn dịch. • Hiển vi điện tử: o Tăng sinh tế bào và chất mầm gian mạch. o Lắng đọng đặc điện tử ở gian mạch."
+        }
+      ],
+      "eval_tags": [
+        "benh_ly_cau_than",
+        "ground_truth",
+        "numeric",
+        "rag_qa"
+      ],
+      "eval_notes": "Generated from data/evaluate_data/qa_dataset_50_questions.json and matched against data/processed_data source artifacts. Review low match_score items before using as hard gold IDs."
+    },
+    {
+      "id": "rag_041",
+      "title": "Thận nhiễm độc thai nghén có tổn thương mô bệnh học chủ yếu như thế nào?",
+      "query": "Thận nhiễm độc thai nghén có tổn thương mô bệnh học chủ yếu như thế nào?",
+      "top_k": 5,
+      "reference_answer": "Tổn thương mô bệnh học chủ yếu trong nhiễm độc thai nghén là sưng phồng tế bào nội mạc làm hẹp lòng mao mạch cầu thận. Đôi khi có sưng phồng cả tế bào gian mạch.",
+      "reference_context": "Tổn thương mô bệnh học chủ yếu là sưng phồng tế bào nội mạc làm hẹp lòng mao mạch cầu thận. Đôi khi có sưng phồng cả tế bào gian mạch.",
+      "required_facts": [
+        "Tổn thương mô bệnh học chủ yếu trong nhiễm độc thai nghén là sưng phồng tế bào nội mạc làm hẹp lòng mao mạch cầu thận.",
+        "Đôi khi có sưng phồng cả tế bào gian mạch."
+      ],
+      "relevant_document_ids": [
+        "chunk::benh_ly_cau_than_p10_004"
+      ],
+      "relevant_source_ids": [
+        "benh_ly_cau_than_p10_004"
+      ],
+      "source_evidence": [
+        {
+          "document_id": "chunk::benh_ly_cau_than_p10_004",
+          "source_id": "benh_ly_cau_than_p10_004",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "pathology",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 10,
+          "content_preview": "4.4.9.2. Tổn thương mô bệnh học • Tổn thương mô bệnh học chủ yếu là sưng phồng tế bào nội mạc làm hẹp lòng mao mạch cầu thận. Đôi khi có sưng phồng cả tế bào gian mạch. Một số báo cáo nêu một số trường hợp có tình trạng tăng sinh tế bào gian mạch. • Điều trị dự phòng cho bệnh nhân tiền sản giật: o Chủ yếu là điều chỉnh huyết áp. o Lợi tiểu thường không được chỉ định vì có nhiều tác hại cho thai, chỉ được cho rất thận trọng cho bệnh nhân có phù nhiều và kèm theo cả bệnh lý tim mạch gây suy tim. o"
+        },
+        {
+          "document_id": "chunk::benh_ly_cau_than_p7_002",
+          "source_id": "benh_ly_cau_than_p7_002",
+          "source_type": "chunk",
+          "match_score": 0.95,
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "pathology",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 7,
+          "content_preview": "4.4.4.2. Tổn thương mô bệnh học • Hiển vi quang học: o Tổn thương ổ mảnh ở giai đoạn sớm của bệnh. o Xơ hóa cầu thận ổ cục bộ, tắc lòng mao mạch cầu thận, dính cuộn mao mạch cầu thận với vỏ bao Bowman. o Chủ yếu là hình thành các liềm tế bào do tăng sinh tế bào biểu mô Bowman lan tỏa ở các cầu thận. o Xơ hóa, hyaline hóa cuộn mao mạch cầu thận và liềm tế bào, hẹp lòng bao Bowman. • Hiển vi huỳnh quang: trong hội chứng Goodpasture: o Có lắng đọng thành dải IgG dọc theo màng đáy. o Có thể có lắng "
+        }
+      ],
+      "eval_tags": [
+        "benh_ly_cau_than",
+        "ground_truth",
+        "rag_qa"
+      ],
+      "eval_notes": "Generated from data/evaluate_data/qa_dataset_50_questions.json and matched against data/processed_data source artifacts. Review low match_score items before using as hard gold IDs."
+    },
+    {
+      "id": "rag_042",
+      "title": "Viêm cầu thận tăng sinh lan tỏa (điển hình sau nhiễm liên cầu) có hình ảnh mô bệnh học đặc trưng trê",
+      "query": "Viêm cầu thận tăng sinh lan tỏa (điển hình sau nhiễm liên cầu) có hình ảnh mô bệnh học đặc trưng trên hiển vi điện tử như thế nào?",
+      "top_k": 5,
+      "reference_answer": "Hình ảnh đặc trưng trên hiển vi điện tử trong viêm cầu thận cấp sau nhiễm liên cầu là các lắng đọng đặc điện tử lớn hình gò giống bướu lạc đà (là các thành phần miễn dịch bị lắng đọng) dưới biểu mô.",
+      "reference_context": "Hình ảnh đặc trưng trên hiển vi điện tử là các lắng đọng đặc điện tử lớn hình gò giống bướu lạc đà (là các thành phần miễn dịch bị lắng đọng) dưới biểu mô. Đôi khi còn có các lắng đọng dưới nội mô và trong khoang gian mạch cầu thận.",
+      "required_facts": [
+        "Hình ảnh đặc trưng trên hiển vi điện tử trong viêm cầu thận cấp sau nhiễm liên cầu là các lắng đọng đặc điện tử lớn hình gò giống bướu lạc đà (là các thành phần miễn dịch bị lắng đọng) dưới biểu mô."
+      ],
+      "relevant_document_ids": [
+        "chunk::benh_ly_cau_than_p9_003"
+      ],
+      "relevant_source_ids": [
+        "benh_ly_cau_than_p9_003"
+      ],
+      "source_evidence": [
+        {
+          "document_id": "chunk::benh_ly_cau_than_p9_003",
+          "source_id": "benh_ly_cau_than_p9_003",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "pathology",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 9,
+          "content_preview": "4.4.7.2. Tổn thương mô bệnh học • Hiển vi quang học: giống hình ảnh của tổn thương cầu thận trong bệnh lý IgA (Berger) o Có thể thấy tăng sinh gian mạch, xơ hóa hoặc hyaline hóa, sưng phồng tế bào nội mô máu. o Tổn thương có thể lan tỏa hoặc tổn thương kiểu ổ, mảnh. o Có tổn thương thành mạch máu quanh cầu thận với nhuộm PSA (+). • Hiển vi huỳnh quang: o Có lắng đọng dạng hạt của IgA, IgG, C3, properdin, fibrin ở khoang gian mạch. o Lắng đọng IgM đôi khi gặp với số lượng ít. o Có lắng đọng nhẹ c"
+        },
+        {
+          "document_id": "chunk::viem_cau_than_cap_p14_004",
+          "source_id": "viem_cau_than_cap_p14_004",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "viem_cau_than_cap",
+          "section_type": "pathology",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 14,
+          "content_preview": "3.3.2. Vi thể • Cầu thận bị tổn thương viêm cấp tính do sự tấn công của các phức hợp miễn dịch được hình thành tại chỗ hay lắng đọng trong cầu thận. • Đối với viêm cầu thận cấp sau nhiễm liên cầu, hình ảnh tổn thương mô bệnh học đặc trưng trên hiển vi quang học là viêm cầu thận tăng sinh tế bào lan tỏa. Cầu thận căng to do phù nề và xâm nhiễm các tế bào bạch cầu đa nhân và tế bào mono trong bó mao mạch, tăng sinh tế bào nội mô và tế bào gian mạch cầu thận. Trên hiển vi miễn dịch huỳnh quang thấy"
+        },
+        {
+          "document_id": "chunk::benh_ly_cau_than_p8_003",
+          "source_id": "benh_ly_cau_than_p8_003",
+          "source_type": "chunk",
+          "match_score": 0.9333,
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "pathology",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 8,
+          "content_preview": "4.4.6.2. Tổn thương mô bệnh học • Kính hiển vi thường: o Có 6 loại tổn thương mô học: ▪ Loại I (class I): tổn thương tối thiểu. ▪ Loại II (class II): viêm cầu thận gian mạch. ▪ Loại III (class III): viêm cầu thận ổ, mảnh. ▪ Loại IV (class IV): viêm cầu thận tăng sinh lan tỏa. ▪ Loại V (class V): viêm cầu thận màng. ▪ Loại VI (class VI): xơ hóa cầu thận lan tỏa. o Ngoài ra, thường có xâm nhập viêm kẽ, xơ hóa kẽ, có tổn thương ống thận phối hợp. • Hiển vi huỳnh quang: o Lắng đọng nhiều thành phần "
+        },
+        {
+          "document_id": "chunk::hoi_chung_than_hu_p21_001",
+          "source_id": "hoi_chung_than_hu_p21_001",
+          "source_type": "chunk",
+          "match_score": 0.9333,
+          "disease_name": "hoi_chung_than_hu",
+          "section_type": "progression",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 21,
+          "content_preview": "• Trên hiển vi quang học có thể thấy tổn thương ở một phần cầu thận, khu trú ở một số cầu thận hoặc lan toả ở tất cả hoặc gần như tất cả các cầu thận. Các tổn thương chính bắt đầu ở vùng ranh giới tuỷ và vỏ thận rồi lan dần về phía vỏ thận. Các mảnh xơ hoá thường nằm sát vùng rốn của bó mao mạch cầu thận. Khi bệnh tiến triển, số tiểu thuỳ bị tổn thương trong một cầu thận và số cầu thận bị tổn thương tăng lên. Dấu hiệu đặc trưng trên hiển vi miễn dịch huỳnh quang là lắng động C3 và IgM ở mảnh cầu"
+        }
+      ],
+      "eval_tags": [
+        "benh_ly_cau_than",
+        "ground_truth",
+        "hoi_chung_than_hu",
+        "rag_qa",
+        "viem_cau_than_cap"
+      ],
+      "eval_notes": "Generated from data/evaluate_data/qa_dataset_50_questions.json and matched against data/processed_data source artifacts. Review low match_score items before using as hard gold IDs."
+    },
+    {
+      "id": "rag_043",
+      "title": "Điều trị bệnh thận lupus class IV-V cụ thể như thế nào?",
+      "query": "Điều trị bệnh thận lupus class IV-V cụ thể như thế nào?",
+      "top_k": 5,
+      "reference_answer": "Điều trị bệnh thận lupus class IV-V cần tích cực với prednisolon 1mg/kg/24h hoặc 2mg/kg/cách ngày trong 3 đến 6 tháng, không quá 80mg/ngày; kết hợp cyclophosphamide (Endoxan) hoặc azathioprin (Imurel) liều tấn công (3mg/kg/24h) trong 2-3 tháng. Nếu không đáp ứng có thể dùng methylprednisolon liều bolus 1000mg trong 3 giờ, 3 ngày liên tục hoặc cyclophosphamid 0,5-1 g/m² truyền tĩnh mạch.",
+      "reference_context": "Bệnh thận Lupus class IV-V: Là thể có tổn thương nặng, cần điều trị tích cực. Có nhiều thuốc ức chế miễn dịch có thể lựa chọn tùy thuộc vào bệnh nhân có chống chỉ định với nhóm nào: Prednisolon (hoặc cùng nhóm tính liều tương đương) 1mg/kg/24h hoặc 2mg/kg/cách ngày trong 3 đến 6 tháng, không quá 80mg/ngày và không quá 120mg cách ngày. Liều uống cyclophosphamide (Endoxan) hoặc azathioprin (Imurel) tấn công (3mg/kg/24h) trong 2 - 3 tháng.",
+      "required_facts": [
+        "Điều trị bệnh thận lupus class IV-V cần tích cực với prednisolon 1mg/kg/24h hoặc 2mg/kg/cách ngày trong 3 đến 6 tháng, không quá 80mg/ngày",
+        "kết hợp cyclophosphamide (Endoxan) hoặc azathioprin (Imurel) liều tấn công (3mg/kg/24h) trong 2-3 tháng.",
+        "Nếu không đáp ứng có thể dùng methylprednisolon liều bolus 1000mg trong 3 giờ, 3 ngày liên tục hoặc cyclophosphamid 0,5-1 g/m² truyền tĩnh mạch."
+      ],
+      "relevant_document_ids": [
+        "chunk::benh_ly_cau_than_p8_002"
+      ],
+      "relevant_source_ids": [
+        "benh_ly_cau_than_p8_002"
+      ],
+      "source_evidence": [
+        {
+          "document_id": "chunk::benh_ly_cau_than_p8_002",
+          "source_id": "benh_ly_cau_than_p8_002",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "clinical_features",
+          "biomarker": "protein_niệu_24h",
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 8,
+          "content_preview": "4.4.6.1. Lâm sàng và cận lâm sàng • Chẩn đoán lupus dựa vào 11 tiêu chuẩn của Hội Khớp học Mỹ (ARA) 1997. Khi có 4/11 tiêu chuẩn trong đó có protein niệu dương tính thì được chẩn đoán là viêm cầu thận lupus. • Về các biểu hiện thận: o Tỷ lệ biểu hiện thận gặp ở 60-75% bệnh nhân lupus ban đỏ hệ thống. o Protein niệu kéo dài nhưng dưới mức thận hư gặp ở 46-64% bệnh nhân. o hội chứng thận hư gặp ở 17-36%. o Đái máu vi thể: 30%. o Tăng huyết áp: 20-25%. o Suy thận gặp ở khoảng 40% sau 30 tháng xuất "
+        },
+        {
+          "document_id": "chunk::lupus_nephritis_p37_005",
+          "source_id": "lupus_nephritis_p37_005",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "lupus_nephritis",
+          "section_type": "treatment",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 37,
+          "content_preview": "5.2.1. Điều trị theo tổn thương mô học cầu thận – Bệnh thận Lupus class I: Chỉ điều trị những biểu hiện ngoài thận. – Bệnh thận Lupus class II: Điều trị những biểu hiện ngoài thận là chủ yếu. Khi có tình trạng lâm sàng nặng nên cân sinh thiết lại thận. Nếu có thay đổi về thể tổn thương mô bệnh học thận sẽ điều trị như thể tổn thương (class) mới. – Bệnh thận Lupus class III: Tốn thương nhẹ chủ yếu điều trị bằng liệu pháp corticoids. Nếu tổn thương nặng điều trị như viêm cầu thận Lupus type IV. – "
+        },
+        {
+          "document_id": "chunk::lupus_nephritis_p38_001",
+          "source_id": "lupus_nephritis_p38_001",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "lupus_nephritis",
+          "section_type": "clinical_features",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 38,
+          "content_preview": "• Liều uống cyclophosphamide (Endoxan) hoặc azathioprin (Imurel) tấn công (3mg/kg/24h) trong 2 - 3 tháng, liều cyclosporine A (3- 4mg/kg/24h) 3 tháng hoặc hơn. Nếu bệnh nhân không đáp ứng, đáp ứng kém hoặc có biểu hiện lâm sàng nặng ngay từ đầu có thể dùng những liều bolus (liều mạnh) methylprednisolon hoặc cyclophosphamide theo liệu trình như sau: • Methylprednisolon liều bolus: Dùng 1000mg pha trong glucose 5% truyền tĩnh mạch chậm trong 3 giờ, 3 ngày liên tục, sau đó tiếp tục liều uống 0,4 - "
+        },
+        {
+          "document_id": "chunk::acute_kidney_injury_p128_002",
+          "source_id": "acute_kidney_injury_p128_002",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "acute_kidney_injury",
+          "section_type": "follow_up",
+          "biomarker": "GFR",
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 128,
+          "content_preview": "9. DỰ PHÒNG • Hạn chế tối đa việc sử dụng các thuốc có thể gây độc cho thận, điều chỉnh liều lượng căn cứ vào mức lọc cầu thận. • Duy trì đủ thể tích tuần hoàn, gây tăng bài niệu trong một số trường hợp cụ thể (như phẫu thuật tim, chấn thương nặng, tiêu cơ vân, tan máu trong mạch, dùng các thuốc cản quang nhất là cản quang đường tĩnh mạch…). • Hồi sức tích cực cho các bệnh nhân chấn thương, bù đủ dịch sớm để đề phòng tổn thương thận cấp trước thận. • Giải quyết ngay các nguyên nhân gây tắc nghẽn"
+        }
+      ],
+      "eval_tags": [
+        "acute_kidney_injury",
+        "benh_ly_cau_than",
+        "classification",
+        "ground_truth",
+        "lupus_nephritis",
+        "numeric",
+        "rag_qa",
+        "treatment"
+      ],
+      "eval_notes": "Generated from data/evaluate_data/qa_dataset_50_questions.json and matched against data/processed_data source artifacts. Review low match_score items before using as hard gold IDs."
+    },
+    {
+      "id": "rag_044",
+      "title": "Tỷ lệ tử vong của tổn thương thận cấp ở bệnh nhân cần lọc máu là bao nhiêu?",
+      "query": "Tỷ lệ tử vong của tổn thương thận cấp ở bệnh nhân cần lọc máu là bao nhiêu?",
+      "top_k": 5,
+      "reference_answer": "Tỷ lệ tử vong của tổn thương thận cấp từ 19-83% ở bệnh nhân cần lọc máu hoặc kết hợp với suy đa tạng.",
+      "reference_context": "Tỉ lệ tử vong của tổn thương thận cấp từ 19-83% ở bệnh nhân cần lọc máu hoặc kết hợp với suy đa tạng.",
+      "required_facts": [
+        "Tỷ lệ tử vong của tổn thương thận cấp từ 19-83% ở bệnh nhân cần lọc máu hoặc kết hợp với suy đa tạng."
+      ],
+      "relevant_document_ids": [
+        "chunk::acute_kidney_injury_p106_002"
+      ],
+      "relevant_source_ids": [
+        "acute_kidney_injury_p106_002"
+      ],
+      "source_evidence": [
+        {
+          "document_id": "chunk::acute_kidney_injury_p106_002",
+          "source_id": "acute_kidney_injury_p106_002",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "acute_kidney_injury",
+          "section_type": "definition",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 106,
+          "content_preview": "1.1. Một số thuật ngữ và định nghĩa • Tổn thương thận cấp là một hội chứng thường gặp trong hồi sức cấp cứu. Vì các tiêu chuẩn chẩn đoán tổn thương thận cấp chưa thống nhất nên tỷ lệ mắc tổn thương thận cấp ở bệnh nhân hồi sức rất khác nhau, từ 1-25%. Ở những bệnh nhân nặng, tỉ lệ tổn thương thận cấp từ 36-67%. Tỉ lệ tử vong của tổn thương thận cấp từ 19-83% ở bệnh nhân cần lọc máu hoặc kết hợp với suy đa tạng."
+        }
+      ],
+      "eval_tags": [
+        "acute_kidney_injury",
+        "ground_truth",
+        "numeric",
+        "rag_qa"
+      ],
+      "eval_notes": "Generated from data/evaluate_data/qa_dataset_50_questions.json and matched against data/processed_data source artifacts. Review low match_score items before using as hard gold IDs."
+    },
+    {
+      "id": "rag_045",
+      "title": "Sỏi niệu quản kích thước dưới 5mm ở 1/3 dưới có khả năng tự đào thải bao nhiêu phần trăm?",
+      "query": "Sỏi niệu quản kích thước dưới 5mm ở 1/3 dưới có khả năng tự đào thải bao nhiêu phần trăm?",
+      "top_k": 5,
+      "reference_answer": "Sỏi niệu quản kích thước < 5mm ở 1/3 dưới có khả năng tự đào thải là 74%.",
+      "reference_context": "Sỏi nằm ở 1/3 dưới niệu quản: < 5mm: 74%",
+      "required_facts": [
+        "Sỏi niệu quản kích thước < 5mm ở 1/3 dưới có khả năng tự đào thải là 74%."
+      ],
+      "relevant_document_ids": [
+        "chunk::diabetic_kidney_disease_p94_003"
+      ],
+      "relevant_source_ids": [
+        "diabetic_kidney_disease_p94_003"
+      ],
+      "source_evidence": [
+        {
+          "document_id": "chunk::diabetic_kidney_disease_p94_003",
+          "source_id": "diabetic_kidney_disease_p94_003",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "diabetic_kidney_disease",
+          "section_type": "treatment",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 94,
+          "content_preview": "4.1.2.2. Vị trí của sỏi • Sỏi thận với kích thước < 2cm thường được điều trị bằng phương pháp tán sỏi ngoài cơ thể, tuy nhiên nếu sỏi nằm ở phía đài dưới của thận thì cho kết quả kém hơn. Trong trường hợp sỏi nằm ở vị trí này thì giới hạn chỉ định tán sỏi khi < 1cm. • Sỏi niệu quản có kích thước dưới 1cm tán sỏi ngoài cơ thể cũng được áp dụng cho một số trường hợp. Tuy nhiên tác động có hại cho buồng trứng là một trong những trở ngại khi chỉ định phương pháp này ở nữ giới trong tuổi sinh đẻ mà c"
+        }
+      ],
+      "eval_tags": [
+        "diabetic_kidney_disease",
+        "ground_truth",
+        "numeric",
+        "rag_qa"
+      ],
+      "eval_notes": "Generated from data/evaluate_data/qa_dataset_50_questions.json and matched against data/processed_data source artifacts. Review low match_score items before using as hard gold IDs."
+    },
+    {
+      "id": "rag_046",
+      "title": "Phân độ thận ứ nước độ IV trên siêu âm và UIV có những đặc điểm gì?",
+      "query": "Phân độ thận ứ nước độ IV trên siêu âm và UIV có những đặc điểm gì?",
+      "top_k": 5,
+      "reference_answer": "Thận ứ nước độ IV có thận to rõ rệt, chức năng thận giảm nhiều không tiết thuốc sau 120 phút, không rõ hình đài bể thận, đài bể thận giãn quá mức, nhu mô thận mỏng < 3mm.",
+      "reference_context": "Độ IV: Thận to rõ rệt. Chức năng thận giảm nhiều, không tiết thuốc sau 120 phút, không rõ hình đài bể thận. Đài bể thận giãn quá mức, không rõ hình đài bể thận. Nhu mô thận mỏng < 3mm.",
+      "required_facts": [
+        "Thận ứ nước độ IV có thận to rõ rệt, chức năng thận giảm nhiều không tiết thuốc sau 120 phút, không rõ hình đài bể thận, đài bể thận giãn quá mức, nhu mô thận mỏng < 3mm."
+      ],
+      "relevant_document_ids": [
+        "chunk::hoi_chung_than_hu_p22_004"
+      ],
+      "relevant_source_ids": [
+        "hoi_chung_than_hu_p22_004"
+      ],
+      "source_evidence": [
+        {
+          "document_id": "chunk::hoi_chung_than_hu_p22_004",
+          "source_id": "hoi_chung_than_hu_p22_004",
+          "source_type": "chunk",
+          "match_score": 0.8,
+          "disease_name": "hoi_chung_than_hu",
+          "section_type": "treatment",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 22,
+          "content_preview": "– Biến chứng còn có thể liên quan đến điều trị. Biến chứng thường gặp khi sử dụng thuốc ức chế miễn dịch là nhiễm trùng. Việc điều trị ban đầu bằng corticosteroid (prednisolon, prednison) có thể gây nhiều tác dụng không mong muốn ở nhiều mức độ khác nhau tùy thuộc vào liều lượng, thời gian, tần suất dùng thuốc. Trong khoảng 6 tuần điều trị đầu tiên thường thấy các thay đổi nhẹ đến vừa về tình trạng tinh thần, tăng cảm giác ngon miệng, vẻ mặt dạng Cushing, nhưng khi giảm liều thì các dấu hiệu này"
+        },
+        {
+          "document_id": "chunk::benh_than_man_p58_004",
+          "source_id": "benh_than_man_p58_004",
+          "source_type": "chunk",
+          "match_score": 0.8,
+          "disease_name": "benh_than_man",
+          "section_type": "treatment",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 58,
+          "content_preview": "3.2.1. Đại thể Bờ và nhu mô thận gồ ghề do có sẹo; các đài thận bị vặn vẹo và thường giãn do mô tuỷ và vỏ thận bị mỏng đi từng phần. Bệnh có thể biểu hiện ở một bên hoặc cả 2 bên và thường có tổn thương ở cực trên và cực dưới thận. Kích thước hai thận không đồng đều và nhỏ hơn bình thường."
+        },
+        {
+          "document_id": "chunk::diabetic_kidney_disease_p103_001",
+          "source_id": "diabetic_kidney_disease_p103_001",
+          "source_type": "chunk",
+          "match_score": 0.8,
+          "disease_name": "diabetic_kidney_disease",
+          "section_type": "classification",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 103,
+          "content_preview": "• Nếu sỏi gây bệnh thận mạn chưa ở giai đoạn cuối: Cố gắng giải quyết sỏi để tránh suy thận nặng thêm và nhằm cải thiện chức năng thận tùy từng trường hợp cụ thể, căn cứ vào thể trạng bệnh nhân, vị trí sỏi, số lượng sỏi, kích thước sỏi và tình trạng nhu mô thận còn lại dày hay mỏng và tính chất nhu mô thận xơ nhiều hay ít. • Nếu sỏi gây bệnh thận mạn giai đoạn cuối: Nguyên tắc chung là điều trị thay thế thận, không có chỉ định can thiệp lấy sỏi. Tuy nhiên trong một số trường hợp sỏi gây biến chứ"
+        },
+        {
+          "document_id": "chunk::benh_than_man_p62_002",
+          "source_id": "benh_than_man_p62_002",
+          "source_type": "chunk",
+          "match_score": 0.7778,
+          "disease_name": "benh_than_man",
+          "section_type": "treatment",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 62,
+          "content_preview": "4.4. Điều trị Việc điều trị nhiễm trùng đường tiết niệu bao gồm việc dùng kháng sinh cho loại bệnh nhân có yếu tố thuận lợi nếu cần. Kháng sinh là lựa chọn hàng đầu cho những người bị nhiễm trùng đường tiết niệu điển hình và có tính trạng sức khỏe chung tốt. Loại thuốc và thời gian điều trị tùy thuộc vào tình trạng sức khỏe và loại vi khuẩn phân lập được từ nước tiểu. Các loại thuốc điều trị nhiễm trùng đường tiết niệu thường hay sử dụng nhất là nitrofurantoin, trimetoprim- sulfamethoxazol, nhóm"
+        }
+      ],
+      "eval_tags": [
+        "benh_than_man",
+        "diabetic_kidney_disease",
+        "ground_truth",
+        "hoi_chung_than_hu",
+        "numeric",
+        "rag_qa"
+      ],
+      "eval_notes": "Generated from data/evaluate_data/qa_dataset_50_questions.json and matched against data/processed_data source artifacts. Review low match_score items before using as hard gold IDs."
+    },
+    {
+      "id": "rag_047",
+      "title": "Phân loại RIFLE cho tổn thương thận cấp giai đoạn 'Failure' (suy) có tiêu chuẩn gì?",
+      "query": "Phân loại RIFLE cho tổn thương thận cấp giai đoạn 'Failure' (suy) có tiêu chuẩn gì?",
+      "top_k": 5,
+      "reference_answer": "Trong phân loại RIFLE, giai đoạn F - Failure (suy) khi creatinin huyết thanh tăng x 3 lần hoặc giảm GFR > 75%, hoặc lượng nước tiểu < 0,3 ml/kg/giờ trong > 12 giờ, hoặc vô niệu trong 12 giờ.",
+      "reference_context": "F - failure (suy): ↑ Creatinin huyết thanh x 3 lần hoặc giảm GFR > 75%. < 0,3 ml/kg/giờ > 12 giờ hoặc vô niệu trong 12 giờ.",
+      "required_facts": [
+        "Trong phân loại RIFLE, giai đoạn F - Failure (suy) khi creatinin huyết thanh tăng x 3 lần hoặc giảm GFR > 75%, hoặc lượng nước tiểu < 0,3 ml/kg/giờ trong > 12 giờ, hoặc vô niệu trong 12 giờ."
+      ],
+      "relevant_document_ids": [
+        "chunk::benh_than_man_p135_002"
+      ],
+      "relevant_source_ids": [
+        "benh_than_man_p135_002"
+      ],
+      "source_evidence": [
+        {
+          "document_id": "chunk::benh_than_man_p135_002",
+          "source_id": "benh_than_man_p135_002",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_than_man",
+          "section_type": "general",
+          "biomarker": "GFR",
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 135,
+          "content_preview": "1.2. Suy thận mạn (Chronic renal failure) • Là tình trạng suy giảm chức năng thận mạn tính không hồi phục theo thời gian nhiều tháng, nhiều năm, do tổn thương không hồi phục về số lượng và chức năng của các nephron. • Cần phân biệt rõ bệnh thận mạn tính và suy thận mạn tính. Khái niệm bệnh thận mạn tính đã bao hàm cả suy thận mạn. Suy thận mạn tương ứng với bệnh thận mạn giai đoạn III, IV, và V (mức lọc cầu thận < 60ml/phút sẽ được trình bày dưới đây)."
+        }
+      ],
+      "eval_tags": [
+        "benh_than_man",
+        "classification",
+        "diagnosis",
+        "ground_truth",
+        "numeric",
+        "rag_qa"
+      ],
+      "eval_notes": "Generated from data/evaluate_data/qa_dataset_50_questions.json and matched against data/processed_data source artifacts. Review low match_score items before using as hard gold IDs."
+    },
+    {
+      "id": "rag_048",
+      "title": "Hội chứng thận hư có nguồn gốc nguyên phát do những bệnh cầu thận nào?",
+      "query": "Hội chứng thận hư có nguồn gốc nguyên phát do những bệnh cầu thận nào?",
+      "top_k": 5,
+      "reference_answer": "Hội chứng thận hư nguyên phát bao gồm: bệnh cầu thận thay đổi tối thiểu (nguyên nhân thường gặp nhất ở trẻ em), viêm cầu thận màng (nguyên nhân thường gặp nhất ở người trưởng thành tại các nước đang phát triển), xơ hoá cầu thận ổ - cục bộ, viêm cầu thận màng tăng sinh, viêm cầu thận tăng sinh gian mạch, viêm cầu thận tăng sinh ngoại mạch, và bệnh thận IgA.",
+      "reference_context": "Nguyên nhân gây hội chứng thận hư nguyên phát bao gồm: Bệnh cầu thận thay đổi tối thiểu, là nguyên nhân gây hội chứng thận hư thường gặp nhất ở trẻ em. Viêm cầu thận màng, là nguyên nhân gây hội chứng thận hư thường gặp nhất ở người trưởng thành tại các nước đang phát triển. Xơ hoá cầu thận ổ - cục bộ. Viêm cầu thận màng tăng sinh. Viêm cầu thận tăng sinh gian mạch. Viêm cầu thận tăng sinh ngoại mạch. Bệnh thận IgA.",
+      "required_facts": [
+        "Hội chứng thận hư nguyên phát bao gồm: bệnh cầu thận thay đổi tối thiểu (nguyên nhân thường gặp nhất ở trẻ em), viêm cầu thận màng (nguyên nhân thường gặp nhất ở người trưởng thành tại các nước đang phát triển), xơ hoá cầu thận ổ - cục bộ, viêm cầu thận màng tăng sinh, viêm cầu thận tăng sinh gian mạch, viêm cầu thận tăng sinh ngoại mạch, và bệnh thận IgA."
+      ],
+      "relevant_document_ids": [
+        "chunk::viem_cau_than_man_p1_011"
+      ],
+      "relevant_source_ids": [
+        "viem_cau_than_man_p1_011"
+      ],
+      "source_evidence": [
+        {
+          "document_id": "chunk::viem_cau_than_man_p1_011",
+          "source_id": "viem_cau_than_man_p1_011",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "viem_cau_than_man",
+          "section_type": "general",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 1,
+          "content_preview": "3.1.3. Bệnh cầu thận lan tỏa: trên 50% cầu thận bị tổn thương, bao gồm • Viêm cầu thận màng: màng đáy dày lan tỏa ở tất cả các cầu thận. • Viêm cầu thận tăng sinh lan tỏa • Tăng sinh tế bào mesangium."
+        },
+        {
+          "document_id": "chunk::viem_cau_than_man_p2_001",
+          "source_id": "viem_cau_than_man_p2_001",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "viem_cau_than_man",
+          "section_type": "general",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 2,
+          "content_preview": "• Tăng sinh tế bào nội mạc và gian mạch. • Tăng sinh tế bào ngoại mạch hình liềm, tế bào biểu mô Bowman. • Viêm cầu thận màng tăng sinh: vừa có dày màng đáy, vừa có tăng sinh tế bào, thường là tế bào gian mạch và nội mạc. • Xơ hóa cầu thận lan tỏa."
+        },
+        {
+          "document_id": "chunk::benh_ly_cau_than_p6_004",
+          "source_id": "benh_ly_cau_than_p6_004",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "pathology",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 6,
+          "content_preview": "4.4.3.2. Tổn thương mô bệnh học • Kính hiển vi quang học: o Tăng sinh tế bào gian mạch rõ. o Tăng sinh nhẹ tế bào nội mạc. o Có xâm nhập bạch cầu đa nhân trong lòng mao mạch cầu thận. o Dày màng đáy cầu thận. o Đôi khi thấy có hình ảnh đường viền kép ở màng đáy cầu thận dưới tiêu bản nhuộm PAS. o Tăng sinh chất mầm gian mạch. o Đôi khi có xuất hiện liềm tế bào với số lượng ít. o Có thể xơ hóa cầu thận. o Có tổn thương teo ống thận, xâm nhập viêm kẽ và xơ hóa kẽ đi kèm. o Không có các tổn thương "
+        },
+        {
+          "document_id": "chunk::benh_ly_cau_than_p6_005",
+          "source_id": "benh_ly_cau_than_p6_005",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_ly_cau_than",
+          "section_type": "progression",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 6,
+          "content_preview": "4.4.4. Viêm cầu thận tăng sinh ngoại mạch hình liềm (viêm cầu thận tiến triển nhanh)"
+        }
+      ],
+      "eval_tags": [
+        "benh_ly_cau_than",
+        "ground_truth",
+        "rag_qa",
+        "viem_cau_than_man"
+      ],
+      "eval_notes": "Generated from data/evaluate_data/qa_dataset_50_questions.json and matched against data/processed_data source artifacts. Review low match_score items before using as hard gold IDs."
+    },
+    {
+      "id": "rag_049",
+      "title": "Viêm bàng quang có những triệu chứng điển hình nào?",
+      "query": "Viêm bàng quang có những triệu chứng điển hình nào?",
+      "top_k": 5,
+      "reference_answer": "Các triệu chứng điển hình của viêm bàng quang là cảm giác buốt khi đi tiểu nhiều lần, mỗi lần chỉ được một số lượng rất ít nước tiểu (đái rắt); cảm giác buốt rất khó chịu khi đi tiểu (đái buốt); có máu trong nước tiểu (đái máu cuối bãi); nước tiểu có thể đục và có mùi hôi.",
+      "reference_context": "Các triệu chứng điển hình của viêm bàng quang là cảm giác buốt khi đi tiểu nhiều lần, mỗi lần chỉ được một số lượng rất ít nước tiểu (đái rắt); cảm giác buốt rất khó chịu khi đi tiểu (đái buốt); có máu trong nước tiểu, có thể là khi đi tiểu gần hết hoặc toàn bộ bàng quang (đái máu cuối bãi); nước tiểu có thể đục và có mùi hôi.",
+      "required_facts": [
+        "Các triệu chứng điển hình của viêm bàng quang là cảm giác buốt khi đi tiểu nhiều lần, mỗi lần chỉ được một số lượng rất ít nước tiểu (đái rắt)",
+        "cảm giác buốt rất khó chịu khi đi tiểu (đái buốt)",
+        "có máu trong nước tiểu (đái máu cuối bãi)",
+        "nước tiểu có thể đục và có mùi hôi."
+      ],
+      "relevant_document_ids": [
+        "chunk::benh_than_man_p61_002"
+      ],
+      "relevant_source_ids": [
+        "benh_than_man_p61_002"
+      ],
+      "source_evidence": [
+        {
+          "document_id": "chunk::benh_than_man_p61_002",
+          "source_id": "benh_than_man_p61_002",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "benh_than_man",
+          "section_type": "clinical_features",
+          "biomarker": null,
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 61,
+          "content_preview": "4.2. Triệu chứng lâm sàng Các triệu chứng điển hình của viêm bàng quang là cảm giác buốt khi đi tiểu nhiều lần, mỗi lần chỉ được một số lượng rất ít nước tiểu (đái rắt); cảm giác buốt rất khó chịu khi đi tiểu (đái buốt); có máu trong nước tiểu, có thể là khi đi tiểu gần hết hoặc toàn bộ bàng quang (đái máu cuối bãi); nước tiểu có thể đục và có mùi hôi. Nếu viêm bàng quang: cảm giác tức nặng vùng bụng dưới hoặc đau tức, khó chịu vùng hạ vị, tiểu buốt, rát và nước tiểu có mùi hôi. Nếu viêm niệu đạ"
+        }
+      ],
+      "eval_tags": [
+        "benh_than_man",
+        "ground_truth",
+        "rag_qa"
+      ],
+      "eval_notes": "Generated from data/evaluate_data/qa_dataset_50_questions.json and matched against data/processed_data source artifacts. Review low match_score items before using as hard gold IDs."
+    },
+    {
+      "id": "rag_050",
+      "title": "Cơ chế bệnh sinh của hội chứng thận hư nguyên phát liên quan đến những tế bào nào?",
+      "query": "Cơ chế bệnh sinh của hội chứng thận hư nguyên phát liên quan đến những tế bào nào?",
+      "top_k": 5,
+      "reference_answer": "Hội chứng thận hư nguyên phát được cho là có cơ chế sinh bệnh học là sự rối loạn đáp ứng miễn dịch, với sự rối loạn chức năng của tế bào lympho. Đặc biệt có sự thay đổi số lượng hoặc chức năng tế bào lympho T, tốc độ chết của tế bào lympho T theo chương trình bị tăng lên.",
+      "reference_context": "Người ta cho rằng hội chứng thận hư nguyên phát có cơ chế sinh bệnh học là sự rối loạn đáp ứng miễn dịch, nhưng bản chất chính xác của quá trình này còn chưa được hiểu biết đầy đủ. Kết quả nhiều nghiên cứu cho thấy có sự rối loạn chức năng của tế bào lympho. Một số tác giả lại nhận thấy có tình trạng giảm đáp ứng miễn dịch và cho rằng điều này có thể là do thay đổi số lượng hoặc chức năng tế bào lympho T.",
+      "required_facts": [
+        "Hội chứng thận hư nguyên phát được cho là có cơ chế sinh bệnh học là sự rối loạn đáp ứng miễn dịch, với sự rối loạn chức năng của tế bào lympho.",
+        "Đặc biệt có sự thay đổi số lượng hoặc chức năng tế bào lympho T, tốc độ chết của tế bào lympho T theo chương trình bị tăng lên."
+      ],
+      "relevant_document_ids": [
+        "chunk::hoi_chung_than_hu_p17_004"
+      ],
+      "relevant_source_ids": [
+        "hoi_chung_than_hu_p17_004"
+      ],
+      "source_evidence": [
+        {
+          "document_id": "chunk::hoi_chung_than_hu_p17_004",
+          "source_id": "hoi_chung_than_hu_p17_004",
+          "source_type": "chunk",
+          "match_score": 1.0,
+          "disease_name": "hoi_chung_than_hu",
+          "section_type": "general",
+          "biomarker": "protein_niệu_24h",
+          "source_file": "ĐẠI CƯƠNG VỀ BỆNH LÝ CẦU THẬN( No Table) .pdf",
+          "page": 17,
+          "content_preview": "2. CƠ CHẾ BỆNH SINH • Người ta cho rằng hội chứng thận hư nguyên phát có cơ chế sinh bệnh học là sự rối loạn đáp ứng miễn dịch, nhưng bản chất chính xác của quá trình này còn chưa được hiểu biết đầy đủ. Kết quả nhiều nghiên cứu cho thấy có sự rối loạn chức năng của tế bào lympho. Một số bệnh nhân có protein mang điện tích dương... trong huyết tương và các phân tử protein này có thể trung hòa điện tích âm trên thành mao mạch cầu thận. Một số tác giả lại nhận thấy có tình trạng giảm đáp ứng miễn d"
+        }
+      ],
+      "eval_tags": [
+        "ground_truth",
+        "hoi_chung_than_hu",
+        "rag_qa"
+      ],
+      "eval_notes": "Generated from data/evaluate_data/qa_dataset_50_questions.json and matched against data/processed_data source artifacts. Review low match_score items before using as hard gold IDs."
+    }
+  ]
+}

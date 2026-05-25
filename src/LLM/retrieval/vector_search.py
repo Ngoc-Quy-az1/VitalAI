@@ -26,24 +26,52 @@ import asyncpg
 from dotenv import load_dotenv
 from openai import AsyncOpenAI
 
+MAX_RESULT_CONTEXT_CHARS = 1800
+NEIGHBOR_BACKWARD_WINDOW = 1
+NEIGHBOR_FORWARD_WINDOW = 4
+
 DISEASE_HINTS = {
-    "benh_than_man": ["benh than man", "suy than man", "ckd", "chronic kidney disease"],
-    "lupus_nephritis": ["lupus", "benh than lupus", "viem than lupus", "lupus ban do"],
-    "acute_kidney_injury": ["suy than cap", "aki", "ton thuong than cap"],
-    "hoi_chung_than_hu": ["hoi chung than hu"],
-    "benh_than_iga": ["iga", "benh than iga"],
+    "lupus_nephritis": ["lupus", "benh than lupus", "viem than lupus", "lupus ban do", "ara 1997", "class iv"],
+    "benh_than_iga": ["iga", "benh than iga", "viem cau than iga", "berger"],
+    "hoi_chung_than_hu": ["hoi chung than hu", "than hu", "nephrotic syndrome"],
+    "viem_cau_than_cap": ["viem cau than cap", "cap sau nhiem lien cau", "sau nhiem lien cau", "psagn"],
+    "acute_kidney_injury": ["suy than cap", "aki", "ton thuong than cap", "rifle", "fena", "kdigo 2012"],
     "diabetic_kidney_disease": ["dai thao duong", "than dai thao duong", "diabetic kidney disease"],
+    "viem_cau_than_man": ["viem cau than man", "viem cau than mang", "mang tang sinh", "xo hoa cau than"],
+    "benh_ly_cau_than": ["benh ly cau than", "benh cau than", "viem cau than", "cau than"],
+    "benh_than_man": ["benh than man", "suy than man", "ckd", "chronic kidney disease", "kdoqi", "albumin nieu", "acr"],
 }
 
 SECTION_HINTS = {
     "definition": ["la gi", "khai niem", "dinh nghia", "co nghia la gi"],
-    "classification": ["phan loai", "giai doan", "stage", "kdigo", "a1", "a2", "a3", "g1", "g2", "g3", "g4", "g5"],
-    "diagnosis_criteria": ["chan doan", "tieu chuan chan doan"],
-    "treatment": ["dieu tri", "thuoc", "phac do"],
-    "clinical_features": ["trieu chung", "lam sang", "can lam sang", "bieu hien"],
-    "pathology": ["mo benh hoc", "sinh thiet", "mien dich huynh quang"],
-    "progression": ["tien trien", "tien luong"],
+    "classification": [
+        "phan loai",
+        "phan do",
+        "giai doan",
+        "stage",
+        "class",
+        "kdigo",
+        "rifle",
+        "failure",
+        "do iv",
+        "uiv",
+        "sieu am",
+        "a1",
+        "a2",
+        "a3",
+        "g1",
+        "g2",
+        "g3",
+        "g4",
+        "g5",
+    ],
+    "diagnosis_criteria": ["chan doan", "chan doan xac dinh", "tieu chuan chan doan", "theo tieu chuan"],
+    "treatment": ["dieu tri", "thuoc", "phac do", "corticosteroid", "khang sinh"],
+    "clinical_features": ["trieu chung", "dau hieu", "lam sang", "can lam sang", "bieu hien", "khoi phat"],
+    "pathology": ["mo benh hoc", "sinh thiet", "mien dich huynh quang", "hien vi", "lang dong"],
+    "progression": ["tien trien", "tien luong", "lau dai", "tai phat"],
     "follow_up": ["theo doi", "tai kham", "du phong", "phong ngua"],
+    "complications": ["bien chung", "tac dung khong mong muon", "tac dung phu"],
 }
 
 BIOMARKER_HINTS = {
@@ -61,6 +89,9 @@ DISEASE_LABELS = {
     "hoi_chung_than_hu": "Hội chứng thận hư",
     "benh_than_iga": "Bệnh thận IgA",
     "diabetic_kidney_disease": "Bệnh thận do đái tháo đường",
+    "benh_ly_cau_than": "Bệnh lý cầu thận",
+    "viem_cau_than_cap": "Viêm cầu thận cấp",
+    "viem_cau_than_man": "Viêm cầu thận mạn",
 }
 
 SECTION_LABELS = {
@@ -72,6 +103,38 @@ SECTION_LABELS = {
     "pathology": "Mô bệnh học",
     "progression": "Tiến triển và tiên lượng",
     "follow_up": "Theo dõi",
+    "complications": "Biến chứng",
+}
+
+RETRIEVAL_STOPWORDS = {
+    "benh",
+    "than",
+    "hoi",
+    "chung",
+    "viem",
+    "cau",
+    "co",
+    "la",
+    "gi",
+    "nao",
+    "nhung",
+    "cac",
+    "cua",
+    "cho",
+    "theo",
+    "duoc",
+    "khi",
+    "nhu",
+    "the",
+    "nao",
+    "trong",
+    "va",
+    "hoac",
+    "mot",
+    "doi",
+    "voi",
+    "nguoi",
+    "benh nhan",
 }
 
 
@@ -175,12 +238,14 @@ class NeonVectorSearcher:
                     source_type=source_type,
                     biomarker=biomarker,
                 )
-                return self._fuse_rows(
+                fused_rows = self._fuse_rows(
                     vector_rows=vector_rows,
                     keyword_rows=keyword_rows,
                     top_k=top_k,
                     understanding=understanding,
                 )
+                expanded_rows = await self._expand_result_contexts(conn, fused_rows)
+                return self._rerank_expanded_rows(expanded_rows, understanding)
             except (
                 asyncpg.ConnectionDoesNotExistError,
                 asyncpg.ConnectionFailureError,
@@ -348,11 +413,13 @@ class NeonVectorSearcher:
             "similarity": round(float(similarity), 6) if similarity is not None else None,
             "keyword_score": round(float(keyword_score), 6) if keyword_score is not None else None,
             "page": metadata.get("page"),
+            "source_file": metadata.get("source_file"),
+            "chunk_index": metadata.get("chunk_index"),
             "disease_name": metadata.get("disease_name"),
             "section_type": metadata.get("section_type"),
             "doc_type": metadata.get("doc_type"),
             "biomarker": metadata.get("biomarker"),
-            "preview": content[:500],
+            "preview": content[:800],
         }
 
     def _fuse_rows(
@@ -386,7 +453,11 @@ class NeonVectorSearcher:
 
         for item in fused.values():
             item["metadata_bonus"] = self._metadata_bonus(item, understanding)
-            item["fusion_score"] = round(item.get("rrf_score", 0.0) + item["metadata_bonus"], 6)
+            item["lexical_bonus"] = self._lexical_bonus(item, understanding)
+            item["fusion_score"] = round(
+                item.get("rrf_score", 0.0) + item["metadata_bonus"] + item["lexical_bonus"],
+                6,
+            )
 
         ranked = sorted(
             fused.values(),
@@ -408,17 +479,204 @@ class NeonVectorSearcher:
                     "similarity": item.get("similarity"),
                     "keyword_score": item.get("keyword_score"),
                     "fusion_score": item["fusion_score"],
+                    "metadata_bonus": item.get("metadata_bonus"),
+                    "lexical_bonus": item.get("lexical_bonus"),
                     "page": item.get("page"),
+                    "source_file": item.get("source_file"),
+                    "chunk_index": item.get("chunk_index"),
                     "disease_name": item.get("disease_name"),
                     "section_type": item.get("section_type"),
                     "doc_type": item.get("doc_type"),
                     "biomarker": item.get("biomarker"),
                     "vector_rank": item.get("vector_rank"),
                     "keyword_rank": item.get("keyword_rank"),
+                    "rrf_score": item.get("rrf_score", 0.0),
+                    "content": item.get("content", ""),
                     "preview": item.get("preview", ""),
                 }
             )
         return results
+
+    def _rerank_expanded_rows(
+        self,
+        rows: list[dict[str, Any]],
+        understanding: dict[str, Any],
+    ) -> list[dict[str, Any]]:
+        for row in rows:
+            expanded_lexical_bonus = self._lexical_bonus(row, understanding)
+            row["expanded_lexical_bonus"] = expanded_lexical_bonus
+            if expanded_lexical_bonus > (row.get("lexical_bonus") or 0.0):
+                row["fusion_score"] = round(
+                    (row.get("fusion_score") or 0.0)
+                    + expanded_lexical_bonus
+                    - (row.get("lexical_bonus") or 0.0),
+                    6,
+                )
+                row["lexical_bonus"] = expanded_lexical_bonus
+        return sorted(
+            rows,
+            key=lambda item: (
+                item.get("fusion_score") or 0.0,
+                item.get("keyword_score") or 0.0,
+                item.get("similarity") or 0.0,
+            ),
+            reverse=True,
+        )
+
+    async def _expand_result_contexts(
+        self,
+        conn: asyncpg.Connection,
+        rows: list[dict[str, Any]],
+    ) -> list[dict[str, Any]]:
+        """Attach short parent/neighbor context for chunk results.
+
+        Many PDF chunks contain the answer but not the parent heading. Expanding
+        with a nearby heading or detail chunk improves grounding without changing
+        ranking.
+        """
+
+        expanded_rows: list[dict[str, Any]] = []
+        for row in rows:
+            if row.get("source_type") != "chunk":
+                row["content"] = row.get("content") or row.get("preview", "")
+                row["preview"] = (row.get("content") or row.get("preview") or "")[:800]
+                expanded_rows.append(row)
+                continue
+
+            neighbor_rows = await self._fetch_neighbor_rows(conn, row)
+            if neighbor_rows:
+                expanded_content = self._merge_neighbor_context(row, neighbor_rows)
+                if expanded_content:
+                    row["original_content"] = row.get("content", "")
+                    row["content"] = expanded_content
+                    row["preview"] = expanded_content[:800]
+                    row["expanded_context"] = True
+            else:
+                row["content"] = row.get("content") or row.get("preview", "")
+                row["preview"] = (row.get("content") or row.get("preview") or "")[:800]
+                row["expanded_context"] = False
+            expanded_rows.append(row)
+        return expanded_rows
+
+    async def _fetch_neighbor_rows(
+        self,
+        conn: asyncpg.Connection,
+        row: dict[str, Any],
+    ) -> list[dict[str, Any]]:
+        source_file = row.get("source_file")
+        page = row.get("page")
+        chunk_index = row.get("chunk_index")
+        if not source_file or page is None or chunk_index is None:
+            return []
+
+        try:
+            page_number = int(page)
+            chunk_number = int(chunk_index)
+        except (TypeError, ValueError):
+            return []
+
+        sql = """
+        SELECT
+            document_id,
+            source_type,
+            source_id,
+            content,
+            metadata,
+            NULL::float8 AS similarity,
+            NULL::float8 AS keyword_score
+        FROM medical_documents
+        WHERE source_type = 'chunk'
+          AND metadata->>'source_file' = $1
+          AND (metadata->>'page')::int = $2
+          AND (metadata->>'chunk_index')::int BETWEEN $3 AND $4
+        ORDER BY (metadata->>'chunk_index')::int ASC
+        """
+        rows = await conn.fetch(
+            sql,
+            source_file,
+            page_number,
+            max(0, chunk_number - NEIGHBOR_BACKWARD_WINDOW),
+            chunk_number + NEIGHBOR_FORWARD_WINDOW,
+        )
+        return [self._normalize_result_row(item) for item in rows]
+
+    def _merge_neighbor_context(
+        self,
+        row: dict[str, Any],
+        neighbor_rows: list[dict[str, Any]],
+    ) -> str:
+        current_document_id = row.get("document_id")
+        current_content = str(row.get("content") or row.get("preview") or "").strip()
+        if not current_content:
+            return ""
+
+        selected: list[str] = []
+        current_chunk_index = self._safe_int(row.get("chunk_index"))
+        for neighbor in neighbor_rows:
+            content = str(neighbor.get("content") or "").strip()
+            if not content:
+                continue
+            if neighbor.get("document_id") == current_document_id:
+                selected.append(content)
+                continue
+            neighbor_chunk_index = self._safe_int(neighbor.get("chunk_index"))
+            is_previous = (
+                current_chunk_index is not None
+                and neighbor_chunk_index is not None
+                and neighbor_chunk_index < current_chunk_index
+            )
+            if self._should_include_neighbor(current_content, content, neighbor, is_previous=is_previous):
+                selected.append(content)
+
+        if current_content not in selected:
+            selected.append(current_content)
+
+        merged = self._join_unique_contexts(selected)
+        return merged[:MAX_RESULT_CONTEXT_CHARS].strip()
+
+    def _should_include_neighbor(
+        self,
+        current_content: str,
+        neighbor_content: str,
+        neighbor: dict[str, Any],
+        *,
+        is_previous: bool,
+    ) -> bool:
+        """Include nearby heading/detail chunks when they add parent context."""
+
+        text = " ".join(neighbor_content.split())
+        if not text:
+            return False
+        neighbor_is_heading = self._looks_like_heading(text)
+        current_is_heading = self._looks_like_heading(current_content)
+        if is_previous and neighbor_is_heading:
+            return True
+        if not is_previous and (current_is_heading or len(current_content) <= 320):
+            return True
+        return False
+
+    def _looks_like_heading(self, text: str) -> bool:
+        cleaned = " ".join(str(text or "").split())
+        if not cleaned or len(cleaned) > 220:
+            return False
+        return re.match(r"^\d+(?:\.\d+){0,4}\.?\s+[^\n]{3,180}$", cleaned) is not None
+
+    def _safe_int(self, value: Any) -> int | None:
+        try:
+            return int(value)
+        except (TypeError, ValueError):
+            return None
+
+    def _join_unique_contexts(self, contexts: list[str]) -> str:
+        result: list[str] = []
+        seen: set[str] = set()
+        for context in contexts:
+            cleaned = " ".join(str(context or "").split())
+            if not cleaned or cleaned in seen:
+                continue
+            seen.add(cleaned)
+            result.append(cleaned)
+        return "\n".join(result)
 
     def _metadata_bonus(self, row: dict[str, Any], understanding: dict[str, Any]) -> float:
         """Cộng điểm mềm cho document khớp disease/section/biomarker hint."""
@@ -426,17 +684,54 @@ class NeonVectorSearcher:
         bonus = 0.0
 
         if understanding["disease_hint"] and row.get("disease_name") == understanding["disease_hint"]:
-            bonus += 0.04
-        if understanding["section_hint"] and row.get("section_type") == understanding["section_hint"]:
             bonus += 0.08
+        if understanding["section_hint"] and row.get("section_type") == understanding["section_hint"]:
+            bonus += 0.10
         if understanding["section_hint"] == "definition" and row.get("section_type") == "general":
             bonus += 0.03
         if understanding["section_hint"] == "definition" and row.get("source_type") == "chunk":
             bonus += 0.01
         if understanding["biomarker_hint"] and row.get("biomarker") == understanding["biomarker_hint"]:
-            bonus += 0.03
+            bonus += 0.05
 
         return round(bonus, 6)
+
+    def _lexical_bonus(self, row: dict[str, Any], understanding: dict[str, Any]) -> float:
+        """Rerank nhẹ theo trùng keyword/số liệu/acronym để giảm nhiễu vector."""
+
+        content = " ".join(
+            str(value or "")
+            for value in (
+                row.get("content"),
+                row.get("preview"),
+                row.get("document_id"),
+                row.get("source_id"),
+                row.get("disease_name"),
+                row.get("section_type"),
+                row.get("biomarker"),
+            )
+        )
+        normalized_content = self._normalize_ascii(content)
+        content_tokens = set(self._content_tokens(normalized_content))
+
+        query_tokens = understanding.get("query_tokens") or []
+        overlap = len(set(query_tokens) & content_tokens)
+        bonus = min(0.10, (overlap / max(1, min(len(query_tokens), 12))) * 0.10)
+
+        number_hits = sum(1 for value in understanding.get("query_numbers") or [] if value in normalized_content)
+        bonus += min(0.06, number_hits * 0.02)
+
+        acronym_hits = sum(
+            1
+            for value in understanding.get("query_acronyms") or []
+            if self._contains_keyword(normalized_content, value)
+        )
+        bonus += min(0.08, acronym_hits * 0.03)
+
+        phrase_hits = sum(1 for phrase in understanding.get("key_phrases") or [] if phrase in normalized_content)
+        bonus += min(0.08, phrase_hits * 0.04)
+
+        return round(min(bonus, 0.22), 6)
 
     def _understand_query(
         self,
@@ -448,12 +743,37 @@ class NeonVectorSearcher:
         """Suy ra intent retrieval cơ bản từ query để enrich search."""
 
         cleaned_query = self._strip_leading_greeting(query)
+        primary_query = self._primary_query_line(cleaned_query)
         normalized = self._normalize_ascii(cleaned_query)
+        normalized_primary = self._normalize_ascii(primary_query)
         disease_hint = disease_name or self._detect_hint(normalized, DISEASE_HINTS)
         section_hint = section_type or self._detect_hint(normalized, SECTION_HINTS)
         biomarker_hint = biomarker or self._detect_hint(normalized, BIOMARKER_HINTS)
+        query_tokens = self._content_tokens(normalized_primary)
+        query_numbers = re.findall(r"\d+(?:[\.,]\d+)?", normalized_primary)
+        query_acronyms = [
+            token
+            for token in query_tokens
+            if token in {"acr", "pcr", "gfr", "egfr", "aki", "ckd", "kdigo", "kdoqi", "rifle", "ara", "uiv", "fena", "aslo"}
+        ]
+        key_phrases = [
+            phrase
+            for phrase in (
+                "ara 1997",
+                "kdigo 2012",
+                "do iv",
+                "do 4",
+                "class iv",
+                "failure",
+                "than u nuoc",
+                "viem bang quang",
+                "sau nhiem lien cau",
+                "thay doi toi thieu",
+            )
+            if phrase in normalized_primary
+        ]
 
-        if section_hint is None and any(pattern in normalized for pattern in ("la gi", "khai niem", "dinh nghia")):
+        if section_hint is None and any(pattern in normalized_primary for pattern in ("la gi", "khai niem", "dinh nghia")):
             section_hint = "definition"
 
         embedding_lines = [f"Câu hỏi người dùng: {cleaned_query.strip()}"]
@@ -464,8 +784,8 @@ class NeonVectorSearcher:
         if biomarker_hint:
             embedding_lines.append(f"Chỉ số trọng tâm: {biomarker_hint}")
 
-        keyword_query = cleaned_query.strip()
-        if section_hint == "definition" and "khai niem" not in normalized and "dinh nghia" not in normalized:
+        keyword_query = primary_query.strip()
+        if section_hint == "definition" and "khai niem" not in normalized_primary and "dinh nghia" not in normalized_primary:
             keyword_query = f"{keyword_query} khái niệm định nghĩa"
 
         return {
@@ -474,6 +794,10 @@ class NeonVectorSearcher:
             "biomarker_hint": biomarker_hint,
             "embedding_query": "\n".join(embedding_lines),
             "keyword_query": keyword_query,
+            "query_tokens": query_tokens,
+            "query_numbers": query_numbers,
+            "query_acronyms": query_acronyms,
+            "key_phrases": key_phrases,
         }
 
     def _strip_leading_greeting(self, query: str) -> str:
@@ -486,6 +810,15 @@ class NeonVectorSearcher:
             cleaned,
         )
         return cleaned or query.strip()
+
+    def _primary_query_line(self, query: str) -> str:
+        """Return the original user-question line from an enriched retrieval query."""
+
+        for line in str(query or "").splitlines():
+            cleaned = line.strip()
+            if cleaned:
+                return cleaned
+        return query.strip()
 
     def _detect_hint(self, normalized_query: str, hint_map: dict[str, list[str]]) -> str | None:
         """Tìm hint đầu tiên khớp query theo danh sách alias đơn giản."""
@@ -502,6 +835,16 @@ class NeonVectorSearcher:
             return keyword in normalized_text
         pattern = rf"(?<![a-z0-9]){re.escape(keyword)}(?![a-z0-9])"
         return re.search(pattern, normalized_text) is not None
+
+    def _content_tokens(self, normalized_text: str) -> list[str]:
+        """Token quan trọng dùng cho lexical rerank, bỏ từ quá chung."""
+
+        tokens = re.findall(r"[a-z0-9]+", normalized_text)
+        return [
+            token
+            for token in tokens
+            if len(token) >= 3 and token not in RETRIEVAL_STOPWORDS
+        ][:32]
 
     def _normalize_ascii(self, text: str) -> str:
         """Bỏ dấu tiếng Việt và co khoảng trắng để match heuristic ổn định hơn."""

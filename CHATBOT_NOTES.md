@@ -74,6 +74,12 @@ Trách nhiệm:
 - cleanup response
 - tạo source metadata an toàn cho UI
 
+Update 2026-05-25:
+
+- Graph có thêm node `understand_retrieval_query` sau `call_medical_tools`.
+- Node này tạo `retrieval_plan` bằng `src/LLM/retrieval/query_planner.py`.
+- Mục tiêu là tăng độ chính xác RAG bằng hard filter an toàn và soft hints, thay vì để medical-tool router quyết định toàn bộ query/filter.
+
 ### 4. Public QA service layer
 
 Nằm trong:
@@ -207,6 +213,38 @@ Kết quả lưu vào state:
 - `evidence_context`
 - `debug_results`
 - `query_understanding`
+
+Update 2026-05-25:
+
+- Evidence formatter ưu tiên `content` đầy đủ hơn thay vì chỉ `preview`.
+- Retriever mở rộng chunk bằng heading/chunk lân cận cùng trang khi chunk hiện tại thiếu parent context.
+- Mục tiêu là giảm hallucination và tăng groundedness vì prompt cuối có đủ fact hơn.
+
+### 3.1. `understand_retrieval_query`
+
+Node này chạy ngay trước `retrieve_context`.
+
+Input:
+
+- `query`
+- request filters nếu có
+- `router_plan`
+- `extracted_tool_payload`
+- `medical_tool_result`
+
+Output:
+
+- `retrieval_plan.query`: query đã enrich bằng bệnh/chỉ số/mục cần tìm.
+- `retrieval_plan.filters`: hard filters an toàn.
+- `retrieval_plan.soft_hints`: disease/section/biomarker/term chưa đủ chắc để filter cứng.
+- `retrieval_plan.candidates`: các candidate kèm confidence để debug/evaluate.
+
+Rule quan trọng:
+
+- Nếu câu hỏi mơ hồ, không hard filter disease/section/biomarker.
+- Nếu bệnh chỉ được suy ra từ alias trong query, vẫn không hard filter; dùng soft hint để tránh mất context đúng do metadata rộng.
+- Nếu medical tool trả threshold/formula rõ ràng, dùng kết quả đó để tăng precision retrieval.
+- `include_debug=true` sẽ trả thêm `retrieval_plan` để xem route đã hiểu câu hỏi như thế nào.
 
 ### 4. `build_prompt`
 

@@ -17,9 +17,44 @@
         "require_threshold_match_min": 1,
         "require_classification_min": 1,
         "min_answer_chars": 50,
-        "must_include_any": ["acr", "gfr", "thận"],
-        "must_not_include_any": ["tool_name"]
-      }
+        "must_include_any": [
+          "acr",
+          "gfr",
+          "thận"
+        ],
+        "must_not_include_any": [
+          "tool_name"
+        ]
+      },
+      "reference_answer": "Với nữ 60 tuổi, creatinine 1.4 mg/dL, CKD-EPI 2021 ước tính eGFR khoảng 43.07 ml/ph/1.73m2, thuộc G3b. ACR 350 mg/g >=300 nên thuộc A3. Kết hợp này cho thấy giảm chức năng thận kèm albumin niệu mức A3; cần diễn giải theo bối cảnh lâm sàng và theo dõi bởi bác sĩ.",
+      "required_facts": [
+        "CKD-EPI eGFR xấp xỉ 43.07 ml/ph/1.73m2.",
+        "43.07 nằm trong khoảng 30 đến dưới 45 nên thuộc G3b.",
+        "ACR 350 mg/g >=300 mg/g nên thuộc A3.",
+        "Cần nêu cả GFR/eGFR và ACR."
+      ],
+      "relevant_document_ids": [
+        "formula::ckd_epi_2021_creatinine",
+        "threshold::benh_than_man_gfr_between_30_0_p150_002",
+        "threshold::benh_than_man_acr_gteq_300_0_p201_003",
+        "chunk::benh_than_man_p202_005"
+      ],
+      "relevant_source_ids": [
+        "ckd_epi_2021_creatinine",
+        "benh_than_man_gfr_between_30_0_p150_002",
+        "benh_than_man_acr_gteq_300_0_p201_003",
+        "benh_than_man_p202_005"
+      ],
+      "eval_tags": [
+        "formula_threshold",
+        "ckd_epi_2021",
+        "gfr",
+        "acr",
+        "g3b",
+        "a3",
+        "medical_tool"
+      ],
+      "eval_notes": "Case end-to-end quan trọng: route -> tool -> RAG -> final answer."
     },
     {
       "id": "formula_threshold_002",
@@ -34,9 +69,41 @@
         "require_extracted_measurements_min": 4,
         "require_formula_result_min": 1,
         "min_answer_chars": 40,
-        "must_include_any": ["gfr", "egfr", "thận"],
-        "must_not_include_any": ["tool_name"]
-      }
+        "must_include_any": [
+          "gfr",
+          "egfr",
+          "thận"
+        ],
+        "must_not_include_any": [
+          "tool_name"
+        ]
+      },
+      "reference_answer": "CKD-EPI 2021 cho nữ 60 tuổi, creatinine 1.4 mg/dL ước tính eGFR khoảng 43.07 ml/ph/1.73m2. Giá trị này thấp hơn 60 và thuộc G3b, nên là bất thường nếu kéo dài/ổn định theo tiêu chuẩn bệnh thận mạn.",
+      "required_facts": [
+        "eGFR xấp xỉ 43.07 ml/ph/1.73m2.",
+        "eGFR 43.07 thuộc G3b.",
+        "GFR <60 là bất thường/tiêu chuẩn CKD nếu kéo dài trên 3 tháng.",
+        "Không khẳng định bệnh thận mạn chắc chắn nếu thiếu thông tin kéo dài 3 tháng."
+      ],
+      "relevant_document_ids": [
+        "formula::ckd_epi_2021_creatinine",
+        "threshold::benh_than_man_gfr_between_30_0_p150_002",
+        "chunk::benh_than_man_p133_002"
+      ],
+      "relevant_source_ids": [
+        "ckd_epi_2021_creatinine",
+        "benh_than_man_gfr_between_30_0_p150_002",
+        "benh_than_man_p133_002"
+      ],
+      "eval_tags": [
+        "formula_threshold",
+        "ckd_epi_2021",
+        "gfr",
+        "g3b",
+        "abnormality",
+        "medical_tool"
+      ],
+      "eval_notes": "Answer nên có caveat về thời gian kéo dài trên 3 tháng."
     },
     {
       "id": "formula_threshold_003",
@@ -49,13 +116,50 @@
         "require_tool_success": true,
         "require_no_null_tool_parameters": true,
         "require_formula_result_min": 1,
-        "require_formula_ids_any": ["ckd_epi_2021_creatinine"],
+        "require_formula_ids_any": [
+          "ckd_epi_2021_creatinine"
+        ],
         "require_threshold_match_min": 1,
         "require_classification_min": 1,
         "min_answer_chars": 50,
-        "must_include_any": ["acr", "gfr", "thận"],
-        "must_not_include_any": ["tool_name"]
-      }
+        "must_include_any": [
+          "acr",
+          "gfr",
+          "thận"
+        ],
+        "must_not_include_any": [
+          "tool_name"
+        ]
+      },
+      "reference_answer": "Nam 58 tuổi, creatinine 1.8 mg/dL có CKD-EPI 2021 eGFR khoảng 43.09 ml/ph/1.73m2, thuộc G3b. ACR 320 mg/g >=300 nên thuộc A3. Câu trả lời cần nêu cả giảm GFR và albumin niệu A3.",
+      "required_facts": [
+        "CKD-EPI eGFR xấp xỉ 43.09 ml/ph/1.73m2.",
+        "43.09 thuộc G3b.",
+        "ACR 320 mg/g >=300 mg/g.",
+        "ACR >=300 mg/g thuộc A3."
+      ],
+      "relevant_document_ids": [
+        "formula::ckd_epi_2021_creatinine",
+        "threshold::benh_than_man_gfr_between_30_0_p150_002",
+        "threshold::benh_than_man_acr_gteq_300_0_p201_003",
+        "chunk::benh_than_man_p202_005"
+      ],
+      "relevant_source_ids": [
+        "ckd_epi_2021_creatinine",
+        "benh_than_man_gfr_between_30_0_p150_002",
+        "benh_than_man_acr_gteq_300_0_p201_003",
+        "benh_than_man_p202_005"
+      ],
+      "eval_tags": [
+        "formula_threshold",
+        "ckd_epi_2021",
+        "gfr",
+        "acr",
+        "g3b",
+        "a3",
+        "medical_tool"
+      ],
+      "eval_notes": "Case kiểm thử đủ biến tính eGFR nam và phân loại ACR đồng thời."
     }
   ]
 }

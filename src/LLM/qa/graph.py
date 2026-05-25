@@ -21,6 +21,7 @@ from langgraph.graph import END, StateGraph
 
 from src.LLM.prompts.tool_router_prompt import MEDICAL_TOOL_ROUTER_PROMPT
 from src.LLM.prompts.templates import DIRECT_ANSWER_PROMPT, RAG_ANSWER_PROMPT
+from src.LLM.retrieval.query_planner import build_retrieval_plan
 from src.LLM.retrieval.vector_search import NeonVectorSearcher
 from src.LLM.tools import (
     MedicalToolsClient,
@@ -56,6 +57,7 @@ class ChatbotGraphState(TypedDict, total=False):
     user_sources: list[dict[str, Any]]
     debug_results: list[dict[str, Any]]
     query_understanding: dict[str, Any] | None
+    retrieval_plan: dict[str, Any] | None
     filters: dict[str, Any]
     tool_contract: str
     router_plan: dict[str, Any] | None
@@ -87,6 +89,7 @@ def build_chatbot_graph(
             "router_plan": None,
             "medical_tool_result": None,
             "structured_context": "Không có kết quả phân tích chỉ số.",
+            "retrieval_plan": None,
             "extracted_tool_payload": {"text": query},
             "supported_tool_context": build_supported_tool_context(),
             "filters": {
@@ -186,6 +189,25 @@ def build_chatbot_graph(
             "structured_context": build_structured_context(result, query=state.get("query")),
         }
 
+    async def understand_retrieval_query(state: ChatbotGraphState) -> ChatbotGraphState:
+        plan = build_retrieval_plan(
+            query=state["query"],
+            initial_filters={
+                "disease_name": state.get("disease_name"),
+                "section_type": state.get("section_type"),
+                "source_type": state.get("source_type"),
+                "biomarker": state.get("biomarker"),
+            },
+            router_plan=state.get("router_plan"),
+            extracted_tool_payload=state.get("extracted_tool_payload"),
+            medical_tool_result=state.get("medical_tool_result"),
+        )
+        return {
+            **state,
+            "retrieval_plan": plan,
+            "filters": plan.get("filters", state.get("filters", {})),
+        }
+
     async def retrieve_context(state: ChatbotGraphState) -> ChatbotGraphState:
         router_plan = state.get("router_plan") or {}
         rag_plan = router_plan.get("rag_plan") or {}
@@ -196,8 +218,17 @@ def build_chatbot_graph(
         source_type = filters.get("source_type") or state.get("source_type")
         biomarker = filters.get("biomarker") or state.get("biomarker")
 
+        retrieval_plan = state.get("retrieval_plan") or {}
+        if retrieval_plan:
+            plan_filters = retrieval_plan.get("filters") or {}
+            retrieval_query = retrieval_plan.get("query") or retrieval_query
+            disease_name = plan_filters.get("disease_name")
+            section_type = plan_filters.get("section_type")
+            source_type = plan_filters.get("source_type")
+            biomarker = plan_filters.get("biomarker")
+
         tool_retrieval = _build_tool_informed_retrieval(state)
-        if tool_retrieval:
+        if tool_retrieval and not retrieval_plan:
             retrieval_query = tool_retrieval["query"]
             disease_name = tool_retrieval.get("disease_name")
             section_type = tool_retrieval.get("section_type")
@@ -231,7 +262,10 @@ def build_chatbot_graph(
             "evidence_items": evidence_items,
             "evidence_context": _format_evidence_for_prompt(evidence_items),
             "debug_results": retrieval["results"],
-            "query_understanding": retrieval.get("query_understanding"),
+            "query_understanding": {
+                "retrieval_planner": retrieval_plan,
+                "searcher": retrieval.get("query_understanding"),
+            },
             "filters": retrieval.get("filters", state.get("filters", {})),
         }
 
@@ -287,6 +321,7 @@ def build_chatbot_graph(
     graph.add_node("extract_tool_payload", extract_tool_payload)
     graph.add_node("route_with_medical_tools", route_with_medical_tools)
     graph.add_node("call_medical_tools", call_medical_tools)
+    graph.add_node("understand_retrieval_query", understand_retrieval_query)
     graph.add_node("retrieve_context", retrieve_context)
     graph.add_node("build_prompt", build_prompt)
     graph.add_node("generate_response", generate_response)
@@ -303,7 +338,8 @@ def build_chatbot_graph(
         },
     )
     graph.add_edge("route_with_medical_tools", "call_medical_tools")
-    graph.add_edge("call_medical_tools", "retrieve_context")
+    graph.add_edge("call_medical_tools", "understand_retrieval_query")
+    graph.add_edge("understand_retrieval_query", "retrieve_context")
     graph.add_conditional_edges(
         "retrieve_context",
         route_after_retrieval,
@@ -585,7 +621,7 @@ def _filter_tool_evidence_items(
     requires_fena = _tool_result_has_biomarker(tool_result, "FENa")
     filtered: list[dict[str, Any]] = []
     for item in items:
-        text = _normalize_query_text(str(item.get("preview") or item.get("content") or ""))
+        text = _normalize_query_text(str(item.get("content") or item.get("preview") or ""))
         if _looks_like_noisy_chunk(text):
             continue
         if requires_fena and "fena" not in text:
@@ -887,9 +923,9 @@ def _format_evidence_for_prompt(evidence_items: list[dict[str, Any]]) -> str:
 
     blocks: list[str] = []
     for item in evidence_items:
-        preview = (item.get("preview") or "").strip()
-        if preview:
-            blocks.append(f"<context_item>\n{preview}\n</context_item>")
+        content = (item.get("content") or item.get("preview") or "").strip()
+        if content:
+            blocks.append(f"<context_item>\n{content[:1800]}\n</context_item>")
     return "\n\n".join(blocks) if blocks else "Không tìm thấy evidence phù hợp."
 
 

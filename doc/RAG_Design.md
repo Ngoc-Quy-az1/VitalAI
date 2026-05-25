@@ -99,6 +99,61 @@ Ví dụ:
 - query về `KDIGO` không nên search trên toàn corpus
 - query về `lupus nephritis` không nên bị nhiễu bởi phần CKD hay AKI
 
+## Update 2026-05-25 — Retrieval Planner
+
+Đã thêm lớp `src/LLM/retrieval/query_planner.py` và node `understand_retrieval_query` trong LangGraph.
+
+Lý do:
+
+- Router medical tool chỉ nên quyết định tool call và tạo `rag_plan` sơ bộ.
+- RAG cần một bước riêng để hiểu bệnh/chỉ số/mục cần tìm với allowlist và confidence.
+- Hard filter quá mạnh có thể làm miss context vì metadata hiện còn lệch ở một số chunk.
+
+Policy hiện tại:
+
+- `disease_name` chỉ hard filter khi request filter explicit hoặc medical tool result đủ chắc.
+- `section_type` và `biomarker` chủ yếu dùng làm soft hint, trừ khi request API truyền filter explicit.
+- Query alias bệnh chỉ dùng làm soft hint vì dữ liệu hiện có nhiều evidence đúng nằm dưới metadata rộng.
+- Soft hints được đưa vào query enrich để vector search, FTS và lexical rerank có thêm tín hiệu.
+- Medical tool result có quyền làm retrieval chính xác hơn: nếu threshold/formula match rõ disease thì planner có thể hard filter disease và đưa label/source text vào query.
+
+Flow mới:
+
+```text
+user query
+-> route_with_medical_tools
+-> call_medical_tools
+-> understand_retrieval_query
+-> retrieve_context
+-> final answer
+```
+
+Mục tiêu đánh giá sau update:
+
+- Tăng `context_precision_llm` nhờ query/filter rõ hơn.
+- Tăng `context_recall_llm` mà không over-filter.
+- Giảm `hallucination` vì final prompt nhận context sát câu hỏi hơn.
+
+## Update 2026-05-25 — Parent/Neighbor Context Expansion
+
+Đã thêm mở rộng context ở retrieval result:
+
+- Result không chỉ trả `preview` 500 ký tự mà trả `content` đầy đủ hơn.
+- Với chunk prose, retriever lấy thêm heading hoặc chunk lân cận cùng trang khi đoạn đó ngắn và có khả năng là parent context.
+- Prompt cuối ưu tiên `content` thay vì `preview`.
+
+Lý do:
+
+- Nhiều chunk đúng chứa answer nhưng thiếu heading cha.
+- Ví dụ `4.1.1. Lâm sàng...` chứa fact trả lời, nhưng cụm `Bệnh cầu thận thay đổi tối thiểu` nằm ở chunk trước.
+- Nếu không mở rộng context, answer generator và evaluator đều thấy thiếu thông tin liên kết.
+
+Expected impact:
+
+- Tăng recall các required facts.
+- Tăng groundedness.
+- Giảm hallucination do model không cần tự suy nối heading với nội dung.
+
 ## 4. Hybrid retrieval
 
 Sau metadata pre-filter, retrieval nên gồm:

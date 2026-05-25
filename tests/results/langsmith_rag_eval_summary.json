@@ -1,0 +1,13 @@
+{
+  "answer_relevance": 0.847,
+  "context_precision_gold_ids": 0.048,
+  "context_precision_llm": 0.36,
+  "context_recall_gold_ids": 0.24,
+  "context_recall_llm": 0.576,
+  "context_recall_required_facts_exact": 0.105,
+  "groundedness": 0.717,
+  "hallucination": 0.283,
+  "rag_context_precision_gold_ids": 0.048,
+  "rag_context_recall_gold_ids": 0.24,
+  "rag_context_recall_required_facts_exact": 0.105
+}

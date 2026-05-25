@@ -100,6 +100,61 @@ Mục tiêu:
 }
 ```
 
+### Implementation update 2026-05-25
+
+Query understanding hiện được triển khai bằng node:
+
+- `understand_retrieval_query` trong `src/LLM/qa/graph.py`
+- helper chính: `build_retrieval_plan(...)` trong `src/LLM/retrieval/query_planner.py`
+
+Output thực tế là `retrieval_plan`:
+
+```json
+{
+  "strategy": "deterministic_tool_aware_query_planner_v1",
+  "query_type": "medical_qa",
+  "query": "câu hỏi đã enrich",
+  "filters": {
+    "disease_name": "lupus_nephritis",
+    "section_type": null,
+    "source_type": "chunk",
+    "biomarker": null
+  },
+  "soft_hints": {
+    "disease_names": ["lupus_nephritis"],
+    "section_types": ["diagnosis_criteria"],
+    "biomarkers": ["protein_niệu_24h"],
+    "terms": ["lupus", "ara 1997"]
+  }
+}
+```
+
+Nguyên tắc chính:
+
+- Hard filter chỉ áp dụng cho request filter explicit hoặc disease từ medical tool result.
+- Section/biomarker suy luận từ query được ưu tiên làm soft hint để không mất recall khi metadata chunk chưa hoàn hảo.
+- Disease suy luận từ query alias cũng là soft hint, không hard filter, vì metadata disease trong corpus còn có các chunk đúng nằm dưới disease rộng.
+- Nếu query mơ hồ, planner không tự gán bệnh/chỉ số cứng; nó giữ query rộng và đưa alias vào soft hints.
+- `retrieval_plan.query` là input cho embedding/FTS/rerank; `retrieval_plan.filters` là hard pre-filter.
+- Trong retriever, embedding được dùng với query enrich đầy đủ, nhưng full-text search chỉ dùng dòng câu hỏi gốc đầu tiên để tránh FTS bị nhiễu bởi các dòng `Bệnh trọng tâm`, `Mục cần tìm`, `Từ khóa ưu tiên`.
+
+### Implementation update 2026-05-25 — Context expansion v3
+
+Retriever hiện trả `content` đầy đủ hơn cho mỗi result thay vì chỉ `preview` ngắn.
+
+Với `source_type = chunk`, retriever cũng lấy thêm chunk lân cận cùng `source_file`, `page`, `chunk_index`:
+
+- chunk trước nếu là heading/ngữ cảnh ngắn
+- chunk hiện tại
+- chunk sau nếu là đoạn ngắn bổ trợ
+
+Mục tiêu:
+
+- Giữ heading cha cho chunk con, ví dụ `Bệnh cầu thận thay đổi tối thiểu` + `4.1.1 Lâm sàng...`
+- Tăng `context_recall_required_facts_exact`
+- Tăng `groundedness`
+- Giảm hallucination do final prompt có đủ fact hơn
+
 ## Bước 2 — Metadata pre-filter
 
 Đây là bước quan trọng nhất để giảm retrieval noise.

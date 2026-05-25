@@ -4,7 +4,7 @@ import re
 from typing import Any
 
 from services.medical_tools.aliases import BIOMARKER_ALIASES, FORMULA_VARIABLE_ALIASES, UNIT_ALIASES
-from src.LLM.tools.medical_tools.constants import ALLOWED_DISEASE_NAMES, DISEASE_NAME_ALIASES
+from src.LLM.tools.medical_tools.constants import ALLOWED_DISEASE_NAMES, ALLOWED_SECTION_TYPES, DISEASE_NAME_ALIASES
 from src.LLM.tools.medical_tools.text_utils import normalize_for_match
 
 
@@ -135,10 +135,14 @@ def build_supported_tool_context() -> str:
     biomarker_names = ", ".join(sorted(BIOMARKER_ALIASES))
     variable_names = ", ".join(sorted(FORMULA_VARIABLE_ALIASES))
     formula_ids = ", ".join(sorted(SUPPORTED_FORMULA_IDS))
+    disease_names = ", ".join(sorted(ALLOWED_DISEASE_NAMES))
+    section_types = ", ".join(sorted(ALLOWED_SECTION_TYPES))
     return (
         f"Supported biomarkers: {biomarker_names}\n"
         f"Supported formula variables: {variable_names}\n"
         f"Supported formula_ids: {formula_ids}\n"
+        f"Supported disease_names: {disease_names}\n"
+        f"Supported section_types: {section_types}\n"
         "Rule: chỉ dùng đúng field có trong danh sách trên; field nào không chắc hoặc không có giá trị thì bỏ hẳn, không ghi null."
     )
 

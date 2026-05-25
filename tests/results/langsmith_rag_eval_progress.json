@@ -1,0 +1,242 @@
+{
+  "baseline": {
+    "metrics": {
+      "answer_relevance": 0.853,
+      "context_precision_gold_ids": 0.044,
+      "context_precision_llm": 0.329,
+      "context_recall_gold_ids": 0.22,
+      "context_recall_llm": 0.442,
+      "context_recall_required_facts_exact": 0.065,
+      "groundedness": 0.722,
+      "hallucination": 0.278,
+      "rag_context_precision_gold_ids": 0.044,
+      "rag_context_recall_gold_ids": 0.22,
+      "rag_context_recall_required_facts_exact": 0.065
+    },
+    "recorded_at": "2026-05-25T00:00:00+10:00",
+    "source": "tests/results/langsmith_rag_eval_summary.json before retrieval rerank improvements"
+  },
+  "change_log": [
+    {
+      "expected_impact": [
+        "Improve context_precision_llm by preferring chunks that share query-specific medical terms, numbers, acronyms, and phrases.",
+        "Improve context_recall_llm by detecting more disease and section hints before ranking.",
+        "Reduce hallucination by giving the final answer prompt more relevant evidence."
+      ],
+      "files": [
+        "src/LLM/retrieval/vector_search.py",
+        "scripts/langsmith_rag_evaluate.py",
+        "scripts/run_langsmith_rag_eval.sh",
+        "tests/results/langsmith_rag_eval_progress.json"
+      ],
+      "note": "Added baseline/progress tracking and retrieval rerank v1: expanded disease/section aliases plus lexical/numeric/acronym rerank bonus.",
+      "recorded_at": "2026-05-25T00:00:00+10:00",
+      "status": "implemented_not_re_evaluated"
+    },
+    {
+      "expected_impact": [
+        "Improve context_precision_llm by adding a dedicated retrieval planner before RAG instead of relying only on medical-tool router output.",
+        "Maintain context_recall_llm by using section and biomarker as soft hints unless the caller explicitly provides hard filters.",
+        "Reduce hallucination by enriching retrieval queries with tool-derived threshold labels, formula names, biomarkers, and source text."
+      ],
+      "files": [
+        "src/LLM/retrieval/query_planner.py",
+        "src/LLM/qa/graph.py",
+        "src/LLM/qa/answering.py",
+        "src/LLM/tools/medical_tools/constants.py",
+        "src/LLM/tools/medical_tools/request_builder.py",
+        "src/LLM/prompts/tool_router_prompt.py",
+        "doc/LangGraph_Tree.md",
+        "doc/RAG_Design.md",
+        "doc/Retrieval_Spec.md",
+        "doc/RAG_Evaluation_LangSmith.md",
+        "CHATBOT_NOTES.md",
+        "src/LLM/tool_contracts/medical_tools_contract.md",
+        "tests/test_retrieval_query_planner.py",
+        "tests/results/langsmith_rag_eval_progress.json"
+      ],
+      "note": "Added retrieval planner v2: tool-aware hard filters plus soft hints before RAG, with docs and tests.",
+      "observed_result": {
+        "answer_relevance": 0.832,
+        "context_precision_llm": 0.296,
+        "context_recall_llm": 0.464,
+        "groundedness": 0.652,
+        "hallucination": 0.348
+      },
+      "recorded_at": "2026-05-25T00:00:00+10:00",
+      "status": "regressed_after_eval",
+      "suspected_cause": "Disease hard filters derived from query aliases removed useful evidence because many correct chunks have broad disease metadata such as benh_ly_cau_than."
+    },
+    {
+      "expected_impact": [
+        "Recover context_precision_llm and groundedness by avoiding DB hard filters from query-only disease aliases.",
+        "Preserve recall by keeping disease aliases in enriched query and soft hints.",
+        "Keep precision gains for threshold/formula cases by still hard-filtering disease when medical tool result identifies it.",
+        "Recover exact keyword/phrase matches by using the original first query line for full-text search while keeping enriched query for embedding."
+      ],
+      "files": [
+        "src/LLM/retrieval/query_planner.py",
+        "src/LLM/retrieval/vector_search.py",
+        "tests/test_retrieval_query_planner.py",
+        "doc/LangGraph_Tree.md",
+        "doc/RAG_Design.md",
+        "doc/Retrieval_Spec.md",
+        "doc/RAG_Evaluation_LangSmith.md",
+        "CHATBOT_NOTES.md",
+        "src/LLM/tool_contracts/medical_tools_contract.md",
+        "tests/results/langsmith_rag_eval_progress.json"
+      ],
+      "note": "Retrieval planner v2.1: demoted query-alias disease matches from hard filters to soft hints; hard disease filters now require explicit request filters or medical tool result; full-text search uses the original query line instead of the enriched multi-line query.",
+      "recorded_at": "2026-05-25T00:00:00+10:00",
+      "status": "implemented_not_re_evaluated"
+    },
+    {
+      "expected_impact": [
+        "Improve groundedness by giving final answer generation fuller chunk content instead of short previews.",
+        "Reduce hallucination by preserving parent headings and nearby context for chunks that otherwise lose disease/subsection meaning.",
+        "Improve context_recall_required_facts_exact by exposing adjacent heading/detail text to LangSmith evaluators.",
+        "Improve answer relevance by tightening the final RAG prompt to answer only directly supported facts and state missing data."
+      ],
+      "files": [
+        "src/LLM/retrieval/vector_search.py",
+        "src/LLM/qa/graph.py",
+        "src/LLM/prompts/templates.py",
+        "tests/test_retrieval_query_planner.py",
+        "doc/LangGraph_Tree.md",
+        "doc/RAG_Design.md",
+        "doc/Retrieval_Spec.md",
+        "doc/RAG_Evaluation_LangSmith.md",
+        "CHATBOT_NOTES.md",
+        "tests/results/langsmith_rag_eval_progress.json"
+      ],
+      "note": "Retrieval context v3: return fuller content, expand chunk context with nearby heading/detail chunks, rerank after expansion, and tighten grounded answer prompt.",
+      "recorded_at": "2026-05-25T00:00:00+10:00",
+      "status": "implemented_not_re_evaluated"
+    },
+    {
+      "experiment_name": "rag-eval-small-judge-4f20b65b",
+      "metrics": {
+        "answer_relevance": 0.804,
+        "context_precision_gold_ids": 0.048,
+        "context_precision_llm": 0.332,
+        "context_recall_gold_ids": 0.24,
+        "context_recall_llm": 0.488,
+        "context_recall_required_facts_exact": 0.105,
+        "groundedness": 0.682,
+        "hallucination": 0.318,
+        "rag_context_precision_gold_ids": 0.048,
+        "rag_context_recall_gold_ids": 0.24,
+        "rag_context_recall_required_facts_exact": 0.105
+      },
+      "note": "retrieval planner v2.1: soft disease aliases + primary-line FTS",
+      "recorded_at": "2026-05-25T03:57:55+00:00"
+    },
+    {
+      "experiment_name": "rag-eval-small-judge-6941f9a9",
+      "metrics": {
+        "answer_relevance": 0.847,
+        "context_precision_gold_ids": 0.048,
+        "context_precision_llm": 0.36,
+        "context_recall_gold_ids": 0.24,
+        "context_recall_llm": 0.576,
+        "context_recall_required_facts_exact": 0.105,
+        "groundedness": 0.717,
+        "hallucination": 0.283,
+        "rag_context_precision_gold_ids": 0.048,
+        "rag_context_recall_gold_ids": 0.24,
+        "rag_context_recall_required_facts_exact": 0.105
+      },
+      "note": "retrieval planner v2.1: soft disease aliases + primary-line FTS",
+      "recorded_at": "2026-05-25T04:54:18+00:00"
+    }
+  ],
+  "latest": {
+    "dataset_name": "vitalAI eval",
+    "dataset_source": "qa",
+    "experiment_name": "rag-eval-small-judge-6941f9a9",
+    "judge_model": "mistral-small-latest",
+    "metrics": {
+      "answer_relevance": 0.847,
+      "context_precision_gold_ids": 0.048,
+      "context_precision_llm": 0.36,
+      "context_recall_gold_ids": 0.24,
+      "context_recall_llm": 0.576,
+      "context_recall_required_facts_exact": 0.105,
+      "groundedness": 0.717,
+      "hallucination": 0.283,
+      "rag_context_precision_gold_ids": 0.048,
+      "rag_context_recall_gold_ids": 0.24,
+      "rag_context_recall_required_facts_exact": 0.105
+    },
+    "recorded_at": "2026-05-25T04:54:18+00:00"
+  },
+  "runs": [
+    {
+      "dataset_name": "vitalAI eval",
+      "dataset_source": "qa",
+      "experiment_name": "rag-eval-small-judge-fad4bb6b",
+      "judge_model": "mistral-small-latest",
+      "metrics": {
+        "answer_relevance": 0.832,
+        "context_precision_gold_ids": 0.036,
+        "context_precision_llm": 0.296,
+        "context_recall_gold_ids": 0.18,
+        "context_recall_llm": 0.464,
+        "context_recall_required_facts_exact": 0.095,
+        "groundedness": 0.652,
+        "hallucination": 0.348,
+        "rag_context_precision_gold_ids": 0.036,
+        "rag_context_recall_gold_ids": 0.18,
+        "rag_context_recall_required_facts_exact": 0.095
+      },
+      "recorded_at": "2026-05-25T02:30:58+00:00"
+    },
+    {
+      "dataset_name": "vitalAI eval",
+      "dataset_source": "qa",
+      "experiment_name": "rag-eval-small-judge-4f20b65b",
+      "judge_model": "mistral-small-latest",
+      "metrics": {
+        "answer_relevance": 0.804,
+        "context_precision_gold_ids": 0.048,
+        "context_precision_llm": 0.332,
+        "context_recall_gold_ids": 0.24,
+        "context_recall_llm": 0.488,
+        "context_recall_required_facts_exact": 0.105,
+        "groundedness": 0.682,
+        "hallucination": 0.318,
+        "rag_context_precision_gold_ids": 0.048,
+        "rag_context_recall_gold_ids": 0.24,
+        "rag_context_recall_required_facts_exact": 0.105
+      },
+      "recorded_at": "2026-05-25T03:57:55+00:00"
+    },
+    {
+      "dataset_name": "vitalAI eval",
+      "dataset_source": "qa",
+      "experiment_name": "rag-eval-small-judge-6941f9a9",
+      "judge_model": "mistral-small-latest",
+      "metrics": {
+        "answer_relevance": 0.847,
+        "context_precision_gold_ids": 0.048,
+        "context_precision_llm": 0.36,
+        "context_recall_gold_ids": 0.24,
+        "context_recall_llm": 0.576,
+        "context_recall_required_facts_exact": 0.105,
+        "groundedness": 0.717,
+        "hallucination": 0.283,
+        "rag_context_precision_gold_ids": 0.048,
+        "rag_context_recall_gold_ids": 0.24,
+        "rag_context_recall_required_facts_exact": 0.105
+      },
+      "recorded_at": "2026-05-25T04:54:18+00:00"
+    }
+  ],
+  "targets": {
+    "answer_relevance": ">= 0.85",
+    "context_precision_llm": ">= 0.55",
+    "context_recall_llm": ">= 0.70",
+    "groundedness": ">= 0.85",
+    "hallucination": "<= 0.15"
+  }
+}

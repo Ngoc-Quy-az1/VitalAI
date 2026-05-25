@@ -475,6 +475,7 @@ prepare_input
   -> router_agent
   -> validate_router_json
   -> call_medical_tools_if_needed
+  -> understand_retrieval_query
   -> retrieve_context_if_needed
   -> build_final_prompt
   -> generate_response
@@ -489,10 +490,24 @@ State additions:
   "router_plan": {},
   "medical_tool_result": {},
   "structured_context": "string for final prompt",
+  "retrieval_plan": {
+    "query": "tool-aware enriched query",
+    "filters": {},
+    "soft_hints": {},
+    "candidates": {}
+  },
   "retrieval": {},
   "evidence_context": "string for final prompt"
 }
 ```
+
+Retrieval planning rule:
+
+- Router JSON is only the first plan. Before RAG, graph must validate and refine it into `retrieval_plan`.
+- Use hard filters only for caller-provided filters or disease from medical tool result.
+- Disease inferred from query aliases must stay as soft hints because source metadata can be broad.
+- Use soft hints for inferred section/biomarker when metadata may be incomplete.
+- Tool result can enrich `retrieval_plan.query` with threshold labels, formula names, derived biomarkers and source text.
 
 Final answer prompt should receive two context blocks:
 

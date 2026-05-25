@@ -1,0 +1,252 @@
+[
+  {
+    "question": "Hội chứng viêm cầu thận cấp có những biểu hiện gì?",
+    "ground_truth": "Hội chứng viêm cầu thận cấp biểu hiện bằng đột ngột xuất hiện phù, đái máu đại thể hoặc vi thể, protein niệu, tăng huyết áp và có thể suy giảm chức năng thận.",
+    "reference_context": "Đột ngột xuất hiện phù, đái máu đại thể hoặc vi thể, protein niệu, tăng huyết áp và có thể suy giảm chức năng thận."
+  },
+  {
+    "question": "Hội chứng thận hư được chẩn đoán xác định dựa vào những tiêu chuẩn nào?",
+    "ground_truth": "Hội chứng thận hư được chẩn đoán khi có: phù, protein niệu > 3,5g/24 giờ/1,73m² diện tích bề mặt cơ thể, protein máu giảm dưới 60g/lít và albumin máu giảm dưới 30g/lít, tăng cholesterol máu ≥ 6,5 mmol/l, có hạt mỡ lưỡng chiết và trụ mỡ trong nước tiểu. Trong đó tiêu chuẩn 2 và 3 là bắt buộc.",
+    "reference_context": "Tiêu chuẩn chẩn đoán hội chứng thận hư bao gồm:\n1. Phù.\n2. Protein niệu > 3,5g/24 giờ/1,73m diện tích bề mặt cơ thể.\n3. Protein máu giảm dưới 60g/lít, albumin máu giảm dưới 30g/lít.\n4. Tăng cholesterol máu ≥ 6,5 mmol/l.\n5. Có hạt mỡ lưỡng chiết, trụ mỡ trong nước tiểu.\nTrong đó tiêu chuẩn 2 và 3 là bắt buộc, các tiêu chuẩn khác có thể không đầy đủ."
+  },
+  {
+    "question": "Bệnh cầu thận thay đổi tối thiểu thường gặp ở đối tượng nào và có những đặc điểm lâm sàng gì?",
+    "ground_truth": "Bệnh cầu thận thay đổi tối thiểu thường gặp ở trẻ nhỏ tuổi đi học, biểu hiện phù nhiều, có đầy đủ triệu chứng của hội chứng thận hư, protein niệu chọn lọc (> 80% là albumin), tăng IgE huyết thanh, bổ thể máu bình thường. Tiên lượng lành tính nhưng có thể xấu nếu hay tái phát.",
+    "reference_context": "Thường gặp ở trẻ nhỏ tuổi đi học.\nPhù nhiều.\nCó đầy đủ triệu chứng của hội chứng thận hư.\nProtein niệu chọn lọc: > 80% protein niệu là albumin.\nTăng IgE huyết thanh.\nBổ thể máu bình thường.\nTiên lượng lành tính. Tuy nhiên tiên lượng có thể xấu nếu hay tái phát."
+  },
+  {
+    "question": "Viêm cầu thận IgA có đặc điểm tiên lượng như thế nào?",
+    "ground_truth": "Tiên lượng viêm cầu thận IgA không tốt, khoảng 30-40% bệnh nhân người trưởng thành tiến triển tới suy thận giai đoạn cuối (10-20% sau 10 năm, 40% sau 20 năm). Có thể tái phát viêm cầu thận IgA ở thận ghép.",
+    "reference_context": "Tiên lượng: không tốt, khoảng 30-40% bệnh nhân người trưởng thành tiến triển tới suy thận giai đoạn cuối (10-20% sau 10 năm, 40% sau 20 năm).\nCó thể tái phát viêm cầu thận IgA ở thận ghép."
+  },
+  {
+    "question": "Viêm cầu thận lupus được chẩn đoán khi nào theo tiêu chuẩn ARA 1997?",
+    "ground_truth": "Theo tiêu chuẩn ARA 1997, viêm cầu thận lupus được chẩn đoán khi có 4/11 tiêu chuẩn trong đó có protein niệu dương tính.",
+    "reference_context": "Chẩn đoán lupus dựa vào 11 tiêu chuẩn của Hội Khớp học Mỹ (ARA) 1997. Khi có 4/11 tiêu chuẩn trong đó có protein niệu dương tính thì được chẩn đoán là viêm cầu thận lupus."
+  },
+  {
+    "question": "Viêm cầu thận lupus class IV có tiên lượng như thế nào?",
+    "ground_truth": "Viêm cầu thận lupus class IV (viêm cầu thận tăng sinh lan tỏa) có tiên lượng xấu, khoảng 50% bệnh nhân suy thận mạn sau 10 năm tiến triển của bệnh.",
+    "reference_context": "Tiên lượng: xấu, phụ thuộc vào loại tổn thương mô bệnh học cầu thận: viêm cầu thận lupus class IV (viêm cầu thận tăng sinh lan tỏa) thì khoảng 50% bệnh nhân suy thận mạn sau 10 năm tiến triển của bệnh."
+  },
+  {
+    "question": "Viêm cầu thận cấp sau nhiễm liên cầu thường gặp ở độ tuổi nào và tỷ lệ nam/nữ như thế nào?",
+    "ground_truth": "Viêm cầu thận cấp sau nhiễm liên cầu thường gặp ở nam giới hơn nữ giới (tỷ lệ nam/nữ là 2/1), hầu hết bệnh nhân ở độ tuổi 6-10 tuổi, chỉ có khoảng 10% bệnh nhân mắc bệnh ở độ tuổi trên 40.",
+    "reference_context": "Viêm cầu thận cấp sau nhiễm liên cầu (viêm cầu thận cấp sau nhiễm liên cầu) là thể bệnh được hiểu biết rõ nhất, thường gặp ở nam giới hơn so với nữ giới (một số tác giả thông báo tỷ lệ nam/nữ là 2/1) và mặc dù có thể gặp ở mọi lứa tuổi, kể cả trẻ nhỏ, nhưng hầu hết các bệnh nhân ở độ tuổi 6-10 tuổi, chỉ có khoảng 10% bệnh nhân bị mắc bệnh ở độ tuổi trên 40."
+  },
+  {
+    "question": "Hiệu giá kháng thể ASLO trong viêm cầu thận cấp sau nhiễm liên cầu có diễn biến như thế nào?",
+    "ground_truth": "Antistreptolysin O (ASLO) có hiệu giá tăng ở khoảng 60-80% bệnh nhân, bắt đầu tăng trong vòng 1-3 tuần đầu, đạt tối đa sau 3-5 tuần và giảm dần về trị số bình thường sau 6 tháng.",
+    "reference_context": "Antistreptolysin O (ASLO) có hiệu giá tăng ở khoảng 60-80% bệnh nhân, bắt đầu tăng trong vòng 1-3 tuần đầu, đạt tối đa sau 3-5 tuần và giảm dần về trị số bình thường sau 6 tháng."
+  },
+  {
+    "question": "Tiên lượng lâu dài của viêm cầu thận cấp sau nhiễm liên cầu như thế nào?",
+    "ground_truth": "Tiên lượng lâu dài của viêm cầu thận cấp sau nhiễm liên cầu nói chung là tốt; có tới trên 98% số bệnh nhân không còn triệu chứng sau 5 năm, chỉ khoảng 1-3% số bệnh nhân chuyển thành suy thận mạn tính.",
+    "reference_context": "Đối với viêm cầu thận cấp sau nhiễm liên cầu, tiên lượng lâu dài nói chung là tốt; có tới trên 98% số bệnh nhân không còn triệu chứng sau 5 năm, chỉ khoảng 1-3% số bệnh nhân chuyển thành suy thận mạn tính."
+  },
+  {
+    "question": "Viêm cầu thận màng tăng sinh có tiên lượng như thế nào?",
+    "ground_truth": "Viêm cầu thận màng tăng sinh có tiên lượng xấu, khoảng 50% bệnh nhân tiến triển thành suy thận mạn sau 8-10 năm.",
+    "reference_context": "Tiên lượng: xấu, khoảng 50% bệnh nhân tiến triển thành suy thận mạn sau 8-10 năm."
+  },
+  {
+    "question": "Hội chứng Schönlein Henoch có những biểu hiện thận như thế nào?",
+    "ground_truth": "Trong hội chứng Schönlein Henoch, biểu hiện thận bao gồm: đái máu vi thể gặp 100% bệnh nhân khi có biểu hiện thận, đái máu đại thể gặp 30%, protein niệu thường ít < 1g/24 giờ, protein niệu cao đến mức thận hư gặp ở 15-38% bệnh nhân có biểu hiện thận. Có thể gặp tăng huyết áp, phù, suy thận.",
+    "reference_context": "Về các biểu hiện thận:\nĐái máu vi thể: 100% bệnh nhân khi có biểu hiện thận.\nĐái máu đại thể: 30%.\nProtein niệu thường ít < 1g/24 giờ.\nProtein niệu cao đến mức thận hư gặp ở 15-38% bệnh nhân có biểu hiện thận.\nCó thể gặp tăng huyết áp, phù, suy thận."
+  },
+  {
+    "question": "Lupus ban đỏ hệ thống ảnh hưởng đến thận với tỷ lệ như thế nào?",
+    "ground_truth": "Tỷ lệ biểu hiện thận gặp ở 60-75% bệnh nhân lupus ban đỏ hệ thống. Tại Mỹ có tới 35% số bệnh nhân có bằng chứng viêm thận Lupus tại thời điểm chẩn đoán và tăng lên với tỷ lệ chung khoảng 50-60% có viêm thận Lupus sau 10 năm.",
+    "reference_context": "Tỷ lệ biểu hiện thận gặp ở 60-75% bệnh nhân lupus ban đỏ hệ thống.\nTại Mỹ có tới 35% số bệnh nhân có bằng chứng viêm thận Lupus tại thời điểm chẩn đoán và tăng lên với tỷ lệ chung khoảng 50-60% có viêm thận Lupus sau 10 năm."
+  },
+  {
+    "question": "Phân loại quốc tế 2003 của bệnh thận Lupus có bao nhiêu hình thái và hình thái nào nặng nhất?",
+    "ground_truth": "Phân loại quốc tế 2003 (ISN/RPS) của bệnh thận Lupus có 6 hình thái (Class I đến VI). Hình thái Class IV là viêm cầu thận tăng sinh lan tỏa, được xem là thể nặng nhất, với tổn thương > 50% số cầu thận.",
+    "reference_context": "Có 6 hình thái:\nHình thái (Class) IV – Viêm cầu thận tăng sinh lan toả: Là thể nặng của tổn thương thận trong Lupus ban đỏ hệ thống, đó là tổn thương ổ > 50% số cầu thận."
+  },
+  {
+    "question": "Bệnh thận IgA được phát hiện lần đầu bởi ai và vào năm nào?",
+    "ground_truth": "Bệnh thận IgA được phát hiện đầu tiên bởi hai nhà giải phẫu bệnh là Berger và Hinglais vào năm 1968.",
+    "reference_context": "Bệnh thận IgA được phát hiện đầu tiên bởi hai nhà giải phẫu bệnh là Berger và Hinglais vào năm 1968."
+  },
+  {
+    "question": "Triệu chứng khởi phát điển hình của bệnh thận IgA là gì?",
+    "ground_truth": "Triệu chứng khởi phát điển hình trong bệnh thận IgA là đái máu đại thể có liên quan với nhiễm trùng hô hấp hoặc tiêu hóa. Đái máu đại thể tái phát thường xảy ra trong vòng 48 giờ sau một nhiễm trùng đường hô hấp trên.",
+    "reference_context": "Triệu chứng khởi phát điển hình trong bệnh thận IgA là đái máu đại thể có liên quan với nhiễm trùng hô hấp hoặc tiêu hóa, có thể gặp ở khoảng 20% trường hợp. Đái máu đại thể tái phát, thường đi kèm với triệu chứng toàn thân như sốt, đau mỏi cơ, đau bụng, nôn, tiêu chảy… Trong vòng 48 giờ sau một nhiễm trùng đường hô hấp trên, hoặc nhiễm trùng khác, là một triệu chứng kinh điển của bệnh thận IgA."
+  },
+  {
+    "question": "Phân loại Oxford cho bệnh thận IgA gồm những tiêu chí nào?",
+    "ground_truth": "Phân loại Oxford cho bệnh thận IgA bao gồm 4 tiêu chí: M (tăng sinh tế bào gian mạch), S (xơ hóa cầu thận từng phần), E (tăng sinh tế bào nội mạch gây hẹp lòng mạch) và T (teo ống thận / xơ hóa kẽ, phân thành T0: 0-25%, T1: 26-50%, T2: >50%).",
+    "reference_context": "Tăng sinh tế bào gian mạch: < 4 tế bào gian mạch/vùng gian mạch = 0 4-5 tế bào gian mạch/vùng gian mạch = 1 6-7 tế bào gian mạch/vùng gian mạch M0 = 0,5 M1 = 2 ≥ 8 tế bào gian mạch/vùng gian mạch = 3\nXơ hóa cầu thận: Bất kỳ số lượng xơ hóa của bất thường thành đám nhỏ, nhưng không xơ hóa toàn bộ hoặc hủy hoại cầu thận S0: không có S1: có\nTăng sinh tế bào nội mạch: Tăng sinh tế bào nội mạc đến số lượng các tế bào trong lòng mạch sao cho cầu thận gây ra hẹp lòng mạch E0: không có E1: có\nTeo ống thận / xơ hóa kẽ: Tỷ lệ phần trăm vùng có thể do ảnh hưởng bởi tế bào ống thận xơ hóa kẽ 0 - 25%: T0 26 - 50%: T1 > 50%: T2"
+  },
+  {
+    "question": "Nhiễm khuẩn tiết niệu không biến chứng là gì?",
+    "ground_truth": "Nhiễm khuẩn tiết niệu không biến chứng là loại nhiễm khuẩn tiết niệu đơn giản khi vi trùng gây bệnh chỉ xâm nhập vào bàng quang hoặc niệu đạo, không gây tổn thương niệu quản, niệu đạo, bàng quang, thận, bể thận.",
+    "reference_context": "Nhiễm khuẩn tiết niệu không biến chứng là loại nhiễm khuẩn tiết niệu đơn giản khi vi trùng gây bệnh chỉ xâm nhập vào bàng quang hoặc niệu đạo, không gây tổn thương niệu quản, niệu đạo, bàng quang, thận, bể thận."
+  },
+  {
+    "question": "Viêm thận bể thận cấp không biến chứng chủ yếu do vi khuẩn nào gây ra?",
+    "ground_truth": "Trên 80% các trường hợp viêm thận bể thận cấp là do E. coli gây ra.",
+    "reference_context": "Trên 80% các trường hợp viêm thận bể thận cấp là do E. coli gây ra."
+  },
+  {
+    "question": "Theo tiêu chuẩn IDSA, chẩn đoán viêm thận bể thận cấp được xác định khi cấy nước tiểu có bao nhiêu vi khuẩn/ml?",
+    "ground_truth": "Theo Hội các nhà nhiễm khuẩn Hoa Kỳ (IDSA), khi cấy nước tiểu có ≥ 10.000 vi khuẩn/ml và trên lâm sàng có các dấu hiệu phù hợp thì đủ để chẩn đoán viêm thận bể thận cấp.",
+    "reference_context": "Theo Hội các nhà nhiễm khuẩn Hoa Kỳ (IDSA), khi cấy nước tiểu có ≥ 10.000 vi khuẩn/ml và trên lâm sàng có các dấu hiệu phù hợp thì đủ để chẩn đoán viêm thận bể thận cấp."
+  },
+  {
+    "question": "Thời gian điều trị kháng sinh cho viêm thận bể thận cấp là bao lâu?",
+    "ground_truth": "Thời gian điều trị kháng sinh viêm thận bể thận cấp có thể từ 7 đến 14 ngày (trung bình 10 ngày). Những người có suy giảm miễn dịch cần điều trị từ 14 đến 21 ngày.",
+    "reference_context": "Thời gian điều trị kháng sinh có thể từ 7 đến 14 ngày (trung bình 10 ngày) đối với những người có suy giảm miễn dịch và thường là không cần phải điều trị dài hơn. Những người có suy giảm miễn dịch bị viêm thận bể thận cấp cần điều trị từ 14 đến 21 ngày."
+  },
+  {
+    "question": "Đái máu đại thể được định nghĩa và phân loại như thế nào?",
+    "ground_truth": "Đái máu đại thể là tình trạng nước tiểu màu đỏ tươi hoặc đỏ sẫm, có thể có dây máu hay máu cục, xét nghiệm cặn Addis có trên 300.000 hồng cầu/ml/phút. Phân loại gồm: đái máu đầu bãi (tổn thương bàng quang), đái máu cuối bãi (tổn thương bàng quang), đái máu toàn bãi (tổn thương từ thận, niệu quản).",
+    "reference_context": "Nước tiểu màu đỏ tươi hoặc đỏ sẫm, có thể có dây máu hay máu cục. Để lâu có cặn hồng cầu.\nXét nghiệm cặn Addis có trên 300.000 hồng cầu/ml/phút (Đếm số lượng hồng cầu trong một thể tích nước tiểu sau khi khuấy đều 1 lần).\nĐái máu đầu bãi: xuất hiện ngay khi bắt đầu đi tiểu, sau đó nước tiểu trong dần. Nguyên nhân thường do tổn thương bàng quang.\nĐái máu cuối bãi: nước tiểu ban đầu trong, cuối bãi xuất hiện đái máu. Nguyên nhân thường nghĩ tới là tổn thương bàng quang.\nĐái máu toàn bãi: thường nghĩ tới nguyên nhân tổn thương từ thận, niệu quản và cũng không loại trừ tổn thương bàng quang mức độ nặng."
+  },
+  {
+    "question": "Bệnh thận đa nang ảnh hưởng đến bao nhiêu người trên thế giới?",
+    "ground_truth": "Các nghiên cứu dịch tễ học dựa vào dân số ước tính rằng bệnh thận đa nang ảnh hưởng đến 1 trong 400–1000 trong số tổng sau sinh, tương đương 12,5 triệu người trên toàn thế giới.",
+    "reference_context": "Các nghiên cứu dịch tễ học dựa vào dân số với việc khám nghiệm thì tỷ lệ ước tính rằng căn bệnh này ảnh hưởng đến 1 trong 400 – 1000 trong số tổng sau sinh, tương đương 12,5 triệu người trên toàn thế giới."
+  },
+  {
+    "question": "Bệnh thận đa nang do những gen nào gây ra?",
+    "ground_truth": "Bệnh thận đa nang là bệnh di truyền trên nhiễm sắc thể thường với hai gen chính là PKD1 (protein, polycystine-1) và PKD2. Các gen này nằm trên hai nhiễm sắc thể số 16 và nhiễm sắc thể số 4.",
+    "reference_context": "Bệnh thận đa nang là bệnh di truyền trên nhiễm sắc thể thường. Có thể có nhiều gen gây bệnh cho bệnh đa nang nhưng nghiên cứu cho thấy có hai gen chính là PKD1 (protein, polycystine-1) và PKD2. Các gen này nằm trên hai nhiễm sắc thể số 16 và nhiễm sắc thể số 4."
+  },
+  {
+    "question": "Tỷ lệ mắc sỏi tiết niệu tại Hoa Kỳ đã thay đổi như thế nào từ năm 1994 đến 2012?",
+    "ground_truth": "Tỷ lệ mắc sỏi tiết niệu tại Hoa Kỳ đã tăng đáng kể: năm 1994, tỷ lệ là 5,2% (1 trong 20 người), nhưng năm 2012, tỷ lệ là gần 10% (1 trong 11 người).",
+    "reference_context": "Đáng chú ý hơn, tỷ lệ mắc sỏi tiết niệu đã tăng đáng kể: năm 1994, tỷ lệ này là 5,2% (1 trong 20 người), nhưng năm 2012, tỷ lệ này là gần 10% (1 trong 11 người)."
+  },
+  {
+    "question": "Sỏi calci hình thành do những cơ chế nào?",
+    "ground_truth": "Sỏi calci hình thành do ba nguyên nhân chính: (1) nước tiểu bị quá bão hòa về muối calci do tăng hấp thu calci ở ruột hoặc tăng tái hấp thu calci ở ống thận; (2) giảm citrat niệu - citrat có tác dụng ức chế kết tinh các muối calci; (3) nước tiểu quá bão hòa về Oxalat do chế độ ăn hoặc rối loạn chuyển hóa.",
+    "reference_context": "Nguyên nhân chính là tình trạng nước tiểu bị quá bão hòa về muối calci do tăng hấp thu calci ở ruột hoặc tăng tái hấp thu calci ở ống thận.\nNguyên nhân thứ 2 là giảm citrat niệu. Citrat niệu có tác dụng ức chế kết tinh các muối calci.\nNguyên nhân thứ 3 là nước tiểu quá bão hòa về Oxalat."
+  },
+  {
+    "question": "Sỏi struvit hình thành do cơ chế gì?",
+    "ground_truth": "Sỏi struvit là do nhiễm khuẩn lâu dài đường tiết niệu. Vi khuẩn giải phóng men urease, men này phân giải ure gây tổng hợp ammoniac trong nước tiểu, dẫn tới làm giảm hòa tan struvit tạo điều kiện hình thành sỏi.",
+    "reference_context": "Sỏi struvit là do nhiễm khuẩn lâu dài đường tiết niệu, vi khuẩn giải phóng men urease, men này phân giải ure gây tổng hợp ammoniac trong nước tiểu, dẫn tới làm giảm hòa tan struvit (MgNH44PO44·6H22O) tạo điều kiện hình thành sỏi."
+  },
+  {
+    "question": "Tổn thương thận cấp được chẩn đoán theo tiêu chuẩn KDIGO 2012 khi nào?",
+    "ground_truth": "Tổn thương thận cấp được chẩn đoán khi có 1 trong 3 tiêu chuẩn: (1) tăng nồng độ creatinin huyết thanh thêm 0,3 mg/dL (26,5 mcmol/L) trong 48 giờ; (2) nồng độ creatinin huyết thanh tăng ≥ 1,5 lần so với creatinin nền trong vòng 7 ngày trước đó; hoặc (3) bệnh nhân có lượng nước tiểu < 0,5 ml/kg/h trong 6 giờ.",
+    "reference_context": "tổn thương thận cấp được chẩn đoán khi có 1 trong 3 tiêu chuẩn sau:\n1. Tăng nồng độ creatinin huyết thanh thêm 0,3 mg/dL (26,5 mcmol/L) trong 48 giờ.\n2. Hoặc nồng độ creatinin huyết thanh tăng lớn hơn hoặc bằng 1,5 lần so với nồng độ creatinin nền trong vòng 7 ngày trước đó.\n3. Hoặc bệnh nhân có lượng nước tiểu < 0,5 ml/kg/h trong 6 giờ."
+  },
+  {
+    "question": "Tổn thương thận cấp trước thận là gì và chiếm tỷ lệ bao nhiêu?",
+    "ground_truth": "Tổn thương thận cấp trước thận là nguyên nhân thường gặp nhất, chiếm khoảng 50% các trường hợp. Đây là tình trạng giảm tưới máu thận dẫn đến giảm mức lọc cầu thận.",
+    "reference_context": "Là nguyên nhân thường gặp nhất, chiếm khoảng 50% các trường hợp. Do giảm tưới máu thận dẫn đến giảm mức lọc cầu thận."
+  },
+  {
+    "question": "Các giai đoạn lâm sàng của tổn thương thận cấp điển hình là gì?",
+    "ground_truth": "Tổn thương thận cấp thể điển hình tiến triển qua 4 giai đoạn: giai đoạn khởi phát (trong vòng 24 giờ, tác nhân gây bệnh tấn công), giai đoạn đái ít - vô niệu (trung bình 7-14 ngày), giai đoạn đái trở lại (kéo dài trung bình 5-7 ngày) và giai đoạn hồi phục (trung bình khoảng 4 tuần).",
+    "reference_context": "Tổn thương thận cấp thể điển hình và có hồi phục thường tiến triển qua 4 giai đoạn.\n4.3.1. Giai đoạn khởi phát: Khởi phát, trong vòng 24 giờ, là giai đoạn tấn công của tác nhân gây bệnh.\n4.3.2. Giai đoạn đái ít - vô niệu: Vô niệu có thể diễn biến từ từ... trung bình 7-14 ngày bệnh nhân sẽ đái trở lại.\n4.3.3. Giai đoạn đái trở lại: Kéo dài trung bình khoảng 5-7 ngày.\n4.3.4. Giai đoạn hồi phục: Tùy theo nguyên nhân... trung bình khoảng 4 tuần."
+  },
+  {
+    "question": "Chỉ định lọc máu sớm trong tổn thương thận cấp gồm những trường hợp nào?",
+    "ground_truth": "Chỉ định lọc máu sớm trong tổn thương thận cấp khi có 1 trong các dấu hiệu: quá tải tuần hoàn đe dọa phù phổi cấp; tăng kali máu với biến đổi điện tim (kali máu ≥ 6,5mmol/l); toan chuyển hóa pH < 7,2; giảm Na⁺ máu trầm trọng (Na⁺ < 120mmol/l); viêm màng ngoài tim; biểu hiện thần kinh như lú lẫn, co giật, hôn mê; xuất huyết do ure máu cao; hội chứng ure máu cao có biểu hiện lâm sàng; thiểu niệu không đáp ứng lợi tiểu.",
+    "reference_context": "Chỉ định lọc máu sớm trong tổn thương thận cấp khi có 1 trong các dấu hiệu sau:\nQuá tải tuần hoàn, đe dọa phù phổi cấp.\nTăng kali máu, biến đổi điện tim (kali máu ≥ 6,5mmol/l).\nToan chuyển hóa, pH < 7,2.\nGiảm Na⁺ máu trầm trọng Na⁺ < 120mmol/l.\nViêm màng ngoài tim.\nBiểu hiện thần kinh: lú lẫn, co giật, hôn mê...\nXuất huyết trầm trọng do ure máu cao.\nHội chứng ure máu cao có biểu hiện lâm sàng.\nThiểu niệu không đáp ứng lợi tiểu."
+  },
+  {
+    "question": "Bệnh thận mạn tính được chẩn đoán dựa vào tiêu chuẩn nào theo KDOQI 2002?",
+    "ground_truth": "Bệnh thận mạn tính được chẩn đoán khi thỏa mãn một trong hai tiêu chuẩn: (A) biểu hiện tổn thương thận tồn tại kéo dài ≥ 3 tháng (albumin niệu, bất thường cặn lắng nước tiểu, bất thường điện giải, bất thường mô bệnh học thận, hoặc hình ảnh học bất thường); hoặc (B) giảm mức lọc cầu thận < 60ml/ph/1,73m² tồn tại kéo dài trên 3 tháng.",
+    "reference_context": "Bệnh nhân được chẩn đoán bệnh thận mạn tính khi thỏa mãn một trong hai tiêu chuẩn (A hoặc B) sau đây:\nA. Biểu hiện tổn thương thận tồn tại kéo dài ≥ 3 tháng (có 1 hoặc nhiều hơn những triệu chứng dưới đây)\nCó Albumin niệu (tỷ lệ albumin/creatinine nước tiểu > 30mg/g hoặc albumin niệu ≥ 24 giờ > 30mg/24giờ).\nBất thường cặn lắng nước tiểu.\nBất thường điện giải hoặc các bất thường khác do rối loạn chức năng của ống thận.\nBất thường về mô bệnh học thận.\nXét nghiệm hình ảnh học phát hiện thận bất thường.\nB. Giảm mức lọc cầu thận (Glomerular filtration rate: GFR) < 60ml/ph/1,73 m²) tồn tại kéo dài trên 3 tháng."
+  },
+  {
+    "question": "Xơ hóa cầu thận ổ có tiên lượng như thế nào?",
+    "ground_truth": "Xơ hóa cầu thận ổ có tiên lượng xấu. Hội chứng thận hư gặp ở 60-80%, có thể tiến triển đến suy thận mạn, thường kháng lại liệu pháp corticoid và các thuốc giảm miễn dịch khác.",
+    "reference_context": "hội chứng thận hư gặp ở: 60-80%.\nĐái máu vi thể thường gặp.\nCó thể tiến triển đến suy thận mạn.\nTăng huyết áp.\nỞ bệnh nhân hội chứng thận hư: thường kháng lại liệu pháp corticoid và các thuốc giảm miễn dịch khác.\nTiên lượng xấu."
+  },
+  {
+    "question": "Viêm cầu thận màng lan tỏa có đặc điểm mô bệnh học huỳnh quang như thế nào?",
+    "ground_truth": "Trên kính hiển vi huỳnh quang của viêm cầu thận màng lan tỏa, thấy lắng đọng IgG và C3 là chủ yếu dọc màng đáy, có thể gặp lắng đọng IgM hoặc IgA, không có lắng đọng IgE.",
+    "reference_context": "Kính hiển vi huỳnh quang:\nLắng đọng IgG và C3 là chủ yếu dọc màng đáy.\nCó thể gặp lắng đọng IgM hoặc IgA.\nKhông có lắng đọng IgE."
+  },
+  {
+    "question": "Viêm cầu thận tăng sinh ngoại mạch hình liềm (viêm cầu thận tiến triển nhanh) có những biểu hiện lâm sàng gì?",
+    "ground_truth": "Viêm cầu thận tiến triển nhanh có biểu hiện thiểu niệu rõ, phù, tăng huyết áp (đặc biệt huyết áp tâm trương), protein niệu ít gặp hội chứng thận hư, đái máu vi thể có trụ hồng cầu, thiếu máu xuất hiện sớm, suy thận xuất hiện sớm và tiến triển nặng dần đến giai đoạn cuối sau 6-18 tháng.",
+    "reference_context": "Thiểu niệu rõ, phù.\nTăng huyết áp: đặc biệt là huyết áp tâm trương.\nProtein niệu: rất ít gặp hội chứng thận hư.\nĐái máu vi thể, thường có trụ hồng cầu.\nThiếu máu xuất hiện sớm.\nSuy thận xuất hiện sớm và ngày càng nặng dần. Suy thận giai đoạn cuối sau 6-18 tháng."
+  },
+  {
+    "question": "Hội chứng Goodpasture trong viêm cầu thận tiến triển nhanh có những triệu chứng phổi nào?",
+    "ground_truth": "Trong hội chứng Goodpasture, triệu chứng ở phổi bao gồm ho, ho máu, rối loạn chức năng hô hấp. Ngoài ra có kháng thể kháng màng đáy cầu thận ở máu ngoại vi, kháng thể kháng bào tương bạch cầu đa nhân trung tính, và hình mờ bất thường ở X-quang tim phổi.",
+    "reference_context": "Nếu có hội chứng Goodpasture có thêm các triệu chứng:\nTriệu chứng ở phổi: ho, ho máu, rối loạn chức năng hô hấp.\nCó kháng thể kháng màng đáy cầu thận ở máu ngoại vi.\nCó kháng thể kháng bào tương bạch cầu đa nhân trung tính.\nCó hình mờ bất thường ở X-quang tim phổi."
+  },
+  {
+    "question": "Điều trị hội chứng thận hư bằng corticosteroid theo phác đồ như thế nào?",
+    "ground_truth": "Điều trị corticosteroid gồm 3 giai đoạn: giai đoạn tấn công khởi đầu với 1-2mg/kg/ngày trong 4-8 tuần; giai đoạn củng cố kéo dài khoảng 4 tháng với giảm dần liều; và giai đoạn duy trì 5-10 mg/ngày có thể kéo dài hàng năm.",
+    "reference_context": "Giai đoạn tấn công khởi đầu: 1-2mg/kg/ngày hoặc 60mg/m²/ngày ở trẻ em (không quá 80mg/ngày) uống 1 lần buổi sáng hoặc có thể chia làm 2 lần/ngày trong vòng 4-8 tuần.\nGiai đoạn củng cố: kéo dài khoảng 4 tháng, liều corticoid được giảm dần.\nGiai đoạn duy trì: 5-10 mg/ngày có thể kéo dài hàng năm."
+  },
+  {
+    "question": "Đáp ứng hoàn toàn với điều trị hội chứng thận hư được định nghĩa như thế nào?",
+    "ground_truth": "Bệnh nhân đáp ứng hoàn toàn khi protein niệu giảm xuống dưới 0,2g/24 giờ.",
+    "reference_context": "Bệnh nhân đáp ứng hoàn toàn khi protein niệu giảm xuống dưới 0,2g/24 giờ."
+  },
+  {
+    "question": "Bệnh cầu thận di truyền bao gồm những bệnh nào?",
+    "ground_truth": "Bệnh cầu thận di truyền bao gồm: hội chứng Alport (bệnh cầu thận có kèm theo điếc), đái máu lành tính tái phát, bệnh cầu thận màng đáy mỏng Nail-patella syndrome, hội chứng thận hư trước sinh, và hội chứng thận hư trẻ em (có xơ hóa gian mạch lan tỏa).",
+    "reference_context": "Bệnh cầu thận di truyền:\nHội chứng Alport (Bệnh cầu thận có kèm theo điếc).\nĐái máu lành tính tái phát.\nBệnh cầu thận màng đáy mỏng Nail-patella syndrome.\nhội chứng thận hư trước sinh.\nhội chứng thận hư trẻ em (có xơ hóa gian mạch lan tỏa)."
+  },
+  {
+    "question": "Xơ hóa cầu thận do đái tháo đường giai đoạn sớm có biểu hiện gì trong nước tiểu?",
+    "ground_truth": "Ở giai đoạn sớm của xơ hóa cầu thận do đái tháo đường, chỉ có microalbumin niệu (0,03 - 0,3 g/24 giờ).",
+    "reference_context": "Protein niệu: từ mức độ nhẹ đến mức độ thận hư. Ở giai đoạn sớm của bệnh chỉ có microalbumin niệu (0,03 - 0,3 g/24 giờ)."
+  },
+  {
+    "question": "Viêm cầu thận lupus trên kính hiển vi huỳnh quang có hình ảnh đặc trưng gì?",
+    "ground_truth": "Trên kính hiển vi huỳnh quang của viêm cầu thận lupus, thấy lắng đọng nhiều thành phần miễn dịch tạo nên hình ảnh 'nhà kho đầy' (full house) của IgG, IgA, IgM, C1q, C3, C4, C5 ở màng đáy cầu thận, khoang gian mạch và ở thành mạch quanh cầu thận.",
+    "reference_context": "Hiển vi huỳnh quang:\nLắng đọng nhiều thành phần miễn dịch tạo nên hình ảnh \"nhà kho đầy\" (full house) của IgG, IgA, IgM, C1q, C3, C4, C5 ở màng đáy cầu thận, khoang gian mạch và ở thành mạch quanh cầu thận."
+  },
+  {
+    "question": "Thận nhiễm độc thai nghén có tổn thương mô bệnh học chủ yếu như thế nào?",
+    "ground_truth": "Tổn thương mô bệnh học chủ yếu trong nhiễm độc thai nghén là sưng phồng tế bào nội mạc làm hẹp lòng mao mạch cầu thận. Đôi khi có sưng phồng cả tế bào gian mạch.",
+    "reference_context": "Tổn thương mô bệnh học chủ yếu là sưng phồng tế bào nội mạc làm hẹp lòng mao mạch cầu thận. Đôi khi có sưng phồng cả tế bào gian mạch."
+  },
+  {
+    "question": "Viêm cầu thận tăng sinh lan tỏa (điển hình sau nhiễm liên cầu) có hình ảnh mô bệnh học đặc trưng trên hiển vi điện tử như thế nào?",
+    "ground_truth": "Hình ảnh đặc trưng trên hiển vi điện tử trong viêm cầu thận cấp sau nhiễm liên cầu là các lắng đọng đặc điện tử lớn hình gò giống bướu lạc đà (là các thành phần miễn dịch bị lắng đọng) dưới biểu mô.",
+    "reference_context": "Hình ảnh đặc trưng trên hiển vi điện tử là các lắng đọng đặc điện tử lớn hình gò giống bướu lạc đà (là các thành phần miễn dịch bị lắng đọng) dưới biểu mô. Đôi khi còn có các lắng đọng dưới nội mô và trong khoang gian mạch cầu thận."
+  },
+  {
+    "question": "Điều trị bệnh thận lupus class IV-V cụ thể như thế nào?",
+    "ground_truth": "Điều trị bệnh thận lupus class IV-V cần tích cực với prednisolon 1mg/kg/24h hoặc 2mg/kg/cách ngày trong 3 đến 6 tháng, không quá 80mg/ngày; kết hợp cyclophosphamide (Endoxan) hoặc azathioprin (Imurel) liều tấn công (3mg/kg/24h) trong 2-3 tháng. Nếu không đáp ứng có thể dùng methylprednisolon liều bolus 1000mg trong 3 giờ, 3 ngày liên tục hoặc cyclophosphamid 0,5-1 g/m² truyền tĩnh mạch.",
+    "reference_context": "Bệnh thận Lupus class IV-V: Là thể có tổn thương nặng, cần điều trị tích cực. Có nhiều thuốc ức chế miễn dịch có thể lựa chọn tùy thuộc vào bệnh nhân có chống chỉ định với nhóm nào:\nPrednisolon (hoặc cùng nhóm tính liều tương đương) 1mg/kg/24h hoặc 2mg/kg/cách ngày trong 3 đến 6 tháng, không quá 80mg/ngày và không quá 120mg cách ngày.\nLiều uống cyclophosphamide (Endoxan) hoặc azathioprin (Imurel) tấn công (3mg/kg/24h) trong 2 - 3 tháng."
+  },
+  {
+    "question": "Tỷ lệ tử vong của tổn thương thận cấp ở bệnh nhân cần lọc máu là bao nhiêu?",
+    "ground_truth": "Tỷ lệ tử vong của tổn thương thận cấp từ 19-83% ở bệnh nhân cần lọc máu hoặc kết hợp với suy đa tạng.",
+    "reference_context": "Tỉ lệ tử vong của tổn thương thận cấp từ 19-83% ở bệnh nhân cần lọc máu hoặc kết hợp với suy đa tạng."
+  },
+  {
+    "question": "Sỏi niệu quản kích thước dưới 5mm ở 1/3 dưới có khả năng tự đào thải bao nhiêu phần trăm?",
+    "ground_truth": "Sỏi niệu quản kích thước < 5mm ở 1/3 dưới có khả năng tự đào thải là 74%.",
+    "reference_context": "Sỏi nằm ở 1/3 dưới niệu quản: < 5mm: 74%"
+  },
+  {
+    "question": "Phân độ thận ứ nước độ IV trên siêu âm và UIV có những đặc điểm gì?",
+    "ground_truth": "Thận ứ nước độ IV có thận to rõ rệt, chức năng thận giảm nhiều không tiết thuốc sau 120 phút, không rõ hình đài bể thận, đài bể thận giãn quá mức, nhu mô thận mỏng < 3mm.",
+    "reference_context": "Độ IV: Thận to rõ rệt. Chức năng thận giảm nhiều, không tiết thuốc sau 120 phút, không rõ hình đài bể thận. Đài bể thận giãn quá mức, không rõ hình đài bể thận. Nhu mô thận mỏng < 3mm."
+  },
+  {
+    "question": "Phân loại RIFLE cho tổn thương thận cấp giai đoạn 'Failure' (suy) có tiêu chuẩn gì?",
+    "ground_truth": "Trong phân loại RIFLE, giai đoạn F - Failure (suy) khi creatinin huyết thanh tăng x 3 lần hoặc giảm GFR > 75%, hoặc lượng nước tiểu < 0,3 ml/kg/giờ trong > 12 giờ, hoặc vô niệu trong 12 giờ.",
+    "reference_context": "F - failure (suy): ↑ Creatinin huyết thanh x 3 lần hoặc giảm GFR > 75%. < 0,3 ml/kg/giờ > 12 giờ hoặc vô niệu trong 12 giờ."
+  },
+  {
+    "question": "Hội chứng thận hư có nguồn gốc nguyên phát do những bệnh cầu thận nào?",
+    "ground_truth": "Hội chứng thận hư nguyên phát bao gồm: bệnh cầu thận thay đổi tối thiểu (nguyên nhân thường gặp nhất ở trẻ em), viêm cầu thận màng (nguyên nhân thường gặp nhất ở người trưởng thành tại các nước đang phát triển), xơ hoá cầu thận ổ - cục bộ, viêm cầu thận màng tăng sinh, viêm cầu thận tăng sinh gian mạch, viêm cầu thận tăng sinh ngoại mạch, và bệnh thận IgA.",
+    "reference_context": "Nguyên nhân gây hội chứng thận hư nguyên phát bao gồm:\nBệnh cầu thận thay đổi tối thiểu, là nguyên nhân gây hội chứng thận hư thường gặp nhất ở trẻ em.\nViêm cầu thận màng, là nguyên nhân gây hội chứng thận hư thường gặp nhất ở người trưởng thành tại các nước đang phát triển.\nXơ hoá cầu thận ổ - cục bộ.\nViêm cầu thận màng tăng sinh.\nViêm cầu thận tăng sinh gian mạch.\nViêm cầu thận tăng sinh ngoại mạch.\nBệnh thận IgA."
+  },
+  {
+    "question": "Viêm bàng quang có những triệu chứng điển hình nào?",
+    "ground_truth": "Các triệu chứng điển hình của viêm bàng quang là cảm giác buốt khi đi tiểu nhiều lần, mỗi lần chỉ được một số lượng rất ít nước tiểu (đái rắt); cảm giác buốt rất khó chịu khi đi tiểu (đái buốt); có máu trong nước tiểu (đái máu cuối bãi); nước tiểu có thể đục và có mùi hôi.",
+    "reference_context": "Các triệu chứng điển hình của viêm bàng quang là cảm giác buốt khi đi tiểu nhiều lần, mỗi lần chỉ được một số lượng rất ít nước tiểu (đái rắt); cảm giác buốt rất khó chịu khi đi tiểu (đái buốt); có máu trong nước tiểu, có thể là khi đi tiểu gần hết hoặc toàn bộ bàng quang (đái máu cuối bãi); nước tiểu có thể đục và có mùi hôi."
+  },
+  {
+    "question": "Cơ chế bệnh sinh của hội chứng thận hư nguyên phát liên quan đến những tế bào nào?",
+    "ground_truth": "Hội chứng thận hư nguyên phát được cho là có cơ chế sinh bệnh học là sự rối loạn đáp ứng miễn dịch, với sự rối loạn chức năng của tế bào lympho. Đặc biệt có sự thay đổi số lượng hoặc chức năng tế bào lympho T, tốc độ chết của tế bào lympho T theo chương trình bị tăng lên.",
+    "reference_context": "Người ta cho rằng hội chứng thận hư nguyên phát có cơ chế sinh bệnh học là sự rối loạn đáp ứng miễn dịch, nhưng bản chất chính xác của quá trình này còn chưa được hiểu biết đầy đủ. Kết quả nhiều nghiên cứu cho thấy có sự rối loạn chức năng của tế bào lympho. Một số tác giả lại nhận thấy có tình trạng giảm đáp ứng miễn dịch và cho rằng điều này có thể là do thay đổi số lượng hoặc chức năng tế bào lympho T."
+  }
+]
