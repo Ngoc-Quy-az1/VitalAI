@@ -23,6 +23,20 @@ class ChatAnswerRequest(BaseModel):
     section_type: str | None = None
     source_type: str | None = None
     biomarker: str | None = None
+    conversation_id: str | None = None
+    user_id: str | None = None
+    memory_context: str | None = None
+    enable_web_search: bool | None = None
+
+
+class MemorySummarizeRequest(BaseModel):
+    previous_summary: str = ""
+    question: str = Field(min_length=1)
+    answer: str = Field(default="")
+
+
+class MemorySummarizeResponse(BaseModel):
+    summary: str
 
 
 class TtsPrepareRequest(BaseModel):
@@ -69,6 +83,10 @@ def _chat_kwargs(request: ChatAnswerRequest) -> dict[str, Any]:
         "section_type": request.section_type,
         "source_type": request.source_type,
         "biomarker": request.biomarker,
+        "conversation_id": request.conversation_id,
+        "user_id": request.user_id,
+        "memory_context": request.memory_context,
+        "enable_web_search": request.enable_web_search,
         "include_debug": request.include_debug,
     }
 
@@ -123,6 +141,24 @@ async def stream_chat(
             "X-Accel-Buffering": "no",
         },
     )
+
+
+@app.post("/memory/summarize", response_model=MemorySummarizeResponse)
+async def summarize_memory(
+    request: MemorySummarizeRequest,
+    answerer: Any = Depends(get_answerer),
+) -> MemorySummarizeResponse:
+    """Tạo rolling summary cho Node backend lưu theo user/session."""
+
+    try:
+        summary = await answerer.summarize_memory(
+            previous_summary=request.previous_summary,
+            question=request.question,
+            answer=request.answer,
+        )
+        return MemorySummarizeResponse(summary=summary)
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Không thể tóm tắt memory: {exc}") from exc
 
 
 @app.post("/voice/tts/prepare")

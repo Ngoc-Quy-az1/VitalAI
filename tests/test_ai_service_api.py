@@ -34,6 +34,9 @@ class FakeAnswerer:
             "sources": [],
         }
 
+    async def summarize_memory(self, **_: Any) -> str:
+        return "Người dùng đang hỏi tiếp về bệnh thận."
+
 
 class AiServiceApiTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -59,6 +62,19 @@ class AiServiceApiTests(unittest.TestCase):
         self.assertIn('"token": " chào"', body)
         self.assertIn("event: done", body)
         self.assertIn('"answer": "Xin chào"', body)
+
+    def test_memory_summary_endpoint(self) -> None:
+        response = self.client.post(
+            "/memory/summarize",
+            json={
+                "previous_summary": "",
+                "question": "Hội chứng thận hư là gì?",
+                "answer": "Đây là bệnh lý thận.",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("bệnh thận", response.json()["summary"])
 
 
 if __name__ == "__main__":

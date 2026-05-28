@@ -298,8 +298,7 @@ def is_rate_limit_error(exc: Exception) -> bool:
         or "capacity exceeded" in text
         or "service_tier_capacity_exceeded" in text
     )
-
-
+# ham chinh gen cau hoi tu RAG pipeline
 def build_target(
     *,
     delay_seconds: float = 0.0,

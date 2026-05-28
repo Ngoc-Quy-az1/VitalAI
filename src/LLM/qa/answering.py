@@ -20,6 +20,7 @@ from typing import Any
 from langchain_mistralai import ChatMistralAI
 
 from src.LLM.observability import configure_langsmith_from_env
+from src.LLM.prompts.templates import MEMORY_SUMMARY_PROMPT
 from src.LLM.qa.graph import build_chatbot_graph, cleanup_user_answer
 from src.LLM.retrieval.vector_search import NeonVectorSearcher, build_searcher_from_env
 
@@ -54,6 +55,10 @@ class RetrievalAugmentedAnswerer:
         section_type: str | None = None,
         source_type: str | None = None,
         biomarker: str | None = None,
+        conversation_id: str | None = None,
+        user_id: str | None = None,
+        memory_context: str | None = None,
+        enable_web_search: bool | None = None,
         include_debug: bool = False,
     ) -> dict[str, Any]:
         """Trả về câu trả lời cuối cùng. Debug RAG chỉ bật khi caller yêu cầu."""
@@ -66,6 +71,10 @@ class RetrievalAugmentedAnswerer:
                 "section_type": section_type,
                 "source_type": source_type,
                 "biomarker": biomarker,
+                "conversation_id": conversation_id,
+                "user_id": user_id,
+                "memory_context": memory_context or "",
+                "enable_web_search": enable_web_search,
             }
         )
         response: dict[str, Any] = {
@@ -84,6 +93,8 @@ class RetrievalAugmentedAnswerer:
                 "router_error": state.get("router_error"),
                 "medical_tool_result": state.get("medical_tool_result"),
                 "extracted_tool_payload": state.get("extracted_tool_payload"),
+                "web_results": state.get("web_results", []),
+                "memory_context": state.get("memory_context"),
             }
         return response
 
@@ -95,6 +106,10 @@ class RetrievalAugmentedAnswerer:
         section_type: str | None = None,
         source_type: str | None = None,
         biomarker: str | None = None,
+        conversation_id: str | None = None,
+        user_id: str | None = None,
+        memory_context: str | None = None,
+        enable_web_search: bool | None = None,
         include_debug: bool = False,
     ) -> AsyncIterator[dict[str, Any]]:
         """Stream token của final answer và kết thúc bằng event `done`.
@@ -110,6 +125,10 @@ class RetrievalAugmentedAnswerer:
             "section_type": section_type,
             "source_type": source_type,
             "biomarker": biomarker,
+            "conversation_id": conversation_id,
+            "user_id": user_id,
+            "memory_context": memory_context or "",
+            "enable_web_search": enable_web_search,
         }
         streamed_text = ""
         final_state: dict[str, Any] | None = None
@@ -154,8 +173,43 @@ class RetrievalAugmentedAnswerer:
                 "router_error": (final_state or {}).get("router_error"),
                 "medical_tool_result": (final_state or {}).get("medical_tool_result"),
                 "extracted_tool_payload": (final_state or {}).get("extracted_tool_payload"),
+                "web_results": (final_state or {}).get("web_results", []),
+                "memory_context": (final_state or {}).get("memory_context"),
             }
         yield response
+
+    async def summarize_memory(
+        self,
+        *,
+        previous_summary: str = "",
+        question: str,
+        answer: str,
+    ) -> str:
+        """Create a compact rolling summary for one chat session."""
+
+        prompt = MEMORY_SUMMARY_PROMPT.invoke(
+            {
+                "previous_summary": _trim_for_summary(previous_summary) or "(empty)",
+                "question": _trim_for_summary(question, 900),
+                "answer": _trim_for_summary(answer, 1600),
+            }
+        )
+        try:
+            response = await self.llm.ainvoke(
+                prompt.messages,
+                config={"tags": ["memory_summary"], "metadata": {"internal": True}},
+            )
+            summary = _trim_for_summary(str(response.content), 1600)
+        except Exception:
+            summary = ""
+        if summary:
+            return summary
+        latest = (
+            f"Trước đó: {_trim_for_summary(previous_summary, 900)} "
+            f"Lượt mới: người dùng hỏi '{_trim_for_summary(question, 260)}'; "
+            f"trợ lý trả lời '{_trim_for_summary(answer, 360)}'."
+        )
+        return _trim_for_summary(latest, 1600)
 
 
 def _chunk_text(chunk: Any) -> str:
@@ -175,6 +229,13 @@ def _chunk_text(chunk: Any) -> str:
                     parts.append(text)
         return "".join(parts)
     return ""
+
+
+def _trim_for_summary(value: str, max_chars: int = 1200) -> str:
+    value = " ".join(str(value or "").split())
+    if len(value) <= max_chars:
+        return value
+    return value[:max_chars].rsplit(" ", 1)[0] + "..."
 
 
 def build_answerer_from_env() -> RetrievalAugmentedAnswerer:

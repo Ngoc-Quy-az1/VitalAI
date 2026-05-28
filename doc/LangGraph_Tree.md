@@ -675,6 +675,7 @@ flowchart TD
         Health["GET /health"]
         ChatAnswer["POST /chat/answer"]
         ChatStream["POST /chat/stream"]
+        MemorySummary["POST /memory/summarize"]
         TTS["POST /voice/tts/prepare"]
     end
 
@@ -690,20 +691,23 @@ flowchart TD
         N4["call_medical_tools"]
         N5["understand_retrieval_query"]
         N6["retrieve_context"]
-        N7["build_prompt"]
-        N8["generate_response"]
-        N9["cleanup_response"]
+        N7["retrieve_medical_web_context"]
+        N8["build_prompt"]
+        N9["generate_response"]
+        N10["cleanup_response"]
     end
 
-    Graph --> N1 --> N2 --> N3 --> N4 --> N5 --> N6 --> N7 --> N8 --> N9
-    N2 -. "direct branch" .-> N7
+    Graph --> N1 --> N2 --> N3 --> N4 --> N5 --> N6 --> N7 --> N8 --> N9 --> N10
+    N2 -. "direct branch" .-> N8
 
     N3 -. "internal_router LLM" .-> MistralRouter["ChatMistralAI<br/>tag internal_router"]
     N4 -. "HTTP POST" .-> MedicalAPI["Medical Tools FastAPI<br/>:8010"]
     MedicalAPI --> MedicalEngine["MedicalToolsService<br/>thresholds + formulas"]
     N6 -. "embedding" .-> OpenAIEmbeddings["OpenAI Embeddings"]
     N6 -. "hybrid search" .-> Neon["Neon/Postgres<br/>medical_documents"]
-    N8 -. "final answer" .-> MistralFinal["ChatMistralAI<br/>tag final_answer"]
+    N7 -. "Google CSE" .-> MedicalWeb["Allowed medical websites only<br/>no Wikipedia/social"]
+    N9 -. "final answer" .-> MistralFinal["ChatMistralAI<br/>tag final_answer"]
+    MemorySummary -. "rolling summary" .-> MistralMemory["ChatMistralAI<br/>tag memory_summary"]
 ```
 
 ## Tool Inventory
@@ -720,6 +724,7 @@ flowchart TD
 | `normalize_router_plan` | `src/LLM/tools/medical_tools/router_plan.py` | `route_with_medical_tools` | Canonicalize/sanitize plan |
 | `build_structured_context` | `src/LLM/tools/medical_tools/context_formatter.py` | `call_medical_tools` | Convert tool JSON thành text sạch cho prompt |
 | `build_retrieval_plan` | `src/LLM/retrieval/query_planner.py` | `understand_retrieval_query` | Tạo query/filter/soft hints an toàn cho RAG |
+| `search_medical_web` | `src/LLM/web_search/medical_google_cse.py` | `retrieve_medical_web_context` | Google CSE bổ sung context từ allowlist web y tế, chặn Wikipedia/social |
 | `cleanup_user_answer` | `src/LLM/qa/graph.py` | `cleanup_response`, `stream_answer` | Xóa metadata nội bộ khỏi answer |
 
 ### LLM tools/calls
@@ -727,6 +732,7 @@ flowchart TD
 | Call | Tag | Node | Prompt | Stream ra frontend? |
 |---|---|---|---|---|
 | Router LLM | `internal_router` | `route_with_medical_tools` | `MEDICAL_TOOL_ROUTER_PROMPT` | Không |
+| Memory summary LLM | `memory_summary` | `POST /memory/summarize` | `MEMORY_SUMMARY_PROMPT` | Không |
 | Final answer LLM | `final_answer` | `generate_response` | `DIRECT_ANSWER_PROMPT` hoặc `RAG_ANSWER_PROMPT` | Có, qua `/chat/stream` |
 
 ### External services
@@ -737,10 +743,12 @@ flowchart TD
 | OpenAI Embeddings | `NeonVectorSearcher._embed_query` | `openai.embeddings.create` | Tạo query embedding |
 | Neon/Postgres | `NeonVectorSearcher._search_vector_rows`, `_search_keyword_rows` | bảng `medical_documents` | Hybrid vector + FTS retrieval |
 | Mistral Chat | `llm.ainvoke` | LangChain `ChatMistralAI` | Router JSON và final answer |
+| Google Custom Search | `search_medical_web` | `customsearch/v1` | Bổ sung web context từ domain y tế allowlist |
 
 ## Important Implementation Notes
 
-- Graph hiện không có memory/session persistence.
+- Graph nhận `memory_context` từ Node backend nhưng không tự persist memory. Node lưu rolling summary theo key `userId:sessionId`, nên memory giữa user không trộn nhau.
+- Web search là context phụ sau retrieval. Nếu thiếu `GOOGLE_API_KEY` hoặc `GOOGLE_CX`, node trả empty và RAG gốc vẫn chạy bình thường.
 - Graph hiện không có node riêng cho safety checker; safety chủ yếu nằm trong prompt, tool disclaimer và cleanup.
 - Medical tool không tự sinh câu trả lời tự nhiên; nó chỉ trả JSON structured.
 - `retrieve_context -> generate_response` có trong conditional edge map nhưng hiện không reachable vì `route_after_retrieval` luôn trả `build_prompt`.

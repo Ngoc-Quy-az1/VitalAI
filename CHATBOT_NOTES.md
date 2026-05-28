@@ -497,6 +497,10 @@ Tối ưu token cho structured tool:
 - Với câu hỏi có lời chào ở đầu như `hi, lupus ban do la gi?`, graph không còn coi cả câu là direct/small-talk. Chỉ lời chào đơn thuần như `hi`, `hello`, `cảm ơn` mới đi direct; lời chào kèm câu hỏi y khoa vẫn đi RAG.
 - Retriever bỏ lời chào đầu câu trước khi hiểu intent để embedding/keyword query tập trung vào phần y khoa. Ví dụ `hi, lupus ban do la gi?` được hiểu như `lupus ban do la gi?`.
 - Router filter disease được canonicalize trước khi search. Nếu router LLM trả alias như `lupus_ban_do`, `lupus ban đỏ`, `SLE`, `benh_than_lupus`, graph sẽ đổi về disease trong database là `lupus_nephritis`; nhờ vậy không bị lọc sạch kết quả và trả fallback sai.
+- Graph đã có node `retrieve_medical_web_context` để bổ sung web context bằng Google Custom Search. Node này chỉ nhận kết quả từ domain y tế allowlist như `cdc.gov`, `nih.gov`, `ncbi.nlm.nih.gov`, `medlineplus.gov`, `mayoclinic.org`, `clevelandclinic.org`, `who.int`, `nhs.uk`, `kidney.org`, `kdigo.org`; đồng thời loại Wikipedia và social media như Facebook, Threads, TikTok, X/Twitter, Reddit, YouTube.
+- Web search không thay thế RAG gốc. Nếu thiếu `GOOGLE_API_KEY` hoặc `GOOGLE_CX`, node trả empty để luồng RAG/tool cũ vẫn hoạt động. Prompt cuối ưu tiên medical tool + RAG nội bộ, web chỉ là context bổ sung và phải báo cần kiểm tra nếu mâu thuẫn.
+- FastAPI có thêm `POST /memory/summarize` để tạo rolling summary ngắn hạn cho một conversation. Node backend gọi route này sau mỗi lượt Q/A và truyền summary vào request kế tiếp qua `memory_context`.
+- Node backend giữ memory theo key `userId:sessionId` và kiểm tra session thuộc user trước khi proxy sang AI service. Vì vậy khi deploy server, memory của user này không dùng chung với user khác. Khi xóa chat session, memory tương ứng cũng bị clear khỏi in-memory store.
 
 Chạy service:
 

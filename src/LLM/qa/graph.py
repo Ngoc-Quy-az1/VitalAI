@@ -14,6 +14,8 @@ Graph này tách rõ các bước:
 
 import re
 import json
+import asyncio
+import os
 from typing import Any, Literal, TypedDict
 
 from langchain_core.messages import BaseMessage
@@ -33,6 +35,7 @@ from src.LLM.tools import (
     parse_router_plan,
     tool_payload_has_supported_inputs,
 )
+from src.LLM.web_search import search_medical_web
 
 
 RouteName = Literal["retrieve", "direct"]
@@ -47,6 +50,10 @@ class ChatbotGraphState(TypedDict, total=False):
     section_type: str | None
     source_type: str | None
     biomarker: str | None
+    conversation_id: str | None
+    user_id: str | None
+    memory_context: str
+    enable_web_search: bool | None
     route: RouteName
     retrieval: dict[str, Any] | None
     evidence_items: list[dict[str, Any]]
@@ -66,6 +73,8 @@ class ChatbotGraphState(TypedDict, total=False):
     structured_context: str
     extracted_tool_payload: dict[str, Any]
     supported_tool_context: str
+    web_context: str
+    web_results: list[dict[str, Any]]
 
 
 def build_chatbot_graph(
@@ -89,6 +98,13 @@ def build_chatbot_graph(
             "router_plan": None,
             "medical_tool_result": None,
             "structured_context": "Không có kết quả phân tích chỉ số.",
+            "web_context": "Không có ngữ cảnh web y tế bổ sung.",
+            "web_results": [],
+            "memory_context": _trim_text(state.get("memory_context") or "", 1600)
+            or "Không có memory ngắn hạn.",
+            "conversation_id": state.get("conversation_id"),
+            "user_id": state.get("user_id"),
+            "enable_web_search": state.get("enable_web_search"),
             "retrieval_plan": None,
             "extracted_tool_payload": {"text": query},
             "supported_tool_context": build_supported_tool_context(),
@@ -269,6 +285,27 @@ def build_chatbot_graph(
             "filters": retrieval.get("filters", state.get("filters", {})),
         }
 
+    async def retrieve_medical_web_context(state: ChatbotGraphState) -> ChatbotGraphState:
+        if not _web_search_enabled(state):
+            return {
+                **state,
+                "web_context": "Không có ngữ cảnh web y tế bổ sung.",
+                "web_results": [],
+            }
+
+        retrieval_plan = state.get("retrieval_plan") or {}
+        query = retrieval_plan.get("query") or state.get("query") or ""
+        try:
+            results = await asyncio.to_thread(search_medical_web, query, num_results=3)
+        except Exception:
+            results = []
+        result_dicts = [item.to_dict() for item in results]
+        return {
+            **state,
+            "web_results": result_dicts,
+            "web_context": _format_web_context(result_dicts),
+        }
+
     async def build_prompt(state: ChatbotGraphState) -> ChatbotGraphState:
         if state.get("retrieval") is None:
             prompt = DIRECT_ANSWER_PROMPT.invoke({"query": state["query"]})
@@ -280,6 +317,8 @@ def build_chatbot_graph(
                     "query": state["query"],
                     "evidence_context": evidence_context,
                     "structured_context": state.get("structured_context") or "Không có kết quả phân tích chỉ số.",
+                    "memory_context": state.get("memory_context") or "Không có memory ngắn hạn.",
+                    "web_context": state.get("web_context") or "Không có ngữ cảnh web y tế bổ sung.",
                 }
             )
             route = "retrieve"
@@ -289,7 +328,12 @@ def build_chatbot_graph(
         return "build_prompt"
 
     async def generate_response(state: ChatbotGraphState) -> ChatbotGraphState:
-        if state.get("route") == "retrieve" and not state.get("evidence_items") and not state.get("medical_tool_result"):
+        if (
+            state.get("route") == "retrieve"
+            and not state.get("evidence_items")
+            and not state.get("medical_tool_result")
+            and not state.get("web_results")
+        ):
             raw_answer = (
                 "Mình chưa tìm thấy ngữ cảnh phù hợp trong kho tài liệu hiện tại, "
                 "nên chưa thể trả lời chắc chắn cho câu hỏi này."
@@ -313,7 +357,10 @@ def build_chatbot_graph(
         return {
             **state,
             "final_answer": final_answer,
-            "user_sources": _build_user_sources(state.get("evidence_items", [])),
+            "user_sources": _build_user_sources(
+                state.get("evidence_items", []),
+                state.get("web_results", []),
+            ),
         }
 
     graph = StateGraph(ChatbotGraphState)
@@ -323,6 +370,7 @@ def build_chatbot_graph(
     graph.add_node("call_medical_tools", call_medical_tools)
     graph.add_node("understand_retrieval_query", understand_retrieval_query)
     graph.add_node("retrieve_context", retrieve_context)
+    graph.add_node("retrieve_medical_web_context", retrieve_medical_web_context)
     graph.add_node("build_prompt", build_prompt)
     graph.add_node("generate_response", generate_response)
     graph.add_node("cleanup_response", cleanup_response)
@@ -340,8 +388,9 @@ def build_chatbot_graph(
     graph.add_edge("route_with_medical_tools", "call_medical_tools")
     graph.add_edge("call_medical_tools", "understand_retrieval_query")
     graph.add_edge("understand_retrieval_query", "retrieve_context")
+    graph.add_edge("retrieve_context", "retrieve_medical_web_context")
     graph.add_conditional_edges(
-        "retrieve_context",
+        "retrieve_medical_web_context",
         route_after_retrieval,
         {
             "build_prompt": "build_prompt",
@@ -929,7 +978,28 @@ def _format_evidence_for_prompt(evidence_items: list[dict[str, Any]]) -> str:
     return "\n\n".join(blocks) if blocks else "Không tìm thấy evidence phù hợp."
 
 
-def _build_user_sources(evidence_items: list[dict[str, Any]]) -> list[dict[str, Any]]:
+def _format_web_context(web_results: list[dict[str, Any]]) -> str:
+    if not web_results:
+        return "Không có ngữ cảnh web y tế bổ sung."
+
+    blocks: list[str] = []
+    for item in web_results:
+        title = str(item.get("title") or item.get("domain") or "Nguồn y tế").strip()
+        domain = str(item.get("domain") or "").strip()
+        snippet = str(item.get("snippet") or "").strip()
+        content = str(item.get("content") or "").strip()
+        text = _trim_text(content or snippet, 1600)
+        if not text:
+            continue
+        heading = " - ".join(part for part in (title, domain) if part)
+        blocks.append(f"<web_context_item>\n{heading}\n{text}\n</web_context_item>")
+    return "\n\n".join(blocks) if blocks else "Không có ngữ cảnh web y tế bổ sung."
+
+
+def _build_user_sources(
+    evidence_items: list[dict[str, Any]],
+    web_results: list[dict[str, Any]] | None = None,
+) -> list[dict[str, Any]]:
     """Tạo source metadata an toàn cho UI, không chứa page/source_id/document_id."""
 
     sources: list[dict[str, Any]] = []
@@ -943,4 +1013,30 @@ def _build_user_sources(evidence_items: list[dict[str, Any]]) -> list[dict[str, 
                 "preview": item.get("preview", "")[:240],
             }
         )
+    offset = len(sources)
+    for index, item in enumerate(web_results or [], start=1):
+        sources.append(
+            {
+                "label": f"Nguồn web y tế {offset + index}",
+                "source_type": "medical_web",
+                "title": item.get("title"),
+                "domain": item.get("domain"),
+                "url": item.get("url"),
+                "preview": (item.get("snippet") or item.get("content") or "")[:240],
+            }
+        )
     return sources
+
+
+def _web_search_enabled(state: ChatbotGraphState) -> bool:
+    requested = state.get("enable_web_search")
+    if requested is not None:
+        return bool(requested)
+    return os.getenv("ENABLE_MEDICAL_WEB_SEARCH", "true").strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _trim_text(value: str, max_chars: int) -> str:
+    value = " ".join(str(value or "").split())
+    if len(value) <= max_chars:
+        return value
+    return value[:max_chars].rsplit(" ", 1)[0] + "..."
