@@ -84,6 +84,48 @@ class RetrievalQueryPlannerTests(unittest.TestCase):
             "Bệnh cầu thận thay đổi tối thiểu thường gặp ở đối tượng nào?",
         )
         self.assertIn("thay doi toi thieu", understanding["key_phrases"])
+        self.assertIn("Bệnh cầu thận thay đổi tối thiểu", " ".join(understanding["lexical_patterns"]))
+
+    def test_searcher_builds_vietnamese_lexical_patterns_from_hints(self) -> None:
+        searcher = object.__new__(NeonVectorSearcher)
+        understanding = searcher._understand_query(
+            query="Hội chứng thận hư được chẩn đoán theo tiêu chuẩn nào?",
+            disease_name=None,
+            section_type=None,
+            biomarker=None,
+        )
+
+        patterns = " ".join(understanding["lexical_patterns"])
+
+        self.assertIn("hoi chung than hu", patterns)
+        self.assertIn("Hội chứng thận hư", patterns)
+        self.assertIn("chan doan", patterns)
+
+    def test_weighted_rrf_includes_lexical_rank(self) -> None:
+        searcher = object.__new__(NeonVectorSearcher)
+        understanding = {
+            "disease_hint": None,
+            "section_hint": None,
+            "biomarker_hint": None,
+            "query_tokens": ["hoi", "chung", "than", "hu", "protein"],
+            "query_numbers": [],
+            "query_acronyms": [],
+            "key_phrases": [],
+        }
+        lexical_row = {
+            "document_id": "chunk::hcth",
+            "source_type": "chunk",
+            "source_id": "hcth",
+            "content": "Hội chứng thận hư có protein niệu nhiều.",
+            "preview": "Hội chứng thận hư có protein niệu nhiều.",
+            "keyword_score": 3.0,
+        }
+
+        fused = searcher._fuse_rows([], [], [lexical_row], top_k=1, understanding=understanding)
+
+        self.assertEqual(fused[0]["document_id"], "chunk::hcth")
+        self.assertEqual(fused[0]["lexical_rank"], 1)
+        self.assertGreater(fused[0]["fusion_score"], 0)
 
     def test_searcher_merges_short_parent_heading_into_context(self) -> None:
         searcher = object.__new__(NeonVectorSearcher)

@@ -691,22 +691,25 @@ flowchart TD
         N4["call_medical_tools"]
         N5["understand_retrieval_query"]
         N6["retrieve_context"]
-        N7["retrieve_medical_web_context"]
-        N8["build_prompt"]
-        N9["generate_response"]
-        N10["cleanup_response"]
+        N7["assess_and_refine_evidence"]
+        N8["retrieve_medical_web_context"]
+        N9["build_prompt"]
+        N10["generate_response"]
+        N11["cleanup_response"]
     end
 
-    Graph --> N1 --> N2 --> N3 --> N4 --> N5 --> N6 --> N7 --> N8 --> N9 --> N10
-    N2 -. "direct branch" .-> N8
+    Graph --> N1 --> N2 --> N3 --> N4 --> N5 --> N6 --> N7 --> N8 --> N9 --> N10 --> N11
+    N2 -. "direct branch" .-> N9
 
     N3 -. "internal_router LLM" .-> MistralRouter["ChatMistralAI<br/>tag internal_router"]
     N4 -. "HTTP POST" .-> MedicalAPI["Medical Tools FastAPI<br/>:8010"]
     MedicalAPI --> MedicalEngine["MedicalToolsService<br/>thresholds + formulas"]
     N6 -. "embedding" .-> OpenAIEmbeddings["OpenAI Embeddings"]
     N6 -. "hybrid search" .-> Neon["Neon/Postgres<br/>medical_documents"]
-    N7 -. "Google CSE" .-> MedicalWeb["Allowed medical websites only<br/>no Wikipedia/social"]
-    N9 -. "final answer" .-> MistralFinal["ChatMistralAI<br/>tag final_answer"]
+    N6 -. "hybrid search" .-> Hybrid["Vector + FTS + Vietnamese lexical<br/>weighted RRF"]
+    N7 -. "multi-query evidence grade<br/>judge + retry" .-> Neon
+    N8 -. "Google CSE" .-> MedicalWeb["Allowed medical websites only<br/>no Wikipedia/social"]
+    N10 -. "final answer" .-> MistralFinal["ChatMistralAI<br/>tag final_answer"]
     MemorySummary -. "rolling summary" .-> MistralMemory["ChatMistralAI<br/>tag memory_summary"]
 ```
 
@@ -724,6 +727,10 @@ flowchart TD
 | `normalize_router_plan` | `src/LLM/tools/medical_tools/router_plan.py` | `route_with_medical_tools` | Canonicalize/sanitize plan |
 | `build_structured_context` | `src/LLM/tools/medical_tools/context_formatter.py` | `call_medical_tools` | Convert tool JSON thành text sạch cho prompt |
 | `build_retrieval_plan` | `src/LLM/retrieval/query_planner.py` | `understand_retrieval_query` | Tạo query/filter/soft hints an toàn cho RAG |
+| `_build_agentic_subqueries` | `src/LLM/qa/graph.py` | `understand_retrieval_query`, `retrieve_context` | Tạo 1-3 sub-query deterministic từ disease/section/biomarker/term hints |
+| `_grade_and_sort_evidence_items` | `src/LLM/qa/graph.py` | `retrieve_context`, `assess_and_refine_evidence` | Chấm từng chunk theo token hits/term hits/metadata/retrieval score rồi sort context |
+| `_assess_evidence_quality` | `src/LLM/qa/graph.py` | `assess_and_refine_evidence` | Judge evidence đủ chưa bằng token coverage/term hits/top score |
+| `_build_agentic_retry_query` | `src/LLM/qa/graph.py` | `assess_and_refine_evidence` | Rewrite query một lần từ soft hints để retry retrieval |
 | `search_medical_web` | `src/LLM/web_search/medical_google_cse.py` | `retrieve_medical_web_context` | Google CSE bổ sung context từ allowlist web y tế, chặn Wikipedia/social |
 | `cleanup_user_answer` | `src/LLM/qa/graph.py` | `cleanup_response`, `stream_answer` | Xóa metadata nội bộ khỏi answer |
 
@@ -741,13 +748,15 @@ flowchart TD
 |---|---|---|---|
 | Medical Tools Service | `MedicalToolsClient.evaluate` | `POST /mcp/medical-tools/evaluate` | Parse chỉ số, tính formula, so threshold, phân loại |
 | OpenAI Embeddings | `NeonVectorSearcher._embed_query` | `openai.embeddings.create` | Tạo query embedding |
-| Neon/Postgres | `NeonVectorSearcher._search_vector_rows`, `_search_keyword_rows` | bảng `medical_documents` | Hybrid vector + FTS retrieval |
+| Neon/Postgres | `NeonVectorSearcher._search_vector_rows`, `_search_keyword_rows`, `_search_lexical_rows` | bảng `medical_documents` | Hybrid vector + FTS + Vietnamese lexical retrieval |
 | Mistral Chat | `llm.ainvoke` | LangChain `ChatMistralAI` | Router JSON và final answer |
 | Google Custom Search | `search_medical_web` | `customsearch/v1` | Bổ sung web context từ domain y tế allowlist |
 
 ## Important Implementation Notes
 
 - Graph nhận `memory_context` từ Node backend nhưng không tự persist memory. Node lưu rolling summary theo key `userId:sessionId`, nên memory giữa user không trộn nhau.
+- Hybrid retrieval hiện là vector + PostgreSQL FTS + Vietnamese lexical substring, fuse bằng weighted RRF.
+- Agentic RAG hiện có 3 lớp deterministic: multi-query decomposition, evidence grading per chunk, và one-shot retry khi evidence judge thấy context yếu.
 - Web search là context phụ sau retrieval. Nếu thiếu `GOOGLE_API_KEY` hoặc `GOOGLE_CX`, node trả empty và RAG gốc vẫn chạy bình thường.
 - Graph hiện không có node riêng cho safety checker; safety chủ yếu nằm trong prompt, tool disclaimer và cleanup.
 - Medical tool không tự sinh câu trả lời tự nhiên; nó chỉ trả JSON structured.

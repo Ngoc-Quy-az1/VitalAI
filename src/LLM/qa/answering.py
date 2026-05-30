@@ -21,7 +21,7 @@ from langchain_mistralai import ChatMistralAI
 
 from src.LLM.observability import configure_langsmith_from_env
 from src.LLM.prompts.templates import MEMORY_SUMMARY_PROMPT
-from src.LLM.qa.graph import build_chatbot_graph, cleanup_user_answer
+from src.LLM.qa.graph import build_chatbot_graph, build_user_sources_for_state, cleanup_user_answer
 from src.LLM.retrieval.vector_search import NeonVectorSearcher, build_searcher_from_env
 
 
@@ -95,6 +95,10 @@ class RetrievalAugmentedAnswerer:
                 "extracted_tool_payload": state.get("extracted_tool_payload"),
                 "web_results": state.get("web_results", []),
                 "memory_context": state.get("memory_context"),
+                "evidence_quality": state.get("evidence_quality"),
+                "evidence_grades": state.get("evidence_grades"),
+                "agentic_queries": state.get("agentic_queries"),
+                "agentic_retry_query": state.get("agentic_retry_query"),
             }
         return response
 
@@ -112,11 +116,6 @@ class RetrievalAugmentedAnswerer:
         enable_web_search: bool | None = None,
         include_debug: bool = False,
     ) -> AsyncIterator[dict[str, Any]]:
-        """Stream token của final answer và kết thúc bằng event `done`.
-
-        Graph có cả LLM router nội bộ lẫn LLM tạo câu trả lời cuối. Ta chỉ public
-        token từ run được tag `final_answer` để UI không bao giờ thấy JSON router.
-        """
 
         graph_input = {
             "query": query,
@@ -130,51 +129,61 @@ class RetrievalAugmentedAnswerer:
             "memory_context": memory_context or "",
             "enable_web_search": enable_web_search,
         }
-        streamed_text = ""
-        final_state: dict[str, Any] | None = None
-
-        async for event in self.graph.astream_events(graph_input, version="v2"):
-            event_name = str(event.get("event") or "")
-            tags = set(event.get("tags") or [])
-
-            if event_name == "on_chat_model_stream" and "final_answer" in tags:
-                token = _chunk_text((event.get("data") or {}).get("chunk"))
-                if token:
-                    streamed_text += token
-                    yield {"event": "token", "token": token}
-                continue
-
-            if event_name == "on_chain_end":
-                output = (event.get("data") or {}).get("output")
-                if isinstance(output, dict) and (
-                    "final_answer" in output
-                    or "raw_answer" in output
-                    or "user_sources" in output
-                ):
-                    final_state = output
-
-        final_answer = cleanup_user_answer(
-            str((final_state or {}).get("final_answer") or streamed_text or "")
+        prompt_state = await self.graph.ainvoke(
+            graph_input,
+            interrupt_before=["generate_response"],
         )
+        streamed_text = ""
+        raw_answer = ""
+
+        if _should_return_no_context_answer(prompt_state):
+            raw_answer = (
+                "Mình chưa tìm thấy ngữ cảnh phù hợp trong kho tài liệu hiện tại, "
+                "nên chưa thể trả lời chắc chắn cho câu hỏi này."
+            )
+            yield {"event": "token", "token": raw_answer}
+        else:
+            try:
+                async for chunk in self.llm.astream(
+                    prompt_state["prompt_messages"],
+                    config={"tags": ["final_answer"], "metadata": {"internal": False}},
+                ):
+                    token = _chunk_text(chunk)
+                    if token:
+                        streamed_text += token
+                        yield {"event": "token", "token": token}
+                raw_answer = streamed_text
+            except Exception:
+                raw_answer = (
+                    "Mình đã xử lý được dữ liệu đầu vào, nhưng chưa thể sinh phần diễn giải cuối. "
+                    "Vui lòng thử lại sau."
+                )
+                yield {"event": "token", "token": raw_answer}
+
+        final_answer = cleanup_user_answer(raw_answer)
         response: dict[str, Any] = {
             "event": "done",
             "query": query,
             "answer": final_answer,
-            "route": (final_state or {}).get("route"),
-            "sources": (final_state or {}).get("user_sources", []),
+            "route": prompt_state.get("route"),
+            "sources": build_user_sources_for_state(prompt_state),
         }
         if include_debug:
             response["debug"] = {
-                "filters": (final_state or {}).get("filters"),
-                "retrieval_plan": (final_state or {}).get("retrieval_plan"),
-                "query_understanding": (final_state or {}).get("query_understanding"),
-                "results": (final_state or {}).get("debug_results", []),
-                "router_plan": (final_state or {}).get("router_plan"),
-                "router_error": (final_state or {}).get("router_error"),
-                "medical_tool_result": (final_state or {}).get("medical_tool_result"),
-                "extracted_tool_payload": (final_state or {}).get("extracted_tool_payload"),
-                "web_results": (final_state or {}).get("web_results", []),
-                "memory_context": (final_state or {}).get("memory_context"),
+                "filters": prompt_state.get("filters"),
+                "retrieval_plan": prompt_state.get("retrieval_plan"),
+                "query_understanding": prompt_state.get("query_understanding"),
+                "results": prompt_state.get("debug_results", []),
+                "router_plan": prompt_state.get("router_plan"),
+                "router_error": prompt_state.get("router_error"),
+                "medical_tool_result": prompt_state.get("medical_tool_result"),
+                "extracted_tool_payload": prompt_state.get("extracted_tool_payload"),
+                "web_results": prompt_state.get("web_results", []),
+                "memory_context": prompt_state.get("memory_context"),
+                "evidence_quality": prompt_state.get("evidence_quality"),
+                "evidence_grades": prompt_state.get("evidence_grades"),
+                "agentic_queries": prompt_state.get("agentic_queries"),
+                "agentic_retry_query": prompt_state.get("agentic_retry_query"),
             }
         yield response
 
@@ -231,6 +240,15 @@ def _chunk_text(chunk: Any) -> str:
     return ""
 
 
+def _should_return_no_context_answer(state: dict[str, Any]) -> bool:
+    return (
+        state.get("route") == "retrieve"
+        and not state.get("evidence_items")
+        and not state.get("medical_tool_result")
+        and not state.get("web_results")
+    )
+
+
 def _trim_for_summary(value: str, max_chars: int = 1200) -> str:
     value = " ".join(str(value or "").split())
     if len(value) <= max_chars:
@@ -258,6 +276,7 @@ def build_answerer_from_env() -> RetrievalAugmentedAnswerer:
         api_key=api_key,
         max_tokens=2048,
         temperature=temperature,
+        streaming=True,
     )
     return RetrievalAugmentedAnswerer(
         searcher=searcher,

@@ -148,27 +148,45 @@
       },
       "note": "retrieval planner v2.1: soft disease aliases + primary-line FTS",
       "recorded_at": "2026-05-25T04:54:18+00:00"
+    },
+    {
+      "experiment_name": "rag-eval-small-judge-6e37552f",
+      "metrics": {
+        "answer_relevance": 0.949,
+        "context_precision_gold_ids": 0.041645,
+        "context_precision_llm": 0.278497,
+        "context_recall_gold_ids": 0.42,
+        "context_recall_llm": 0.75,
+        "context_recall_required_facts_exact": 0.125,
+        "groundedness": 0.845,
+        "hallucination": 0.155,
+        "rag_context_precision_gold_ids": 0.041645,
+        "rag_context_recall_gold_ids": 0.42,
+        "rag_context_recall_required_facts_exact": 0.125
+      },
+      "note": "agentic-hybrid-vietnamese-multiquery-evidence-grading",
+      "recorded_at": "2026-05-30T01:46:59+00:00"
     }
   ],
   "latest": {
     "dataset_name": "vitalAI eval",
     "dataset_source": "qa",
-    "experiment_name": "rag-eval-small-judge-6941f9a9",
+    "experiment_name": "rag-eval-small-judge-6e37552f",
     "judge_model": "mistral-small-latest",
     "metrics": {
-      "answer_relevance": 0.847,
-      "context_precision_gold_ids": 0.048,
-      "context_precision_llm": 0.36,
-      "context_recall_gold_ids": 0.24,
-      "context_recall_llm": 0.576,
-      "context_recall_required_facts_exact": 0.105,
-      "groundedness": 0.717,
-      "hallucination": 0.283,
-      "rag_context_precision_gold_ids": 0.048,
-      "rag_context_recall_gold_ids": 0.24,
-      "rag_context_recall_required_facts_exact": 0.105
+      "answer_relevance": 0.949,
+      "context_precision_gold_ids": 0.041645,
+      "context_precision_llm": 0.278497,
+      "context_recall_gold_ids": 0.42,
+      "context_recall_llm": 0.75,
+      "context_recall_required_facts_exact": 0.125,
+      "groundedness": 0.845,
+      "hallucination": 0.155,
+      "rag_context_precision_gold_ids": 0.041645,
+      "rag_context_recall_gold_ids": 0.42,
+      "rag_context_recall_required_facts_exact": 0.125
     },
-    "recorded_at": "2026-05-25T04:54:18+00:00"
+    "recorded_at": "2026-05-30T01:46:59+00:00"
   },
   "runs": [
     {
@@ -230,6 +248,26 @@
         "rag_context_recall_required_facts_exact": 0.105
       },
       "recorded_at": "2026-05-25T04:54:18+00:00"
+    },
+    {
+      "dataset_name": "vitalAI eval",
+      "dataset_source": "qa",
+      "experiment_name": "rag-eval-small-judge-6e37552f",
+      "judge_model": "mistral-small-latest",
+      "metrics": {
+        "answer_relevance": 0.949,
+        "context_precision_gold_ids": 0.041645,
+        "context_precision_llm": 0.278497,
+        "context_recall_gold_ids": 0.42,
+        "context_recall_llm": 0.75,
+        "context_recall_required_facts_exact": 0.125,
+        "groundedness": 0.845,
+        "hallucination": 0.155,
+        "rag_context_precision_gold_ids": 0.041645,
+        "rag_context_recall_gold_ids": 0.42,
+        "rag_context_recall_required_facts_exact": 0.125
+      },
+      "recorded_at": "2026-05-30T01:46:59+00:00"
     }
   ],
   "targets": {

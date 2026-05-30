@@ -24,7 +24,7 @@ from langgraph.graph import END, StateGraph
 from src.LLM.prompts.tool_router_prompt import MEDICAL_TOOL_ROUTER_PROMPT
 from src.LLM.prompts.templates import DIRECT_ANSWER_PROMPT, RAG_ANSWER_PROMPT
 from src.LLM.retrieval.query_planner import build_retrieval_plan
-from src.LLM.retrieval.vector_search import NeonVectorSearcher
+from src.LLM.retrieval.vector_search import DISEASE_LABELS, SECTION_LABELS, NeonVectorSearcher
 from src.LLM.tools import (
     MedicalToolsClient,
     build_structured_context,
@@ -75,6 +75,11 @@ class ChatbotGraphState(TypedDict, total=False):
     supported_tool_context: str
     web_context: str
     web_results: list[dict[str, Any]]
+    evidence_quality: dict[str, Any]
+    evidence_grades: list[dict[str, Any]]
+    agentic_queries: list[str]
+    agentic_retry_count: int
+    agentic_retry_query: str | None
 
 
 def build_chatbot_graph(
@@ -100,6 +105,11 @@ def build_chatbot_graph(
             "structured_context": "Không có kết quả phân tích chỉ số.",
             "web_context": "Không có ngữ cảnh web y tế bổ sung.",
             "web_results": [],
+            "evidence_quality": {},
+            "evidence_grades": [],
+            "agentic_queries": [],
+            "agentic_retry_count": int(state.get("agentic_retry_count") or 0),
+            "agentic_retry_query": None,
             "memory_context": _trim_text(state.get("memory_context") or "", 1600)
             or "Không có memory ngắn hạn.",
             "conversation_id": state.get("conversation_id"),
@@ -221,6 +231,7 @@ def build_chatbot_graph(
         return {
             **state,
             "retrieval_plan": plan,
+            "agentic_queries": _build_agentic_subqueries(state["query"], plan),
             "filters": plan.get("filters", state.get("filters", {})),
         }
 
@@ -259,7 +270,28 @@ def build_chatbot_graph(
             source_type=source_type,
             biomarker=biomarker,
         )
-        evidence_items = retrieval["results"][:max_evidence_items]
+        retrieval_results = retrieval["results"]
+        for subquery in state.get("agentic_queries", []):
+            if not subquery or subquery == retrieval_query:
+                continue
+            try:
+                sub_retrieval = await searcher.search(
+                    query=subquery,
+                    top_k=max(3, min(state["top_k"], max_evidence_items)),
+                    disease_name=disease_name,
+                    section_type=section_type,
+                    source_type=source_type,
+                    biomarker=biomarker,
+                )
+            except Exception:
+                continue
+            retrieval_results = _merge_agentic_retry_items(
+                retrieval_results,
+                sub_retrieval.get("results", []),
+                limit=max(state["top_k"] * 4, max_evidence_items),
+            )
+
+        evidence_items = retrieval_results[:max_evidence_items]
         if state.get("medical_tool_result"):
             evidence_items = _filter_tool_evidence_items(
                 evidence_items,
@@ -271,18 +303,82 @@ def build_chatbot_graph(
                     state.get("medical_tool_result"),
                     limit=max_evidence_items,
                 )
+        evidence_items, evidence_grades = _grade_and_sort_evidence_items(
+            evidence_items,
+            state,
+            limit=max_evidence_items,
+        )
         return {
             **state,
             "route": "retrieve",
             "retrieval": retrieval,
             "evidence_items": evidence_items,
+            "evidence_grades": evidence_grades,
             "evidence_context": _format_evidence_for_prompt(evidence_items),
-            "debug_results": retrieval["results"],
+            "debug_results": retrieval_results,
             "query_understanding": {
                 "retrieval_planner": retrieval_plan,
                 "searcher": retrieval.get("query_understanding"),
             },
             "filters": retrieval.get("filters", state.get("filters", {})),
+        }
+
+    async def assess_and_refine_evidence(state: ChatbotGraphState) -> ChatbotGraphState:
+        quality = _assess_evidence_quality(state)
+        if not _should_agentic_retry(state, quality):
+            return {**state, "evidence_quality": quality}
+
+        retry_query = _build_agentic_retry_query(state)
+        try:
+            retry_retrieval = await searcher.search(
+                query=retry_query,
+                top_k=max(state["top_k"], max_evidence_items),
+                disease_name=None,
+                section_type=None,
+                source_type="chunk",
+                biomarker=None,
+            )
+            retry_results = retry_retrieval.get("results", [])
+        except Exception as exc:
+            retry_retrieval = {"results": [], "error": str(exc)}
+            retry_results = []
+
+        merged_items = _merge_agentic_retry_items(
+            state.get("evidence_items", []),
+            retry_results[:max_evidence_items],
+            limit=max_evidence_items,
+        )
+        merged_items, evidence_grades = _grade_and_sort_evidence_items(
+            merged_items,
+            state,
+            limit=max_evidence_items,
+        )
+        merged_debug_results = _merge_agentic_retry_items(
+            state.get("debug_results", []),
+            retry_results,
+            limit=max(state["top_k"] * 4, max_evidence_items),
+        )
+        refined_state: ChatbotGraphState = {
+            **state,
+            "agentic_retry_count": int(state.get("agentic_retry_count") or 0) + 1,
+            "agentic_retry_query": retry_query,
+            "evidence_items": merged_items,
+            "evidence_grades": evidence_grades,
+            "evidence_context": _format_evidence_for_prompt(merged_items),
+            "debug_results": merged_debug_results,
+            "evidence_quality": {
+                **quality,
+                "retried": True,
+                "retry_query": retry_query,
+                "retry_result_count": len(retry_results),
+            },
+        }
+        return {
+            **refined_state,
+            "evidence_quality": {
+                **refined_state["evidence_quality"],
+                "after_retry": _assess_evidence_quality(refined_state),
+            },
         }
 
     async def retrieve_medical_web_context(state: ChatbotGraphState) -> ChatbotGraphState:
@@ -370,6 +466,7 @@ def build_chatbot_graph(
     graph.add_node("call_medical_tools", call_medical_tools)
     graph.add_node("understand_retrieval_query", understand_retrieval_query)
     graph.add_node("retrieve_context", retrieve_context)
+    graph.add_node("assess_and_refine_evidence", assess_and_refine_evidence)
     graph.add_node("retrieve_medical_web_context", retrieve_medical_web_context)
     graph.add_node("build_prompt", build_prompt)
     graph.add_node("generate_response", generate_response)
@@ -388,7 +485,8 @@ def build_chatbot_graph(
     graph.add_edge("route_with_medical_tools", "call_medical_tools")
     graph.add_edge("call_medical_tools", "understand_retrieval_query")
     graph.add_edge("understand_retrieval_query", "retrieve_context")
-    graph.add_edge("retrieve_context", "retrieve_medical_web_context")
+    graph.add_edge("retrieve_context", "assess_and_refine_evidence")
+    graph.add_edge("assess_and_refine_evidence", "retrieve_medical_web_context")
     graph.add_conditional_edges(
         "retrieve_medical_web_context",
         route_after_retrieval,
@@ -964,6 +1062,306 @@ def _is_direct_query(query: str) -> bool:
     return normalized in direct_exact
 
 
+def _assess_evidence_quality(state: ChatbotGraphState) -> dict[str, Any]:
+    """Heuristic evidence judge used before spending tokens on final answer."""
+
+    evidence_items = state.get("evidence_items", [])
+    combined_context = " ".join(
+        str(item.get("content") or item.get("preview") or "")
+        for item in evidence_items
+        if isinstance(item, dict)
+    )
+    normalized_context = _normalize_query_text(combined_context)
+    normalized_query = _normalize_query_text(state.get("query", ""))
+    query_tokens = _important_query_tokens(normalized_query)
+    context_tokens = set(_important_query_tokens(normalized_context, max_tokens=300))
+    overlap = len(set(query_tokens) & context_tokens)
+    denominator = max(1, min(len(query_tokens), 10))
+    token_coverage = round(overlap / denominator, 3)
+
+    retrieval_plan = state.get("retrieval_plan") or {}
+    soft_hints = retrieval_plan.get("soft_hints") or {}
+    required_terms = [
+        *[str(term) for term in soft_hints.get("terms", [])[:8]],
+        *[str(term) for term in soft_hints.get("disease_names", [])[:4]],
+        *[str(term) for term in soft_hints.get("section_types", [])[:4]],
+        *[str(term) for term in soft_hints.get("biomarkers", [])[:4]],
+    ]
+    term_hits = [
+        term
+        for term in required_terms
+        if _normalize_query_text(term) and _normalize_query_text(term) in normalized_context
+    ]
+    top_score = max(
+        (
+            float(item.get("fusion_score") or item.get("keyword_score") or item.get("similarity") or 0.0)
+            for item in evidence_items
+            if isinstance(item, dict)
+        ),
+        default=0.0,
+    )
+    sufficient = bool(evidence_items) and (
+        bool(state.get("medical_tool_result"))
+        or token_coverage >= 0.34
+        or len(term_hits) >= 2
+        or top_score >= 0.12
+    )
+    return {
+        "sufficient": sufficient,
+        "evidence_count": len(evidence_items),
+        "token_coverage": token_coverage,
+        "query_token_hits": overlap,
+        "term_hits": term_hits[:8],
+        "top_score": round(top_score, 6),
+    }
+
+
+def _build_agentic_subqueries(query: str, retrieval_plan: dict[str, Any]) -> list[str]:
+    """Deterministically decompose a broad medical question into focused retrievals."""
+
+    soft_hints = retrieval_plan.get("soft_hints") or {}
+    disease_names = [DISEASE_LABELS.get(str(item), str(item)) for item in soft_hints.get("disease_names", [])][:3]
+    section_types = [SECTION_LABELS.get(str(item), str(item)) for item in soft_hints.get("section_types", [])][:3]
+    biomarkers = [str(item) for item in soft_hints.get("biomarkers", []) if item][:4]
+    terms = [str(item) for item in soft_hints.get("terms", []) if item][:8]
+    base = " ".join(str(query or "").split())
+
+    subqueries: list[str] = []
+    if disease_names or section_types:
+        subqueries.append(
+            "\n".join(
+                part
+                for part in (
+                    base,
+                    "Bệnh trọng tâm: " + ", ".join(disease_names) if disease_names else "",
+                    "Mục cần tìm: " + ", ".join(section_types) if section_types else "",
+                )
+                if part
+            )
+        )
+    if biomarkers or terms:
+        subqueries.append(
+            "\n".join(
+                part
+                for part in (
+                    base,
+                    "Chỉ số/từ khóa: " + ", ".join([*biomarkers, *terms][:10]),
+                    "Ưu tiên đoạn có tiêu chuẩn, ngưỡng, biểu hiện hoặc định nghĩa trực tiếp.",
+                )
+                if part
+            )
+        )
+    if _looks_multi_intent_question(base):
+        subqueries.append(
+            "\n".join(
+                part
+                for part in (
+                    base,
+                    "Tách ý: định nghĩa, chẩn đoán, phân loại, điều trị, tiên lượng nếu câu hỏi có nhiều ý.",
+                )
+                if part
+            )
+        )
+
+    return _unique_texts([item for item in subqueries if item and item != base])[:3]
+
+
+def _looks_multi_intent_question(query: str) -> bool:
+    normalized = _normalize_query_text(query)
+    intent_markers = (
+        "chan doan",
+        "dieu tri",
+        "phan loai",
+        "trieu chung",
+        "tien luong",
+        "nguyen nhan",
+        "co che",
+        "la gi",
+    )
+    hits = sum(1 for marker in intent_markers if marker in normalized)
+    return hits >= 2 or any(separator in normalized for separator in (" va ", " dong thoi ", " kem theo "))
+
+
+def _grade_and_sort_evidence_items(
+    evidence_items: list[dict[str, Any]],
+    state: ChatbotGraphState,
+    *,
+    limit: int,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    grades: list[dict[str, Any]] = []
+    for index, item in enumerate(evidence_items):
+        grade = _grade_evidence_item(item, state, index=index)
+        enriched_item = {**item, "evidence_grade": grade}
+        evidence_items[index] = enriched_item
+        grades.append(
+            {
+                "document_id": item.get("document_id"),
+                "source_id": item.get("source_id"),
+                **grade,
+            }
+        )
+    ranked = sorted(
+        evidence_items,
+        key=lambda item: (
+            (item.get("evidence_grade") or {}).get("score") or 0.0,
+            item.get("fusion_score") or 0.0,
+            item.get("keyword_score") or 0.0,
+            item.get("similarity") or 0.0,
+        ),
+        reverse=True,
+    )
+    sorted_grades = sorted(grades, key=lambda item: item.get("score") or 0.0, reverse=True)
+    return ranked[:limit], sorted_grades[:limit]
+
+
+def _grade_evidence_item(item: dict[str, Any], state: ChatbotGraphState, *, index: int) -> dict[str, Any]:
+    content = " ".join(
+        str(value or "")
+        for value in (
+            item.get("content"),
+            item.get("preview"),
+            item.get("disease_name"),
+            item.get("section_type"),
+            item.get("biomarker"),
+        )
+    )
+    normalized_content = _normalize_query_text(content)
+    normalized_query = _normalize_query_text(state.get("query", ""))
+    query_tokens = set(_important_query_tokens(normalized_query))
+    context_tokens = set(_important_query_tokens(normalized_content, max_tokens=300))
+    token_hits = sorted(query_tokens & context_tokens)
+
+    retrieval_plan = state.get("retrieval_plan") or {}
+    soft_hints = retrieval_plan.get("soft_hints") or {}
+    term_candidates = [
+        *[str(term) for term in soft_hints.get("terms", [])[:8]],
+        *[str(term) for term in soft_hints.get("disease_names", [])[:4]],
+        *[str(term) for term in soft_hints.get("section_types", [])[:4]],
+        *[str(term) for term in soft_hints.get("biomarkers", [])[:4]],
+    ]
+    term_hits = [
+        term
+        for term in term_candidates
+        if _normalize_query_text(term) and _normalize_query_text(term) in normalized_content
+    ]
+    metadata_hits = 0
+    filters = state.get("filters") or {}
+    if filters.get("disease_name") and filters.get("disease_name") == item.get("disease_name"):
+        metadata_hits += 1
+    if filters.get("section_type") and filters.get("section_type") == item.get("section_type"):
+        metadata_hits += 1
+    if filters.get("biomarker") and filters.get("biomarker") == item.get("biomarker"):
+        metadata_hits += 1
+
+    retrieval_score = float(item.get("fusion_score") or item.get("keyword_score") or item.get("similarity") or 0.0)
+    token_score = min(0.35, len(token_hits) * 0.055)
+    term_score = min(0.30, len(term_hits) * 0.10)
+    metadata_score = min(0.15, metadata_hits * 0.05)
+    retrieval_component = min(0.20, retrieval_score)
+    score = round(token_score + term_score + metadata_score + retrieval_component, 6)
+    return {
+        "score": score,
+        "token_hits": token_hits[:12],
+        "term_hits": term_hits[:8],
+        "metadata_hits": metadata_hits,
+        "retrieval_score": round(retrieval_score, 6),
+        "rank_before_grade": index + 1,
+    }
+
+
+def _should_agentic_retry(state: ChatbotGraphState, quality: dict[str, Any]) -> bool:
+    if state.get("route") != "retrieve":
+        return False
+    if quality.get("sufficient"):
+        return False
+    if int(state.get("agentic_retry_count") or 0) >= 1:
+        return False
+    if state.get("medical_tool_result") and state.get("evidence_items"):
+        return False
+    return bool(state.get("query"))
+
+
+def _build_agentic_retry_query(state: ChatbotGraphState) -> str:
+    retrieval_plan = state.get("retrieval_plan") or {}
+    soft_hints = retrieval_plan.get("soft_hints") or {}
+    parts = [state.get("query", "")]
+    terms = [str(item) for item in soft_hints.get("terms", []) if item][:8]
+    diseases = [DISEASE_LABELS.get(str(item), str(item)) for item in soft_hints.get("disease_names", [])][:3]
+    sections = [SECTION_LABELS.get(str(item), str(item)) for item in soft_hints.get("section_types", [])][:3]
+    biomarkers = [str(item) for item in soft_hints.get("biomarkers", []) if item][:4]
+    if diseases:
+        parts.append("Bệnh liên quan: " + ", ".join(diseases))
+    if sections:
+        parts.append("Mục cần tìm: " + ", ".join(sections))
+    if biomarkers:
+        parts.append("Chỉ số: " + ", ".join(biomarkers))
+    if terms:
+        parts.append("Từ khóa bắt buộc: " + ", ".join(terms))
+    parts.append("Tìm đoạn giải thích trực tiếp, tiêu chuẩn, biểu hiện, phân loại hoặc điều trị liên quan.")
+    return "\n".join(part for part in parts if part)
+
+
+def _merge_agentic_retry_items(
+    base_items: list[dict[str, Any]],
+    retry_items: list[dict[str, Any]],
+    *,
+    limit: int,
+) -> list[dict[str, Any]]:
+    merged: dict[str, dict[str, Any]] = {}
+    for item in [*base_items, *retry_items]:
+        if not isinstance(item, dict):
+            continue
+        key = str(item.get("document_id") or item.get("source_id") or len(merged))
+        existing = merged.get(key)
+        if existing is None or _retrieval_sort_score(item) > _retrieval_sort_score(existing):
+            merged[key] = item
+    return sorted(merged.values(), key=_retrieval_sort_score, reverse=True)[:limit]
+
+
+def _unique_texts(values: list[str]) -> list[str]:
+    result: list[str] = []
+    seen: set[str] = set()
+    for value in values:
+        text = str(value or "").strip()
+        key = _normalize_query_text(text)
+        if not text or key in seen:
+            continue
+        seen.add(key)
+        result.append(text)
+    return result
+
+
+def _retrieval_sort_score(item: dict[str, Any]) -> float:
+    return float(item.get("fusion_score") or item.get("keyword_score") or item.get("similarity") or 0.0)
+
+
+def _important_query_tokens(normalized_text: str, *, max_tokens: int = 32) -> list[str]:
+    stopwords = {
+        "benh",
+        "than",
+        "hoi",
+        "chung",
+        "viem",
+        "cau",
+        "nhung",
+        "cac",
+        "cua",
+        "cho",
+        "theo",
+        "duoc",
+        "khi",
+        "trong",
+        "voi",
+        "nguoi",
+        "benh",
+        "nhan",
+        "gi",
+        "nao",
+    }
+    tokens = re.findall(r"[a-z0-9]+", normalized_text)
+    return [token for token in tokens if len(token) >= 3 and token not in stopwords][:max_tokens]
+
+
 def _format_evidence_for_prompt(evidence_items: list[dict[str, Any]]) -> str:
     """Format evidence cho prompt nhưng không đưa số trang, source label hoặc id nội bộ vào."""
 
@@ -1026,6 +1424,15 @@ def _build_user_sources(
             }
         )
     return sources
+
+
+def build_user_sources_for_state(state: dict[str, Any]) -> list[dict[str, Any]]:
+    """Public helper for the API streaming path, which stops before cleanup_response."""
+
+    return _build_user_sources(
+        state.get("evidence_items", []),
+        state.get("web_results", []),
+    )
 
 
 def _web_search_enabled(state: ChatbotGraphState) -> bool:

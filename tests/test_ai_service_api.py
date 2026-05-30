@@ -12,6 +12,20 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from src.api.app import app, get_answerer
+from src.LLM.qa.answering import RetrievalAugmentedAnswerer
+
+
+class FakeStreamingLlm:
+    async def ainvoke(self, *_: Any, **__: Any) -> Any:
+        raise AssertionError("stream_answer must not use ainvoke for final answer")
+
+    async def astream(self, *_: Any, **__: Any):
+        yield "Xin"
+        yield " chào"
+
+
+class FakeSearcher:
+    pass
 
 
 class FakeAnswerer:
@@ -75,6 +89,20 @@ class AiServiceApiTests(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertIn("bệnh thận", response.json()["summary"])
+
+    def test_answerer_stream_uses_llm_astream_tokens(self) -> None:
+        async def collect_events() -> list[dict[str, Any]]:
+            answerer = RetrievalAugmentedAnswerer(FakeSearcher(), FakeStreamingLlm())
+            return [event async for event in answerer.stream_answer("xin chao")]
+
+        import asyncio
+
+        events = asyncio.run(collect_events())
+
+        self.assertEqual(events[0], {"event": "token", "token": "Xin"})
+        self.assertEqual(events[1], {"event": "token", "token": " chào"})
+        self.assertEqual(events[-1]["event"], "done")
+        self.assertEqual(events[-1]["answer"], "Xin chào")
 
 
 if __name__ == "__main__":

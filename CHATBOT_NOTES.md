@@ -501,6 +501,11 @@ Tối ưu token cho structured tool:
 - Web search không thay thế RAG gốc. Nếu thiếu `GOOGLE_API_KEY` hoặc `GOOGLE_CX`, node trả empty để luồng RAG/tool cũ vẫn hoạt động. Prompt cuối ưu tiên medical tool + RAG nội bộ, web chỉ là context bổ sung và phải báo cần kiểm tra nếu mâu thuẫn.
 - FastAPI có thêm `POST /memory/summarize` để tạo rolling summary ngắn hạn cho một conversation. Node backend gọi route này sau mỗi lượt Q/A và truyền summary vào request kế tiếp qua `memory_context`.
 - Node backend giữ memory theo key `userId:sessionId` và kiểm tra session thuộc user trước khi proxy sang AI service. Vì vậy khi deploy server, memory của user này không dùng chung với user khác. Khi xóa chat session, memory tương ứng cũng bị clear khỏi in-memory store.
+- Retriever hiện dùng hybrid 3 nhánh phù hợp tiếng Việt: vector semantic, PostgreSQL FTS `simple`, và lexical substring có dấu/alias. Nhánh lexical giúp bắt các cụm như `Hội chứng thận hư`, `Bệnh cầu thận thay đổi tối thiểu`, `ARA 1997`, `KDIGO`, vốn dễ yếu nếu chỉ dùng FTS tiếng Anh/simple.
+- Fusion retrieval hiện dùng weighted RRF: lexical tiếng Việt được ưu tiên nhẹ hơn vector/FTS để tăng recall nhưng vẫn giữ metadata bonus và lexical rerank.
+- Graph có thêm node `assess_and_refine_evidence`. Node này judge evidence bằng token coverage, soft-hint term hits và top score. Nếu evidence yếu, graph tự tạo `agentic_retry_query`, search lại một lần với filter nới lỏng rồi merge evidence. Đây là Agentic RAG dạng deterministic, ít tốn token hơn LLM agent loop nhưng vẫn có self-reflection/retry.
+- Agentic RAG được nâng thêm multi-query decomposition. Từ `retrieval_plan.soft_hints`, graph tạo tối đa 3 sub-query tập trung vào disease/section, biomarker/term và multi-intent. Các sub-query này chạy qua cùng hybrid retriever rồi merge/dedupe evidence.
+- Trước final prompt, graph chấm điểm từng evidence chunk bằng `evidence_grade`: token hits, term hits, metadata hits và retrieval score. Chunk có grade cao được đưa lên trước để tăng context precision và giảm nhiễu trong prompt.
 
 Chạy service:
 

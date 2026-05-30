@@ -1,19 +1,5 @@
 from __future__ import annotations
 
-"""
-Retriever hybrid để test retrieval trực tiếp trên Neon + pgvector.
-
-File này dành cho giai đoạn kiểm tra chất lượng retrieval:
-- hiểu query ở mức heuristic
-- embed query đã được enrich theo intent
-- kết hợp vector search + full-text search
-- cộng bonus theo metadata hint để giảm retrieval noise
-
-Chưa làm ở bước này:
-- reranker riêng bằng model
-- structured lookup riêng cho threshold/formula
-- query understanding dùng model
-"""
 
 import json
 import os
@@ -29,6 +15,10 @@ from openai import AsyncOpenAI
 MAX_RESULT_CONTEXT_CHARS = 1800
 NEIGHBOR_BACKWARD_WINDOW = 1
 NEIGHBOR_FORWARD_WINDOW = 4
+RRF_K = 60
+VECTOR_RRF_WEIGHT = 0.85
+KEYWORD_RRF_WEIGHT = 1.0
+LEXICAL_RRF_WEIGHT = 1.15
 
 DISEASE_HINTS = {
     "lupus_nephritis": ["lupus", "benh than lupus", "viem than lupus", "lupus ban do", "ara 1997", "class iv"],
@@ -238,9 +228,19 @@ class NeonVectorSearcher:
                     source_type=source_type,
                     biomarker=biomarker,
                 )
+                lexical_rows = await self._search_lexical_rows(
+                    conn=conn,
+                    understanding=understanding,
+                    top_k=candidate_limit,
+                    disease_name=disease_name,
+                    section_type=section_type,
+                    source_type=source_type,
+                    biomarker=biomarker,
+                )
                 fused_rows = self._fuse_rows(
                     vector_rows=vector_rows,
                     keyword_rows=keyword_rows,
+                    lexical_rows=lexical_rows,
                     top_k=top_k,
                     understanding=understanding,
                 )
@@ -315,6 +315,75 @@ class NeonVectorSearcher:
         FROM medical_documents
         {where_clause}
         ORDER BY embedding <=> $1::vector
+        LIMIT ${limit_index}
+        """
+
+        rows = await conn.fetch(sql, *params)
+        return [self._normalize_result_row(row) for row in rows]
+
+    async def _search_lexical_rows(
+        self,
+        conn: asyncpg.Connection,
+        understanding: dict[str, Any],
+        top_k: int,
+        disease_name: str | None,
+        section_type: str | None,
+        source_type: str | None,
+        biomarker: str | None,
+    ) -> list[dict[str, Any]]:
+        """Vietnamese-aware substring retrieval for exact disease/criteria phrases.
+
+        Postgres `simple` FTS is not ideal for Vietnamese medical text because it
+        has no language-specific tokenizer and does not normalize accents. This
+        lexical pass catches high-signal phrases such as "hội chứng thận hư",
+        "thay đổi tối thiểu", "ARA 1997", or biomarker aliases.
+        """
+
+        patterns = self._lexical_patterns(understanding)
+        if not patterns:
+            return []
+
+        params: list[Any] = []
+        match_exprs: list[str] = []
+        score_exprs: list[str] = []
+        for pattern in patterns[:12]:
+            params.append(f"%{pattern}%")
+            index = len(params)
+            match_expr = (
+                f"(content ILIKE ${index} "
+                f"OR source_id ILIKE ${index} "
+                f"OR metadata::text ILIKE ${index})"
+            )
+            match_exprs.append(match_expr)
+            score_exprs.append(f"CASE WHEN {match_expr} THEN 1 ELSE 0 END")
+
+        filters: list[str] = ["(" + " OR ".join(match_exprs) + ")"]
+        self._append_filters(
+            params=params,
+            filters=filters,
+            disease_name=disease_name,
+            section_type=section_type,
+            source_type=source_type,
+            biomarker=biomarker,
+        )
+
+        params.append(top_k)
+        limit_index = len(params)
+        where_clause = "WHERE " + " AND ".join(filters)
+        score_sql = " + ".join(score_exprs)
+
+        sql = f"""
+        SELECT
+            document_id,
+            source_type,
+            source_id,
+            content,
+            metadata,
+            NULL::float8 AS similarity,
+            ({score_sql})::float8 AS keyword_score
+        FROM medical_documents
+        {where_clause}
+        ORDER BY keyword_score DESC, document_id ASC
         LIMIT ${limit_index}
         """
 
@@ -426,6 +495,7 @@ class NeonVectorSearcher:
         self,
         vector_rows: list[dict[str, Any]],
         keyword_rows: list[dict[str, Any]],
+        lexical_rows: list[dict[str, Any]],
         top_k: int,
         understanding: dict[str, Any],
     ) -> list[dict[str, Any]]:
@@ -436,16 +506,28 @@ class NeonVectorSearcher:
         for rank, row in enumerate(vector_rows, start=1):
             item = fused.setdefault(row["document_id"], dict(row))
             item["vector_rank"] = rank
-            item["rrf_score"] = item.get("rrf_score", 0.0) + (1.0 / (60 + rank))
+            item["rrf_score"] = item.get("rrf_score", 0.0) + (VECTOR_RRF_WEIGHT / (RRF_K + rank))
 
         for rank, row in enumerate(keyword_rows, start=1):
             item = fused.setdefault(row["document_id"], dict(row))
             item["keyword_rank"] = rank
-            item["rrf_score"] = item.get("rrf_score", 0.0) + (1.0 / (60 + rank))
+            item["rrf_score"] = item.get("rrf_score", 0.0) + (KEYWORD_RRF_WEIGHT / (RRF_K + rank))
             if item.get("similarity") is None:
                 item["similarity"] = row.get("similarity")
             if item.get("keyword_score") is None:
                 item["keyword_score"] = row.get("keyword_score")
+            if item.get("preview") is None:
+                item["preview"] = row.get("preview")
+            if item.get("content") is None:
+                item["content"] = row.get("content")
+
+        for rank, row in enumerate(lexical_rows, start=1):
+            item = fused.setdefault(row["document_id"], dict(row))
+            item["lexical_rank"] = rank
+            item["rrf_score"] = item.get("rrf_score", 0.0) + (LEXICAL_RRF_WEIGHT / (RRF_K + rank))
+            if item.get("similarity") is None:
+                item["similarity"] = row.get("similarity")
+            item["keyword_score"] = max(item.get("keyword_score") or 0.0, row.get("keyword_score") or 0.0)
             if item.get("preview") is None:
                 item["preview"] = row.get("preview")
             if item.get("content") is None:
@@ -490,6 +572,7 @@ class NeonVectorSearcher:
                     "biomarker": item.get("biomarker"),
                     "vector_rank": item.get("vector_rank"),
                     "keyword_rank": item.get("keyword_rank"),
+                    "lexical_rank": item.get("lexical_rank"),
                     "rrf_score": item.get("rrf_score", 0.0),
                     "content": item.get("content", ""),
                     "preview": item.get("preview", ""),
@@ -772,6 +855,14 @@ class NeonVectorSearcher:
             )
             if phrase in normalized_primary
         ]
+        lexical_patterns = self._build_lexical_patterns(
+            primary_query=primary_query,
+            query_tokens=query_tokens,
+            key_phrases=key_phrases,
+            disease_hint=disease_hint,
+            section_hint=section_hint,
+            biomarker_hint=biomarker_hint,
+        )
 
         if section_hint is None and any(pattern in normalized_primary for pattern in ("la gi", "khai niem", "dinh nghia")):
             section_hint = "definition"
@@ -798,6 +889,7 @@ class NeonVectorSearcher:
             "query_numbers": query_numbers,
             "query_acronyms": query_acronyms,
             "key_phrases": key_phrases,
+            "lexical_patterns": lexical_patterns,
         }
 
     def _strip_leading_greeting(self, query: str) -> str:
@@ -845,6 +937,67 @@ class NeonVectorSearcher:
             for token in tokens
             if len(token) >= 3 and token not in RETRIEVAL_STOPWORDS
         ][:32]
+
+    def _lexical_patterns(self, understanding: dict[str, Any]) -> list[str]:
+        return [
+            pattern
+            for pattern in understanding.get("lexical_patterns", [])
+            if isinstance(pattern, str) and pattern.strip()
+        ]
+
+    def _build_lexical_patterns(
+        self,
+        *,
+        primary_query: str,
+        query_tokens: list[str],
+        key_phrases: list[str],
+        disease_hint: str | None,
+        section_hint: str | None,
+        biomarker_hint: str | None,
+    ) -> list[str]:
+        patterns: list[str] = []
+        cleaned_primary = " ".join(primary_query.split())
+        if cleaned_primary and len(cleaned_primary) <= 140:
+            patterns.append(cleaned_primary)
+
+        patterns.extend(key_phrases)
+        if disease_hint:
+            patterns.extend(DISEASE_HINTS.get(disease_hint, []))
+            label = DISEASE_LABELS.get(disease_hint)
+            if label:
+                patterns.append(label)
+        if section_hint:
+            patterns.extend(SECTION_HINTS.get(section_hint, []))
+            label = SECTION_LABELS.get(section_hint)
+            if label:
+                patterns.append(label)
+        if biomarker_hint:
+            patterns.extend(BIOMARKER_HINTS.get(biomarker_hint, []))
+            patterns.append(biomarker_hint)
+
+        # Add compact token windows for user questions without exact aliases.
+        important_tokens = [token for token in query_tokens if len(token) >= 4][:8]
+        for index in range(0, max(0, len(important_tokens) - 1)):
+            patterns.append(" ".join(important_tokens[index : index + 2]))
+        for token in important_tokens[:6]:
+            if token in {"kdigo", "kdoqi", "rifle", "fena", "egfr", "aslo"}:
+                patterns.append(token)
+
+        return self._unique_patterns(patterns)
+
+    def _unique_patterns(self, patterns: list[str]) -> list[str]:
+        result: list[str] = []
+        seen: set[str] = set()
+        for pattern in patterns:
+            cleaned = " ".join(str(pattern or "").strip().split())
+            if not cleaned or len(cleaned) < 3:
+                continue
+            key = self._normalize_ascii(cleaned)
+            if key in seen:
+                continue
+            seen.add(key)
+            result.append(cleaned)
+        return result[:16]
 
     def _normalize_ascii(self, text: str) -> str:
         """Bỏ dấu tiếng Việt và co khoảng trắng để match heuristic ổn định hơn."""

@@ -155,6 +155,136 @@ Mục tiêu:
 - Tăng `groundedness`
 - Giảm hallucination do final prompt có đủ fact hơn
 
+### Implementation update 2026-05-30 — Vietnamese-aware hybrid search
+
+Retriever hiện dùng hybrid 3 nhánh:
+
+1. Dense vector search bằng OpenAI embedding cho semantic similarity.
+2. PostgreSQL full-text search `simple` cho keyword/BM25-like ranking nội bộ.
+3. Lexical substring search có dấu/alias tiếng Việt cho cụm y khoa quan trọng.
+
+Lý do thêm lexical branch:
+
+- Dữ liệu y khoa hiện chủ yếu là tiếng Việt có dấu.
+- PostgreSQL `simple` không phải tokenizer tiếng Việt, nên FTS có thể yếu với cụm như `hội chứng thận hư`, `bệnh cầu thận thay đổi tối thiểu`, `viêm cầu thận lupus`.
+- Người dùng có thể gõ không dấu, có dấu, acronym hoặc alias. Embedding giúp semantic, nhưng exact phrase vẫn cần branch lexical để tăng recall.
+
+Fusion hiện là weighted reciprocal rank fusion:
+
+- vector weight: `0.85`
+- FTS keyword weight: `1.0`
+- Vietnamese lexical weight: `1.15`
+
+Sau fusion vẫn cộng thêm:
+
+- metadata bonus theo disease/section/biomarker hint
+- lexical bonus theo token overlap, số liệu, acronym, key phrase
+- neighbor context expansion để giữ heading cha và đoạn tiêu chuẩn liên quan
+
+Chiến lược này được gọi là:
+
+```text
+Vietnamese-aware Hybrid RAG with Metadata Filtering, Weighted RRF, and Context Expansion
+```
+
+### Implementation update 2026-05-30 — Agentic retrieval refine
+
+LangGraph có thêm node `assess_and_refine_evidence` sau `retrieve_context`.
+
+Node này đóng vai trò evidence judge nhẹ:
+
+- đo số evidence
+- đo token coverage giữa query và context
+- đo term hits từ `retrieval_plan.soft_hints`
+- xem top retrieval score
+
+Nếu evidence chưa đủ và chưa retry, graph tự tạo `agentic_retry_query` gồm:
+
+- câu hỏi gốc
+- disease/section/biomarker soft hints
+- terms quan trọng
+- hướng dẫn tìm đoạn giải thích trực tiếp, tiêu chuẩn, biểu hiện, phân loại hoặc điều trị
+
+Sau đó graph search lại một lần với filter nới lỏng hơn (`source_type=chunk`, không hard disease/section/biomarker) rồi merge/dedupe evidence.
+
+Mục tiêu:
+
+- tăng context recall cho câu hỏi mơ hồ hoặc metadata chưa chuẩn
+- giảm trả lời fallback sai khi lượt search đầu bị lọc quá chặt
+- giữ chi phí thấp hơn agentic loop LLM nhiều vòng
+
+Chiến lược này được gọi là:
+
+```text
+Deterministic Agentic RAG with Evidence Sufficiency Judge and One-shot Retrieval Retry
+```
+
+### Implementation update 2026-05-30 — Multi-query decomposition
+
+Trước khi retrieval chính chạy xong, graph tạo thêm `agentic_queries` từ `retrieval_plan.soft_hints`.
+
+Các sub-query được tạo theo 3 hướng:
+
+1. Disease/section focused query: dùng bệnh trọng tâm và mục cần tìm.
+2. Biomarker/term focused query: dùng chỉ số, acronym, tiêu chuẩn, cụm y khoa.
+3. Multi-intent query: chỉ bật nếu câu hỏi có nhiều intent như định nghĩa + chẩn đoán + điều trị.
+
+Ví dụ:
+
+```text
+User: Viêm cầu thận lupus được chẩn đoán khi nào theo ARA 1997?
+
+Sub-query 1:
+Viêm cầu thận lupus được chẩn đoán khi nào theo ARA 1997?
+Bệnh trọng tâm: Viêm thận lupus
+Mục cần tìm: Chẩn đoán
+
+Sub-query 2:
+Viêm cầu thận lupus được chẩn đoán khi nào theo ARA 1997?
+Chỉ số/từ khóa: ARA 1997, protein niệu
+Ưu tiên đoạn có tiêu chuẩn, ngưỡng, biểu hiện hoặc định nghĩa trực tiếp.
+```
+
+Mục tiêu:
+
+- tăng recall cho câu hỏi dài, nhiều ý hoặc dùng thuật ngữ chuyên khoa
+- tránh phụ thuộc vào một embedding query duy nhất
+- vẫn không tốn LLM call vì decomposition là deterministic
+
+### Implementation update 2026-05-30 — Evidence grading
+
+Sau retrieval chính và sau agentic retry nếu có, graph chấm từng evidence item trước khi đưa vào final prompt.
+
+Grade dựa trên:
+
+- token hits giữa query và context
+- term hits từ `soft_hints`
+- metadata hits với hard filters
+- retrieval score gốc (`fusion_score`, `keyword_score`, `similarity`)
+
+Mỗi item được gắn:
+
+```json
+{
+  "evidence_grade": {
+    "score": 0.42,
+    "token_hits": ["chan", "doan"],
+    "term_hits": ["protein niệu"],
+    "metadata_hits": 1,
+    "retrieval_score": 0.13,
+    "rank_before_grade": 2
+  }
+}
+```
+
+Sau đó graph sort lại evidence theo grade để prompt cuối nhận context liên quan nhất trước.
+
+Mục tiêu:
+
+- tăng `context_precision_llm`
+- giảm chunk nhiễu lọt vào prompt
+- giúp LangSmith debug vì `include_debug=true` sẽ thấy `evidence_grades`
+
 ## Bước 2 — Metadata pre-filter
 
 Đây là bước quan trọng nhất để giảm retrieval noise.
