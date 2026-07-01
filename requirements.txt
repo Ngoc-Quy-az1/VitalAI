@@ -2,15 +2,23 @@ PyPDF2 == 3.0.1
 python-dotenv == 1.0.0  
 reportlab == 4.2.5
 Pillow == 11.1.0
-# torch == 2.5.1
-# torchvision == 0.20.1
-easyocr == 1.7.2
 numpy == 1.26.4
 PyMuPDF == 1.24.13
 openai == 2.2.0
 asyncpg == 0.31.0
+torch >= 2.6.0
+torchaudio >= 2.6.0
+torchvision >= 0.17.0
+safetensors >= 0.3.0
+rich == 13.9.4
+sounddevice == 0.5.1
+transformers >= 4.40.0
 langchain-core == 0.3.83
 langchain-mistralai == 0.2.5
 langgraph == 0.2.76
 fastapi == 0.115.7
 uvicorn == 0.34.0
+python-multipart == 0.0.20
+mistralai == 2.4.4
+rank-bm25 == 0.2.2
+sentence-transformers == 3.0.1

@@ -35,7 +35,16 @@ htmlcov/
 *.swp
 *.swo
 
+# Local mic test recordings (giữ thư mục, không commit file ghi)
+data/audio/*.wav
+
 # OS-specific
 .DS_Store
 Thumbs.db
 
+# Project data (keep local only)
+data/
+
+# Temporary / Scratch files
+scratch/
+*.tar.gz

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-"""Aliases dùng để nhận diện chỉ số và biến công thức từ text người dùng."""
 
 BIOMARKER_ALIASES: dict[str, list[str]] = {
     "protein_niệu_24h": ["protein niệu", "protein nieu", "đạm niệu", "dam nieu", "protein niệu 24h"],

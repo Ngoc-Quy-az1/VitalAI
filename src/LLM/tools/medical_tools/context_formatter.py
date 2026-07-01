@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import Any
+import json
 
 from src.LLM.tools.medical_tools.constants import LABEL_TRANSLATIONS
 from src.LLM.tools.medical_tools.text_utils import clean_text, format_number, join_value_unit, normalize_for_match
@@ -16,6 +17,21 @@ def build_structured_context(result: dict[str, Any] | None, query: str | None = 
             "Kết quả phân tích chỉ số: không khả dụng. "
             "Không được tự tính công thức hoặc tự phân loại ngưỡng nếu thiếu dữ liệu chắc chắn."
         )
+
+    if result.get("result_type") == "structured_knowledge_query":
+        hits = result.get("hits") or []
+        if not hits:
+            return "Không tìm thấy sơ đồ hoặc bảng dữ liệu có cấu trúc phù hợp."
+        
+        lines: list[str] = ["Dữ liệu sơ đồ/bảng có cấu trúc tìm được:"]
+        for hit in hits:
+            doc_id = hit.get("document_id")
+            source_type = hit.get("source_type")
+            content = hit.get("content") or {}
+            
+            content_str = json.dumps(content, ensure_ascii=False, indent=2)
+            lines.append(f"\n--- [ID: {doc_id}, Type: {source_type}] ---\n{content_str}")
+        return "\n".join(lines)
 
     lines: list[str] = ["Kết quả phân tích chỉ số đã được chuẩn hóa:"]
 

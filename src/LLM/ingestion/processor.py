@@ -13,12 +13,6 @@ File này tạo ra những gì:
 - `thresholds.jsonl`: các ngưỡng số liệu lấy từ câu văn và từ các `rules` nhúng trong JSON
 - `formulas.json`: các công thức được phục hồi từ phần JSON nhúng
 - `summary.json`: thống kê nhanh để kiểm tra chất lượng extraction sau mỗi lần chạy
-
-Giới hạn hiện tại:
-- Đây vẫn là extractor heuristic, chưa phải ingestion pipeline cuối cùng.
-- Mục tiêu hiện tại là dễ đọc, dễ debug và dễ kiểm tra thủ công.
-- Việc thiếu `disease_name` ở nhiều đoạn overview là điều đã biết và sẽ được xử lí sau bằng
-  heading/context propagation.
 """
 
 import json
@@ -60,6 +54,15 @@ SECTION_KEYWORDS = {
     "classification": ["phan loai", "kdigo", "giai doan", "stage"],
     "clinical_features": ["lam sang", "can lam sang", "trieu chung"],
     "diagnosis_criteria": ["chan doan", "tieu chuan chan doan"],
+    "investigations": [
+        "xet nghiem",
+        "xet nghiem mau",
+        "xet nghiem nuoc tieu",
+        "chan doan hinh anh",
+        "sieu am",
+        "x quang",
+        "uiv",
+    ],
     "pathology": ["mo benh hoc", "ton thuong mo benh hoc", "kinh hien vi", "mien dich huynh quang", "hien vi dien tu"],
     "treatment": ["dieu tri", "nguyen tac dieu tri", "lieu dung", "thuoc"],
     "progression": ["tien trien", "tien luong"],
@@ -67,47 +70,228 @@ SECTION_KEYWORDS = {
     "follow_up": ["theo doi", "tai kham", "phong ngua", "du phong"],
 }
 
-DISEASE_KEYWORDS = {
+DISEASE_KEYWORDS = DISEASE_KEYWORDS = {
     "benh_ly_cau_than": [
         "benh ly cau than",
+        "benh cau than",
         "benh cau than nguyen phat",
         "benh cau than thu phat",
         "phan loai benh cau than",
-        "benh cau than giai doan cuoi",
-        "ton thuong cau than sau ghep",
-        "chan doan mot so benh cau than thuong gap",
+        "ton thuong cau than",
+        "glomerular disease",
+        "glomerulopathy"
     ],
     "benh_than_man": [
         "benh than man",
         "suy than man",
         "benh cau than man",
+        "benh than man tinh",
+        "suy than man tinh",
         "chronic kidney disease",
         "ckd",
         "kdigo",
+        "esrd",
+        "end stage renal disease",
+        "benh than giai doan cuoi",
+        "suy than giai doan cuoi"
     ],
-    "lupus_nephritis": ["lupus", "viem cau than lupus"],
     "acute_kidney_injury": [
         "suy than cap",
         "ton thuong than cap",
+        "suy than cap tinh",
+        "ton thuong than cap tinh",
         "acute kidney injury",
         "aki",
+        "acute renal failure",
+        "arf",
         "suy than cap truoc than",
         "suy than cap sau than",
         "suy than cap tai than",
+        "hoai tu ong than cap",
+        "acute tubular necrosis",
+        "atn"
     ],
-    "hoi_chung_than_hu": ["hoi chung than hu"],
-    "viem_cau_than_cap": ["viem cau than cap"],
-    "viem_cau_than_man": ["viem cau than man"],
-    "viem_cau_than_tien_trien_nhanh": ["viem cau than tien trien nhanh", "tien trien nhanh"],
-    "benh_than_iga": ["benh than iga", "iga nephropathy", "iga"],
+    "hoi_chung_than_hu": [
+        "hoi chung than hu",
+        "hcth",
+        "nephrotic syndrome",
+        "nephrosis",
+    ],
+    "viem_cau_than_cap": [
+        "viem cau than cap",
+        "viem cau than cap sau nhiem lien cau",
+        "vctc",
+        "acute glomerulonephritis",
+        "agn",
+        "psgn",
+        "post-streptococcal glomerulonephritis"
+    ],
+    "viem_cau_than_man": [
+        "viem cau than man",
+        "vctm",
+        "chronic glomerulonephritis",
+        "cgn"
+    ],
+    "viem_cau_than_tien_trien_nhanh": [
+        "viem cau than tien trien nhanh",
+        "tien trien nhanh",
+        "rpgn",
+        "rapidly progressive glomerulonephritis",
+        "benh cau than hinh liem",
+        "crescentic glomerulonephritis"
+    ],
+    "benh_than_iga": [
+        "benh than iga",
+        "iga nephropathy",
+        "iga",
+        "benh berger",
+        "berger's disease",
+        "viem cau than iga"
+    ],
+    "benh_cau_than_thay_doi_toi_thieu": [
+        "benh cau than thay doi toi thieu",
+        "thay doi toi thieu",
+        "mcd",
+        "minimal change disease"
+    ],
+    "xo_hoa_cau_than_o_cuc_bo": [
+        "xo hoa cau than o cuc bo",
+        "xo hoa o cuc bo",
+        "fsgs",
+        "focal segmental glomerulosclerosis"
+    ],
+    "benh_than_mang": [
+        "benh than mang",
+        "viem cau than mang",
+        "membranous nephropathy",
+        "mn",
+        "membranous glomerulonephritis",
+        "mgn"
+    ],
+    "viem_cau_than_mang_tang_sinh": [
+        "viem cau than mang tang sinh",
+        "mang tang sinh",
+        "mpgn",
+        "membranoproliferative glomerulonephritis"
+    ],
+    "lupus_nephritis": [
+        "lupus",
+        "viem cau than lupus",
+        "benh than lupus",
+        "lupus ban do",
+        "lupus ban do he thong",
+        "sle",
+        "sle nephritis"
+    ],
     "diabetic_kidney_disease": [
         "dai thao duong",
         "diabetic kidney disease",
+        "diabetic nephropathy",
         "than dai thao duong",
         "benh than dtd",
         "benh than do dtd",
         "dtd",
+        "dkd",
+        "bien chung than do dai thao duong"
     ],
+    "benh_than_ong_ke": [
+        "viem ong ke than",
+        "viem ong ke than cap",
+        "viem ong ke than man",
+        "tubulointerstitial nephritis",
+        "tin",
+        "ain",
+        "cin",
+        "interstitial nephritis"
+    ],
+    "benh_ly_mach_mau_than": [
+        "hep dong mach than",
+        "renal artery stenosis",
+        "xo hoa than do tang huyet ap",
+        "hypertensive nephrosclerosis",
+        "benh than do tang huyet ap",
+        "huyet khoi tinh mach than",
+        "renal vein thrombosis",
+        "nhoi mau than",
+        "renal infarction"
+    ],
+    "benh_than_di_truyen_nang": [
+        "benh than da nang",
+        "nang than",
+        "than da nang",
+        "polycystic kidney disease",
+        "pkd",
+        "adpkd",
+        "arpdk",
+        "hoi chung alport",
+        "alport syndrome",
+        "nail-patella syndrome",
+        "thin basement membrane",
+        "dai mau lanh tinh tai phat",
+    ],
+    "nhiem_trung_va_soi_than": [
+        "viem dai be than",
+        "viem dai be than cap",
+        "viem dai be than man",
+        "pyelonephritis",
+        "soi than",
+        "soi tiet nieu",
+        "nephrolithiasis",
+        "kidney stone",
+        "urolithiasis",
+        "soi than tiet nieu",
+        "cystine stone",
+        "struvite",
+        "acid uric",
+    ],
+    "than_u_nuoc": [
+        "than u nuoc",
+        "u nuoc than",
+        "hydronephrosis",
+        "gian dai be than",
+        "tac nghen be than nieu quan",
+    ],
+    "benh_than_thu_phat_khac": [
+        "amyloidosis than",
+        "renal amyloidosis",
+        "benh than do da u tuy xuong",
+        "myeloma kidney",
+        "viem mach anca",
+        "anca vasculitis",
+        "hoi chung goodpasture",
+        "goodpasture syndrome",
+        "cryoglobuline mau",
+        "cryoglobulinemia",
+        "waldenstrom",
+        "schonlein henoch",
+        "wegener",
+        "viem nut quanh dong mach",
+        "polyarteritis nodosa",
+        "hoi chung ure mau tan mau",
+        "hemolytic uremic syndrome",
+        "hus",
+    ],
+    "ung_thu_than": [
+        "ung thu than",
+        "ung thu bieu mo te bao than",
+        "renal cell carcinoma",
+        "rcc",
+        "u wilms",
+        "wilms tumor",
+        "nephroblastoma"
+    ],
+    "phuong_phap_thay_the_than": [
+        "loc mau",
+        "chay than",
+        "chay than nhan tao",
+        "hemodialysis",
+        "loc mang bung",
+        "tham phan phuc mac",
+        "peritoneal dialysis",
+        "ghep than",
+        "kidney transplant",
+        "renal transplantation"
+    ]
 }
 
 BIOMARKER_ALIASES = {
@@ -154,16 +338,56 @@ BIOMARKER_ALIASES = {
 }
 
 THRESHOLD_UNIT_DEFAULTS = {
+    # ===== Chức năng thận =====
+    "creatinine": "mg/dL",
+    "GFR": "ml/ph/1.73m2",
+    "cystatin_c": "mg/L",
+    "BUN": "mg/dL",
+    "urea": "mmol/L",
+
+    # ===== Protein & albumin =====
     "protein_niệu_24h": "g/24h",
     "protein_mau": "g/L",
     "albumin_máu": "g/L",
-    "cholesterol": "mmol/L",
-    "PCR": "mg/g",
-    "creatinine": "mg/dL",
-    "GFR": "ml/ph/1.73m2",
+    "albumin_niệu": "mg/L",
+    "microalbumin_niệu": "mg/L",
     "ACR": "mg/g",
+    "PCR": "mg/g",
+
+    # ===== Điện giải =====
     "sodium": "mmol/L",
-    "urea": "mmol/L",
+    "potassium": "mmol/L",
+    "chloride": "mmol/L",
+    "calcium": "mmol/L",
+    "phosphate": "mmol/L",
+    "magnesium": "mmol/L",
+    "bicarbonate": "mmol/L",
+
+    # ===== Chức năng ống thận =====
+    "FENa": "%",
+    "FEurea": "%",
+    "urine_osmolality": "mOsm/kg",
+    "urine_specific_gravity": "",  # không có đơn vị (tỷ trọng)
+
+    # ===== Tổn thương thận cấp =====
+    "NGAL": "ng/mL",
+    "KIM-1": "ng/mL",
+    "IL-18": "pg/mL",
+    "L-FABP": "ng/mL",
+
+    # ===== Nước tiểu =====
+    "RBC_niệu": "cells/HPF",
+    "WBC_niệu": "cells/HPF",
+    "trụ_niệu": "casts/LPF",
+    "glucose_niệu": "mmol/L",
+    "ketone_niệu": "mmol/L",
+    "pH_niệu": "",
+
+    # ===== Chức năng ống thận =====
+    "BSA": "m2",
+    "uric_acid": "µmol/L",
+    "hemoglobin": "g/dL",
+    "cholesterol": "mmol/L",
 }
 
 DISEASE_PRIORITY = {
@@ -198,8 +422,6 @@ SUBCHUNK_MAX_UNITS = 2
 
 @dataclass
 class PageRecord:
-    """Cấu trúc tối giản để giữ nội dung text của từng trang PDF."""
-
     page: int
     text: str
 
@@ -221,7 +443,6 @@ class MedicalPdfProcessor:
         self.source_file = self.pdf_path.name
 
     def process(self) -> dict[str, Any]:
-        """Chạy toàn bộ pipeline extraction trong bộ nhớ và trả về tất cả artifact."""
 
         pages = self._extract_pages()
         extracted_chunks = self._extract_chunks(pages)
@@ -238,7 +459,6 @@ class MedicalPdfProcessor:
         }
 
     def _extract_pages(self) -> list[PageRecord]:
-        """Đọc từng trang PDF thành plain text. Bước này cố tình giữ đơn giản."""
 
         document = fitz.open(self.pdf_path)
         return [
@@ -315,13 +535,6 @@ class MedicalPdfProcessor:
         return chunks
 
     def _propagate_missing_chunk_disease_names(self, chunks: list[dict[str, Any]]) -> list[dict[str, Any]]:
-        """
-        Điền `disease_name` cho các chunk còn thiếu bằng context heading lân cận.
-
-        Đây là pass hậu xử lí cho đúng cấu trúc của tài liệu hiện có:
-        nhiều mục con như `5.1`, `7.1`, `4.4.8.1` không nhắc lại tên bệnh,
-        nhưng lại nằm ngay dưới một heading cha hoặc một chunk anh em đã biết disease.
-        """
 
         page_context: dict[int, str] = {}
         for item in chunks:
@@ -357,15 +570,6 @@ class MedicalPdfProcessor:
         current_index: int,
         heading_number: str | None,
     ) -> str | None:
-        """
-        Suy luận disease từ các chunk gần kề có cùng nhánh heading.
-
-        Ví dụ:
-        - `7.1` có thể kế thừa từ `7.2.1`
-        - `5.2` có thể kế thừa từ chapter `5`
-        - `4.4.8.1` có thể kế thừa từ `4.4.8`
-        """
-
         current_page = chunks[current_index]["metadata"]["page"]
         candidate_prefixes = self._candidate_heading_prefixes(heading_number)
         best_match: tuple[int, int, str] | None = None
@@ -433,14 +637,6 @@ class MedicalPdfProcessor:
         pages: list[PageRecord],
         chunks: list[dict[str, Any]] | None = None,
     ) -> list[dict[str, Any]]:
-        """
-        Trích xuất các ngưỡng số liệu có cấu trúc.
-
-        Nguồn lấy dữ liệu gồm:
-        - câu văn bình thường như `protein niệu > 3,5 g/24h`
-        - các block `rules` nhúng trong JSON như rule phân tầng KDIGO / ACR
-        """
-
         thresholds: list[dict[str, Any]] = []
         page_disease_context = self._build_page_disease_context(chunks or [])
         current_disease_context: str | None = None
@@ -519,13 +715,6 @@ class MedicalPdfProcessor:
         return thresholds
 
     def _extract_formulas(self, pages: list[PageRecord]) -> list[dict[str, Any]]:
-        """
-        Khôi phục các công thức tường minh từ text mang hình dạng JSON.
-
-        Quanh mỗi key `"formula"`, hàm sẽ cố lấy lại các field lân cận như `id`, `name`,
-        `inputs`, `output`, `unit`. Việc match theo cửa sổ ngữ cảnh là cần thiết vì text PDF
-        thường làm vỡ một object JSON qua nhiều dòng hoặc nhiều trang.
-        """
 
         formulas: list[dict[str, Any]] = []
 
@@ -592,8 +781,6 @@ class MedicalPdfProcessor:
         return formulas
 
     def _split_prose_blocks(self, text: str) -> list[str]:
-        """Tách block văn xuôi theo heading; đây mới là giải pháp tạm trước semantic chunking."""
-
         blocks: list[list[str]] = []
         current: list[str] = []
 
@@ -622,12 +809,6 @@ class MedicalPdfProcessor:
         return cleaned
 
     def _split_large_prose_block(self, block: str) -> list[str]:
-        """
-        Tách prose block quá dài theo bullet/đoạn nhưng vẫn giữ heading ở đầu chunk.
-
-        Mục tiêu là tránh một chunk overview quá dài gom nhiều ý khác nhau,
-        làm embedding bị loãng và đè mất ý định nghĩa/khái niệm.
-        """
 
         if len(block) < HEADING_PRESERVING_SPLIT_THRESHOLD:
             return [block]
@@ -665,8 +846,6 @@ class MedicalPdfProcessor:
         return chunks if len(chunks) > 1 else [block]
 
     def _split_block_units(self, lines: list[str]) -> list[str]:
-        """Nhóm các dòng thuộc cùng một bullet/đoạn để phục vụ chia subchunk."""
-
         units: list[str] = []
         current: list[str] = []
 
@@ -689,8 +868,6 @@ class MedicalPdfProcessor:
         return [unit for unit in units if unit]
 
     def _compose_prose_subchunk(self, heading: str | None, units: list[str]) -> str:
-        """Ghép heading với các đơn vị nội dung con thành một chunk hoàn chỉnh."""
-
         if heading is None:
             return "\n".join(units).strip()
         return "\n".join([heading] + units).strip()
@@ -700,8 +877,6 @@ class MedicalPdfProcessor:
         return stripped.startswith(("–", "-", "•"))
 
     def _split_sentences(self, text: str) -> list[str]:
-        """Tách câu phục vụ extract threshold. Giữ bảo thủ để tránh cắt quá vụn."""
-
         sentences = []
         for item in SENTENCE_SPLIT_RE.split(text):
             sentence = " ".join(item.replace("\n", " ").split()).strip()
@@ -710,8 +885,6 @@ class MedicalPdfProcessor:
         return sentences
 
     def _remove_json_lines(self, text: str) -> str:
-        """Loại các dòng nhìn rõ là JSON trước khi chunk phần văn xuôi."""
-
         cleaned_lines = []
         for line in text.splitlines():
             if JSON_LINE_RE.match(line.strip()):

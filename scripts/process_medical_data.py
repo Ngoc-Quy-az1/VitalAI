@@ -27,13 +27,13 @@ from src.LLM.ingestion.processor import MedicalPdfProcessor
 
 
 def main() -> None:
-    """Xác định file PDF nguồn, chạy processor, rồi in ra các đường dẫn output đã ghi."""
+    # Thực hiện xử lí data từ file PDF nguồn và ghi ra các output có cấu trúc.
 
     parser = argparse.ArgumentParser(description="Xử lí PDF thận học thành các output có cấu trúc.")
     parser.add_argument(
         "--source",
         default="data/raw_data",
-        help="Đường dẫn tới file PDF hoặc thư mục chỉ chứa một file PDF nguồn.",
+        help="Đường dẫn tới file PDF nguồn.",
     )
     parser.add_argument(
         "--output",

@@ -35,6 +35,13 @@ DEFAULT_ALLOWED_DOMAINS = (
     "merckmanuals.com",
     "healthdirect.gov.au",
     "betterhealth.vic.gov.au",
+    "moh.gov.vn",
+    "vinmec.com",
+    "bachmai.gov.vn",
+    "tamanhhospital.vn",
+    "suckhoedoisong.vn",
+    "bvndgiadinh.org.vn",
+    "bvcot.vn",
 )
 
 DEFAULT_BLOCKED_DOMAINS = (

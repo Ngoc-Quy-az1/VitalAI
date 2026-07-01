@@ -1,0 +1,32 @@
+FROM python:3.10-slim
+
+WORKDIR /app
+
+# Thiết lập các biến môi trường Python tối ưu cho Docker container
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/app
+
+# Cập nhật pip và cài đặt các dependencies (đã fix xung đột pydantic)
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir \
+    fastapi==0.115.7 \
+    uvicorn==0.34.0 \
+    python-multipart==0.0.20 \
+    httpx==0.28.1 \
+    python-dotenv==1.0.0 \
+    mistralai==2.4.4 \
+    openai==2.2.0 \
+    asyncpg==0.31.0 \
+    pydantic>=2.11.2
+
+# Copy mã nguồn và thư viện bổ trợ cần thiết
+COPY src/ /app/src/
+COPY services/medical_tools/ /app/services/medical_tools/
+COPY data/processed_data/ /app/data/processed_data/
+
+# Cổng dịch vụ lắng nghe mặc định
+EXPOSE 8010
+
+# Khởi chạy dịch vụ FastAPI bằng Uvicorn
+CMD ["uvicorn", "services.medical_tools.app:app", "--host", "0.0.0.0", "--port", "8010"]

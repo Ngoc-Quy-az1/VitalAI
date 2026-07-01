@@ -15,6 +15,9 @@ RAG_ANSWER_PROMPT = ChatPromptTemplate.from_messages(
             """
 Câu hỏi: {query}
 
+Lịch sử trò chuyện gần đây (dùng để hiểu ngữ cảnh tiếp nối/đại từ xưng hô):
+{chat_history}
+
 Tóm tắt ngắn hạn của conversation nếu có, chỉ dùng để hiểu ngữ cảnh đại từ/ý định tiếp nối:
 {memory_context}
 

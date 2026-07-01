@@ -80,6 +80,7 @@ class ChatbotGraphState(TypedDict, total=False):
     agentic_queries: list[str]
     agentic_retry_count: int
     agentic_retry_query: str | None
+    chat_history: list[dict[str, str]]
 
 
 def build_chatbot_graph(
@@ -96,9 +97,11 @@ def build_chatbot_graph(
 
     async def prepare_input(state: ChatbotGraphState) -> ChatbotGraphState:
         query = " ".join(state.get("query", "").split())
+        chat_history = state.get("chat_history") or []
+        enriched_query = _enrich_query_with_history(query, chat_history)
         return {
             **state,
-            "query": query,
+            "query": enriched_query,
             "top_k": int(state.get("top_k") or 5),
             "router_plan": None,
             "medical_tool_result": None,
@@ -112,6 +115,7 @@ def build_chatbot_graph(
             "agentic_retry_query": None,
             "memory_context": _trim_text(state.get("memory_context") or "", 1600)
             or "Không có memory ngắn hạn.",
+            "chat_history": state.get("chat_history") or [],
             "conversation_id": state.get("conversation_id"),
             "user_id": state.get("user_id"),
             "enable_web_search": state.get("enable_web_search"),
@@ -227,6 +231,8 @@ def build_chatbot_graph(
             router_plan=state.get("router_plan"),
             extracted_tool_payload=state.get("extracted_tool_payload"),
             medical_tool_result=state.get("medical_tool_result"),
+            chat_history=state.get("chat_history"),
+            memory_context=state.get("memory_context"),
         )
         return {
             **state,
@@ -408,9 +414,15 @@ def build_chatbot_graph(
             route: RouteName = "direct"
         else:
             evidence_context = state.get("evidence_context") or "Không tìm thấy evidence phù hợp."
+            chat_history_list = state.get("chat_history") or []
+            chat_history_str = "\n".join(
+                f"{'Người dùng' if msg.get('role') == 'user' else 'Trợ lý'}: {msg.get('content', '')}"
+                for msg in chat_history_list
+            ) or "Không có lịch sử trò chuyện gần đây."
             prompt = RAG_ANSWER_PROMPT.invoke(
                 {
                     "query": state["query"],
+                    "chat_history": chat_history_str,
                     "evidence_context": evidence_context,
                     "structured_context": state.get("structured_context") or "Không có kết quả phân tích chỉ số.",
                     "memory_context": state.get("memory_context") or "Không có memory ngắn hạn.",
@@ -543,6 +555,17 @@ def _build_heuristic_router_plan(query: str, extracted_tool_payload: dict[str, A
     """
 
     normalized = _normalize_query_text(query)
+    if _looks_like_structured_query(normalized):
+        source_type = "structured_graph" if _looks_like_graph_query(normalized) else "structured_table"
+        return _tool_plan_structured(
+            query=query,
+            endpoint="/mcp/medical-tools/structured-knowledge-query",
+            parameters={"query": query, "top_k": 5},
+            rag_query=query,
+            source_type=source_type,
+            reason="heuristic_structured_first",
+        )
+
     formula_ids = _detect_formula_ids(normalized, query)
     has_threshold_values = tool_payload_has_supported_inputs(extracted_tool_payload)
 
@@ -577,7 +600,72 @@ def _build_heuristic_router_plan(query: str, extracted_tool_payload: dict[str, A
             reason="heuristic_threshold_values",
         )
 
-    return None
+    # Structured-first default for knowledge questions without explicit formula inputs.
+    return _tool_plan_structured(
+        query=query,
+        endpoint="/mcp/medical-tools/structured-knowledge-query",
+        parameters={"query": query, "top_k": 5},
+        rag_query=query,
+        source_type=None,
+        reason="default_structured_first",
+    )
+
+
+def _tool_plan_structured(
+    *,
+    query: str,
+    endpoint: str,
+    parameters: dict[str, Any],
+    rag_query: str,
+    source_type: str | None,
+    reason: str,
+) -> dict[str, Any]:
+    return {
+        "needs_medical_tool": True,
+        "tool_call": {
+            "tool_name": "medical_tools.evaluate",
+            "method": "POST",
+            "endpoint": endpoint,
+            "parameters": parameters,
+        },
+        "rag_plan": {
+            "should_retrieve": True,
+            "query": rag_query,
+            "filters": {
+                "disease_name": None,
+                "section_type": None,
+                "source_type": source_type,
+                "biomarker": None,
+            },
+        },
+        "missing_inputs": [],
+        "reason": reason,
+    }
+
+
+def _looks_like_structured_query(normalized: str) -> bool:
+    keywords = (
+        "bang",
+        "du lieu bang",
+        "so do",
+        "luu do",
+        "decision tree",
+        "nhanh",
+        "graph",
+        "metadata",
+        "rifle",
+        "risk",
+        "injury",
+        "failure",
+        "loss",
+        "end stage",
+    )
+    return any(keyword in normalized for keyword in keywords)
+
+
+def _looks_like_graph_query(normalized: str) -> bool:
+    keywords = ("so do", "luu do", "decision tree", "graph", "nhanh", "cay")
+    return any(keyword in normalized for keyword in keywords)
 
 
 def _detect_formula_ids(normalized: str, original_query: str) -> list[str]:
@@ -942,6 +1030,25 @@ def _has_fena_input_set(normalized_query: str) -> bool:
         )
     )
     return has_urine_na and has_plasma_na and has_urine_creatinine and has_plasma_creatinine
+
+
+def _enrich_query_with_history(query: str, chat_history: list[dict[str, str]]) -> str:
+    normalized_query = _normalize_query_text(query)
+    has_disease = False
+    from src.LLM.retrieval.vector_search import DISEASE_HINTS
+    for aliases in DISEASE_HINTS.values():
+        if any(alias in normalized_query for alias in aliases):
+            has_disease = True
+            break
+    
+    if not has_disease and chat_history:
+        for msg in reversed(chat_history[-3:]):
+            content_norm = _normalize_query_text(msg.get("content", ""))
+            for canonical, aliases in DISEASE_HINTS.items():
+                for alias in aliases:
+                    if alias in content_norm:
+                        return f"{query} ({alias})"
+    return query
 
 
 def _normalize_query_text(query: str) -> str:

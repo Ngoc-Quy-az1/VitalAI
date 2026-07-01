@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  medical-tools:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.medical_tools
+    image: vitalai-medical-tools:latest
+    container_name: vitalai-medical-tools-service
+    ports:
+      - "8010:8010"
+    env_file:
+      - ../.env
+    restart: always

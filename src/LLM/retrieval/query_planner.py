@@ -33,6 +33,8 @@ def build_retrieval_plan(
     router_plan: dict[str, Any] | None = None,
     extracted_tool_payload: dict[str, Any] | None = None,
     medical_tool_result: dict[str, Any] | None = None,
+    chat_history: list[dict[str, str]] | None = None,
+    memory_context: str | None = None,
 ) -> dict[str, Any]:
     """Build a safe, tool-aware plan for RAG retrieval."""
 
@@ -44,9 +46,38 @@ def build_retrieval_plan(
 
     base_query = _clean_text(rag_plan.get("query")) or query
     normalized_query = _normalize_text(query)
+
+    detected_diseases = _detect_candidates(normalized_query, DISEASE_HINTS, kind="disease")
+    detected_sections = _detect_candidates(normalized_query, SECTION_HINTS, kind="section")
+    detected_biomarkers = _detect_candidates(normalized_query, BIOMARKER_HINTS, kind="biomarker")
+
+    history_text = ""
+    if chat_history:
+        history_text = " ".join(msg.get("content", "") for msg in chat_history[-3:])
+    elif memory_context:
+        history_text = memory_context
+
+    if history_text:
+        normalized_history = _normalize_text(history_text)
+        if not detected_diseases:
+            detected_diseases = _detect_candidates(normalized_history, DISEASE_HINTS, kind="disease")
+            for d in detected_diseases:
+                d["confidence"] = max(0.5, d["confidence"] - 0.2)
+                d["source"] = "chat_history_alias"
+        if not detected_sections:
+            detected_sections = _detect_candidates(normalized_history, SECTION_HINTS, kind="section")
+            for s in detected_sections:
+                s["confidence"] = max(0.5, s["confidence"] - 0.2)
+                s["source"] = "chat_history_alias"
+        if not detected_biomarkers:
+            detected_biomarkers = _detect_candidates(normalized_history, BIOMARKER_HINTS, kind="biomarker")
+            for b in detected_biomarkers:
+                b["confidence"] = max(0.5, b["confidence"] - 0.2)
+                b["source"] = "chat_history_alias"
+
     candidates = {
         "diseases": _merge_candidates(
-            _detect_candidates(normalized_query, DISEASE_HINTS, kind="disease"),
+            detected_diseases,
             _candidate_from_value(
                 extracted_tool_payload.get("disease_name"),
                 confidence=0.9,
@@ -60,7 +91,7 @@ def build_retrieval_plan(
             *_tool_disease_candidates(medical_tool_result),
         ),
         "sections": _merge_candidates(
-            _detect_candidates(normalized_query, SECTION_HINTS, kind="section"),
+            detected_sections,
             _candidate_from_value(
                 router_filters.get("section_type"),
                 confidence=0.74,
@@ -68,7 +99,7 @@ def build_retrieval_plan(
             ),
         ),
         "biomarkers": _merge_candidates(
-            _detect_candidates(normalized_query, BIOMARKER_HINTS, kind="biomarker"),
+            detected_biomarkers,
             *_payload_biomarker_candidates(extracted_tool_payload),
             *_tool_biomarker_candidates(medical_tool_result),
             _candidate_from_value(

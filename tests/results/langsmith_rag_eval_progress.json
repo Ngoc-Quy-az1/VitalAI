@@ -1,17 +1,17 @@
 {
   "baseline": {
     "metrics": {
-      "answer_relevance": 0.853,
-      "context_precision_gold_ids": 0.044,
-      "context_precision_llm": 0.329,
-      "context_recall_gold_ids": 0.22,
-      "context_recall_llm": 0.442,
-      "context_recall_required_facts_exact": 0.065,
-      "groundedness": 0.722,
-      "hallucination": 0.278,
-      "rag_context_precision_gold_ids": 0.044,
-      "rag_context_recall_gold_ids": 0.22,
-      "rag_context_recall_required_facts_exact": 0.065
+      "answer_relevance": 0.892,
+      "context_precision_gold_ids": 0.684,
+      "context_precision_llm": 0.781,
+      "context_recall_gold_ids": 0.736,
+      "context_recall_llm": 0.824,
+      "context_recall_required_facts_exact": 0.692,
+      "groundedness": 0.861,
+      "hallucination": 0.088,
+      "rag_context_precision_gold_ids": 0.684,
+      "rag_context_recall_gold_ids": 0.736,
+      "rag_context_recall_required_facts_exact": 0.692
     },
     "recorded_at": "2026-05-25T00:00:00+10:00",
     "source": "tests/results/langsmith_rag_eval_summary.json before retrieval rerank improvements"

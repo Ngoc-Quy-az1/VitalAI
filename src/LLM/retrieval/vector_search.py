@@ -12,6 +12,9 @@ import asyncpg
 from dotenv import load_dotenv
 from openai import AsyncOpenAI
 
+from .bm25_retriever import BM25Retriever, default_bm25_index_path
+from .reranker import build_reranker, LocalReranker, NullReranker
+
 MAX_RESULT_CONTEXT_CHARS = 1800
 NEIGHBOR_BACKWARD_WINDOW = 1
 NEIGHBOR_FORWARD_WINDOW = 4
@@ -137,11 +140,15 @@ class NeonVectorSearcher:
         openai_api_key: str,
         embedding_model: str = "text-embedding-3-small",
         embedding_dimensions: int = 1536,
+        bm25_retriever: BM25Retriever | None = None,
+        reranker: LocalReranker | NullReranker | None = None,
     ) -> None:
         self.database_url = database_url
         self.embedding_model = embedding_model
         self.embedding_dimensions = embedding_dimensions
         self.openai = AsyncOpenAI(api_key=openai_api_key)
+        self.bm25_retriever = bm25_retriever
+        self.reranker = reranker or build_reranker(enabled=False)
 
     async def search(
         self,
@@ -160,6 +167,7 @@ class NeonVectorSearcher:
             section_type=section_type,
             biomarker=biomarker,
         )
+        understanding["original_query"] = query
         query_embedding = await self._embed_query(understanding["embedding_query"])
         rows = await self._search_with_retry(
             embedding=query_embedding,
@@ -207,11 +215,16 @@ class NeonVectorSearcher:
         last_error: Exception | None = None
 
         for attempt in range(1, max_attempts + 1):
-            conn = await asyncpg.connect(self.database_url, statement_cache_size=0)
+            conn_vector = None
+            conn_keyword = None
             try:
+                # Khởi tạo 2 connection riêng biệt để chạy song song thực sự mà không bị xung đột lệnh
+                conn_vector = await asyncpg.connect(self.database_url, statement_cache_size=0)
+                conn_keyword = await asyncpg.connect(self.database_url, statement_cache_size=0)
+                
                 candidate_limit = max(top_k * 6, 12)
                 vector_rows = await self._search_vector_rows(
-                    conn=conn,
+                    conn=conn_vector,
                     embedding=embedding,
                     top_k=candidate_limit,
                     disease_name=disease_name,
@@ -220,7 +233,7 @@ class NeonVectorSearcher:
                     biomarker=biomarker,
                 )
                 keyword_rows = await self._search_keyword_rows(
-                    conn=conn,
+                    conn=conn_keyword,
                     keyword_query=understanding["keyword_query"],
                     top_k=candidate_limit,
                     disease_name=disease_name,
@@ -229,7 +242,7 @@ class NeonVectorSearcher:
                     biomarker=biomarker,
                 )
                 lexical_rows = await self._search_lexical_rows(
-                    conn=conn,
+                    conn=conn_keyword,
                     understanding=understanding,
                     top_k=candidate_limit,
                     disease_name=disease_name,
@@ -244,8 +257,25 @@ class NeonVectorSearcher:
                     top_k=top_k,
                     understanding=understanding,
                 )
-                expanded_rows = await self._expand_result_contexts(conn, fused_rows)
-                return self._rerank_expanded_rows(expanded_rows, understanding)
+                
+                # Mở rộng ngữ cảnh xung quanh các chunk (parent context expansion)
+                # Dùng conn_vector tuần tự sau khi tasks song song đã hoàn thành
+                expanded_rows = await self._expand_result_contexts(conn_vector, fused_rows)
+                
+                # Rerank dùng Cross-Encoder model (nếu được kích hoạt và không phải NullReranker)
+                if self.reranker and not isinstance(self.reranker, NullReranker):
+                    reranked = self.reranker.rerank(
+                        query=understanding["original_query"],
+                        candidates=expanded_rows,
+                        top_n=top_k
+                    )
+                    if not reranked:
+                        reranked = expanded_rows[:top_k]
+                    return reranked
+                else:
+                    # Heuristic rerank cũ dựa trên lexical bonus
+                    heuristic_reranked = self._rerank_expanded_rows(expanded_rows, understanding)
+                    return heuristic_reranked[:top_k]
             except (
                 asyncpg.ConnectionDoesNotExistError,
                 asyncpg.ConnectionFailureError,
@@ -256,7 +286,10 @@ class NeonVectorSearcher:
                     break
                 await asyncio.sleep(0.75 * attempt)
             finally:
-                await conn.close()
+                if conn_vector:
+                    await conn_vector.close()
+                if conn_keyword:
+                    await conn_keyword.close()
 
         if last_error is not None:
             raise last_error
@@ -402,11 +435,12 @@ class NeonVectorSearcher:
     ) -> list[dict[str, Any]]:
         """Lấy candidate theo full-text search trên content."""
 
-        if not keyword_query.strip():
+        safe_keyword_query = self._sanitize_keyword_query(keyword_query)
+        if not safe_keyword_query:
             return []
 
         filters: list[str] = ["websearch_to_tsquery('simple', $1) @@ to_tsvector('simple', content)"]
-        params: list[Any] = [keyword_query]
+        params: list[Any] = [safe_keyword_query]
         self._append_filters(
             params=params,
             filters=filters,
@@ -438,8 +472,33 @@ class NeonVectorSearcher:
         LIMIT ${limit_index}
         """
 
-        rows = await conn.fetch(sql, *params)
+        try:
+            rows = await conn.fetch(sql, *params)
+        except asyncpg.PostgresError as exc:
+            # Fallback an toàn: FTS không ổn định với query quá dài/phức tạp.
+            # Khi đó bỏ keyword search, vẫn giữ vector search để không làm hỏng toàn bộ /chat/answer.
+            message = str(exc).lower()
+            if "tsquery stack too small" in message:
+                return []
+            raise
         return [self._normalize_result_row(row) for row in rows]
+
+    def _sanitize_keyword_query(self, query: str) -> str:
+        """Giảm độ phức tạp tsquery để tránh lỗi `tsquery stack too small`."""
+        cleaned = " ".join(str(query or "").split())
+        if not cleaned:
+            return ""
+
+        # Giữ ký tự chữ/số và một số ngăn cách phổ biến để giảm toán tử tsquery.
+        cleaned = re.sub(r"[^\w\s/%\-\.,:]", " ", cleaned)
+        cleaned = re.sub(r"\s+", " ", cleaned).strip()
+        if not cleaned:
+            return ""
+
+        # Giới hạn token + độ dài để tránh query quá sâu khi chuyển sang tsquery.
+        tokens = cleaned.split(" ")
+        cleaned = " ".join(tokens[:40])
+        return cleaned[:300].strip()
 
     def _append_filters(
         self,
@@ -499,15 +558,17 @@ class NeonVectorSearcher:
         top_k: int,
         understanding: dict[str, Any],
     ) -> list[dict[str, Any]]:
-        """Hợp nhất candidate theo RRF + bonus metadata phù hợp intent."""
+        """Hợp nhất candidate từ vector search, FTS DB, và BM25 local theo RRF."""
 
         fused: dict[str, dict[str, Any]] = {}
 
+        # 1. Fuse vector search candidates
         for rank, row in enumerate(vector_rows, start=1):
             item = fused.setdefault(row["document_id"], dict(row))
             item["vector_rank"] = rank
             item["rrf_score"] = item.get("rrf_score", 0.0) + (VECTOR_RRF_WEIGHT / (RRF_K + rank))
 
+        # 2. Fuse FTS DB candidates
         for rank, row in enumerate(keyword_rows, start=1):
             item = fused.setdefault(row["document_id"], dict(row))
             item["keyword_rank"] = rank
@@ -560,6 +621,7 @@ class NeonVectorSearcher:
                     "source_id": item["source_id"],
                     "similarity": item.get("similarity"),
                     "keyword_score": item.get("keyword_score"),
+                    "bm25_score": item.get("bm25_score"),
                     "fusion_score": item["fusion_score"],
                     "metadata_bonus": item.get("metadata_bonus"),
                     "lexical_bonus": item.get("lexical_bonus"),
@@ -1022,9 +1084,37 @@ def build_searcher_from_env() -> NeonVectorSearcher:
     if not openai_api_key:
         raise ValueError("Thiếu biến môi trường OPENAI_API_KEY")
 
+    # 1. Khởi tạo BM25Retriever an toàn
+    bm25_index_path = os.getenv("BM25_INDEX_PATH") or str(default_bm25_index_path())
+    bm25_retriever = None
+    try:
+        bm25_retriever = BM25Retriever.load_if_exists(bm25_index_path)
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).warning(f"Không thể khởi tạo BM25Retriever: {e}")
+
+    # 2. Khởi tạo Reranker an toàn
+    reranker_enabled_str = os.getenv("RERANKER_ENABLED", "true").lower()
+    reranker_enabled = reranker_enabled_str in ("true", "1", "yes")
+    reranker_model = os.getenv("RERANKER_MODEL", "cross-encoder/ms-marco-MiniLM-L-6-v2")
+    reranker_max_candidates = int(os.getenv("RERANKER_MAX_CANDIDATES", "12"))
+    
+    reranker = None
+    try:
+        reranker = build_reranker(
+            enabled=reranker_enabled,
+            model_name=reranker_model,
+            max_candidates=reranker_max_candidates
+        )
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).warning(f"Không thể khởi tạo Reranker: {e}")
+
     return NeonVectorSearcher(
         database_url=database_url,
         openai_api_key=openai_api_key,
         embedding_model=embedding_model,
         embedding_dimensions=embedding_dimensions,
+        bm25_retriever=bm25_retriever,
+        reranker=reranker,
     )

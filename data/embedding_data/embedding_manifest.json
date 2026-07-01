@@ -1,25 +1,25 @@
 {
   "counts": {
-    "documents": 851,
+    "documents": 854,
     "skipped_chunks": 39
   },
   "distributions": {
     "source_type": {
       "chunk": 774,
-      "threshold": 73,
-      "formula": 4
+      "threshold": 75,
+      "formula": 5
     },
     "doc_type": {
       "disease_guideline": 745,
       "medication_reference": 9,
-      "threshold_reference": 85,
-      "formula_reference": 12
+      "threshold_reference": 87,
+      "formula_reference": 13
     },
     "section_type": {
       "definition": 34,
       "general": 277,
       "progression": 27,
-      "classification": 95,
+      "classification": 98,
       "clinical_features": 88,
       "pathology": 26,
       "diagnosis_criteria": 73,
@@ -31,11 +31,11 @@
       "benh_ly_cau_than": 66,
       "viem_cau_than_man": 2,
       "lupus_nephritis": 73,
-      "diabetic_kidney_disease": 170,
+      "diabetic_kidney_disease": 167,
       "hoi_chung_than_hu": 53,
       "viem_cau_than_cap": 27,
       "benh_than_iga": 32,
-      "benh_than_man": 237,
+      "benh_than_man": 243,
       "acute_kidney_injury": 191
     }
   },

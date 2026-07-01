@@ -58,6 +58,7 @@ class RetrievalAugmentedAnswerer:
         conversation_id: str | None = None,
         user_id: str | None = None,
         memory_context: str | None = None,
+        chat_history: list[dict[str, str]] | None = None,
         enable_web_search: bool | None = None,
         include_debug: bool = False,
     ) -> dict[str, Any]:
@@ -74,6 +75,7 @@ class RetrievalAugmentedAnswerer:
                 "conversation_id": conversation_id,
                 "user_id": user_id,
                 "memory_context": memory_context or "",
+                "chat_history": chat_history or [],
                 "enable_web_search": enable_web_search,
             }
         )
@@ -113,6 +115,7 @@ class RetrievalAugmentedAnswerer:
         conversation_id: str | None = None,
         user_id: str | None = None,
         memory_context: str | None = None,
+        chat_history: list[dict[str, str]] | None = None,
         enable_web_search: bool | None = None,
         include_debug: bool = False,
     ) -> AsyncIterator[dict[str, Any]]:
@@ -127,6 +130,7 @@ class RetrievalAugmentedAnswerer:
             "conversation_id": conversation_id,
             "user_id": user_id,
             "memory_context": memory_context or "",
+            "chat_history": chat_history or [],
             "enable_web_search": enable_web_search,
         }
         prompt_state = await self.graph.ainvoke(
